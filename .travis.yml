@@ -1,0 +1,14 @@
+language: java
+os:
+  - linux
+services:
+  - docker
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+install:
+  - ./gradlew assemble --stacktrace --info
+script:
+  - ./gradlew check --stacktrace --info
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

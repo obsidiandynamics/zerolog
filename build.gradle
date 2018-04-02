@@ -1,0 +1,184 @@
+plugins {
+  id "com.jfrog.bintray" version "1.7.3"
+}
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
+
+group = "com.obsidiandynamics.zerolog"
+version = "0.1.0-SNAPSHOT"
+  
+def envUser = "BINTRAY_USER"
+def envKey = "BINTRAY_KEY"
+task bintrayCredentialsCheck {
+  doLast {
+    if (System.getenv(envUser) == null) {
+      throw new GradleException('No Bintray username specified; set with "export ${envUser}=<username>"')
+    }
+    if (System.getenv(envKey) == null) {
+      throw new GradleException('No Bintray key specified; set with "export ${envKey}=<key>"')
+    }
+  }
+}
+
+allprojects {
+  apply plugin: "java"
+  apply plugin: "jacoco"
+  apply plugin: "maven-publish"
+  apply plugin: "com.jfrog.bintray"
+
+  repositories {
+    jcenter()
+    maven {
+      url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+  }
+  
+  ext {
+    fulcrumVersion = "0.4.0"
+  }
+  
+  dependencies {
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.9.0"
+    testCompile "org.hamcrest:hamcrest-library:1.3"
+  }
+
+  test {
+    exclude "**/*IT.class"
+  }
+  
+  task integrationTest(type: Test, description: "Runs integration tests.", group: "Verification") {
+    include "**/*IT.class"
+  }
+
+  jacoco {
+    toolVersion = "0.8.1"
+  }
+
+  jacocoTestReport {
+    additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+    classDirectories = files(sourceSets.main.output)
+    reports {
+      html.enabled true
+      xml.enabled true
+      csv.enabled false
+    }
+  }
+
+  // invoke this task when ready to publish to Bintray
+  bintrayUpload {
+    dependsOn ":bintrayCredentialsCheck"
+  }
+}
+
+subprojects {
+  dependencies {
+    testCompile project(":").sourceSets.test.output
+  }
+}
+
+task jacocoRootReport(type: JacocoReport) {
+  dependsOn = allprojects.test
+  additionalSourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(allprojects.sourceSets.main.output)
+  executionData = files(allprojects.jacocoTestReport.executionData)
+  reports {
+    html.enabled true
+    xml.enabled true
+    csv.enabled false
+  }
+  onlyIf = {
+    true
+  }
+  doFirst {
+    executionData = files(executionData.findAll {
+      it.exists()
+    })
+  }
+  afterEvaluate {
+    classDirectories = files(classDirectories.files.collect {
+      fileTree(dir: it, exclude: ["sample/**", "**/*Uncovered*"])
+    })
+  }
+}
+
+def packageName = "zerolog-core"
+
+dependencies {
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-assert:${fulcrumVersion}"
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-await:${fulcrumVersion}"
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-junit:${fulcrumVersion}"
+  testCompile "org.slf4j:slf4j-log4j12:1.7.25"
+  testCompile "log4j:log4j:1.2.17"
+}
+
+jar {
+  baseName packageName
+  finalizedBy jacocoRootReport
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  baseName packageName
+  classifier = "javadoc"
+  from "$buildDir/docs/javadoc"
+}
+ 
+task sourcesJar(type: Jar) {
+  baseName packageName
+  from sourceSets.main.allSource
+  classifier = "sources"
+}
+ 
+artifacts {
+  archives jar
+  archives javadocJar
+  archives sourcesJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId project(":").group
+      artifactId packageName
+      version project(":").version
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+    }
+  }
+  repositories {
+    maven {
+      url "${project(":").projectDir}/../repo"
+    }
+  }
+}
+
+def packageDesc = "Ultra-low overhead logging façade for performance-sensitive applications"
+def repoName = "zerolog"
+bintray {
+  user = System.getenv(envUser)
+  key = System.getenv(envKey)
+  publications = ["mavenJava"]
+  pkg {
+    repo = "${repoName}"
+    name = packageName
+    userOrg = "obsidiandynamics"
+    desc = packageDesc
+    websiteUrl = "https://github.com/obsidiandynamics/${repoName}"
+    licenses = ["BSD New"]
+    vcsUrl = "https://github.com/obsidiandynamics/${repoName}"
+    issueTrackerUrl = "https://github.com/obsidiandynamics/${repoName}/issues"
+    publicDownloadNumbers = true
+    githubRepo = "obsidiandynamics/${repoName}"
+    override = true
+    publish = false
+    version {
+      name = project(":").version
+      desc = packageDesc
+      released  = new Date()
+      vcsTag = project(":").version
+    }
+  }
+}
