@@ -58,7 +58,9 @@ allprojects {
   }
   
   javadoc {
-    options.addStringOption("quiet", "-html5")
+    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+      options.addStringOption("quiet", "-html5")
+    }
   }
 
   jacocoTestReport {
