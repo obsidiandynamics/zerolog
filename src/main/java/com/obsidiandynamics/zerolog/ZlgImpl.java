@@ -1,17 +1,17 @@
 package com.obsidiandynamics.zerolog;
 
 final class ZlgImpl implements Zlg {
-  static class DuplicateValueException extends IllegalStateException {
+  static final class DuplicateValueException extends IllegalStateException {
     private static final long serialVersionUID = 1L;
     DuplicateValueException(String m) { super(m); }
   }
   
-  static class MissingValueException extends IllegalStateException {
+  static final class MissingValueException extends IllegalStateException {
     private static final long serialVersionUID = 1L;
     MissingValueException(String m) { super(m); }
   }
   
-  static class TooManyArgsException extends IllegalStateException {
+  static final class TooManyArgsException extends IllegalStateException {
     private static final long serialVersionUID = 1L;
     TooManyArgsException(String m) { super(m); }
   }
@@ -114,14 +114,14 @@ final class ZlgImpl implements Zlg {
     }
   }
   
-  private final LogLevel rootLevel;
+  private final LogLevel baseLevel;
   
   private final LogTarget target;
   
   private final ThreadLocal<LogChainImpl> threadLocalChain = ThreadLocal.withInitial(LogChainImpl::new);
   
   ZlgImpl(String name, LogConfig config) {
-    rootLevel = config.getBaseLevel();
+    baseLevel = config.getBaseLevel();
     target = config.getLogService().get(name);
   }
   
@@ -140,6 +140,6 @@ final class ZlgImpl implements Zlg {
   
   @Override
   public boolean isEnabled(LogLevel level) {
-    return level.sameOrHigherThan(rootLevel) && target.isEnabled(level);
+    return level.sameOrHigherThan(baseLevel) && target.isEnabled(level);
   }
 }
