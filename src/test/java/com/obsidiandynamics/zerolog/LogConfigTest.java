@@ -9,12 +9,12 @@ import com.obsidiandynamics.assertion.*;
 public final class LogConfigTest {
   @Test
   public void test() {
-    final LogLevel rootLevel = LogLevel.DEBUG;
+    final LogLevel baseLevel = LogLevel.DEBUG;
     final LogService logService = __name -> null;
     final LogConfig config = new LogConfig()
-        .withRootLevel(rootLevel)
+        .withBaseLevel(baseLevel)
         .withLogService(logService);
-    assertEquals(rootLevel, config.getRootLevel());
+    assertEquals(baseLevel, config.getBaseLevel());
     assertEquals(logService, config.getLogService());
     Assertions.assertToStringOverride(config);
   }
@@ -22,7 +22,7 @@ public final class LogConfigTest {
   @Test
   public void testDefaults() {
     final LogConfig config = new LogConfig();
-    assertEquals(LogConfig.getDefaultLevel(), config.getRootLevel());
+    assertEquals(LogConfig.getDefaultBaseLevel(), config.getBaseLevel());
     assertEquals(LogConfig.getDefaultLogService(), config.getLogService());
   }
 }

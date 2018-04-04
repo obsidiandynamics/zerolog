@@ -11,13 +11,13 @@ import com.obsidiandynamics.zerolog.ZlgImpl.*;
 
 public final class ZlgImplTest {
   private static class LogMocks implements ConfigService {
-    private final LogLevel rootLevel;
+    private final LogLevel baseLevel;
     final LogService service = mock(LogService.class);
     final LogTarget target = mock(LogTarget.class);
     Object[] argv;
     
-    LogMocks(LogLevel rootLevel, LogLevel localLevel) {
-      this.rootLevel = rootLevel;
+    LogMocks(LogLevel baseLevel, LogLevel localLevel) {
+      this.baseLevel = baseLevel;
       
       when(service.get(any())).thenReturn(target);
       when(target.isEnabled(any())).thenReturn(true);
@@ -37,12 +37,12 @@ public final class ZlgImplTest {
     
     @Override
     public LogConfig get() {
-      return new LogConfig().withRootLevel(rootLevel).withLogService(service);
+      return new LogConfig().withBaseLevel(baseLevel).withLogService(service);
     }
   }
 
   /**
-   *  Tests logging at debug level, which should be disabled at the root level.
+   *  Tests logging at debug level, which should be disabled at the base level.
    */
   @Test
   public void testLogDebug() {
@@ -54,7 +54,7 @@ public final class ZlgImplTest {
   }
 
   /**
-   *  Tests logging at configuration level, which should be enabled at the root level but disabled locally.
+   *  Tests logging at configuration level, which should be enabled at the base level but disabled locally.
    */
   @Test
   public void testLogConf() {

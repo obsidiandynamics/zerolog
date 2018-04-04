@@ -121,7 +121,7 @@ final class ZlgImpl implements Zlg {
   private final ThreadLocal<LogChainImpl> threadLocalChain = ThreadLocal.withInitial(LogChainImpl::new);
   
   ZlgImpl(String name, LogConfig config) {
-    rootLevel = config.getRootLevel();
+    rootLevel = config.getBaseLevel();
     target = config.getLogService().get(name);
   }
   

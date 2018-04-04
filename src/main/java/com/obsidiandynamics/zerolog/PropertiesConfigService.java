@@ -9,7 +9,7 @@ import com.obsidiandynamics.io.*;
 import com.obsidiandynamics.props.*;
 
 public final class PropertiesConfigService implements ConfigService {
-  public static final String KEY_ROOT_LEVEL = "zlg.root.level";
+  public static final String KEY_BASE_LEVEL = "zlg.base.level";
   public static final String KEY_LOG_SERVICE = "zlg.log.service";
   
   static final class ServiceInstantiationException extends RuntimeException {
@@ -46,17 +46,17 @@ public final class PropertiesConfigService implements ConfigService {
   }
   
   private static LogConfig loadConfig(Properties props) {
-    final LogLevel defaultLevel = LogConfig.getDefaultLevel();
+    final LogLevel defaultBaseLevel = LogConfig.getDefaultBaseLevel();
     final LogService defaultLogService = LogConfig.getDefaultLogService();
     final String defaultLogServiceClass = defaultLogService.getClass().getName();
     
-    final LogLevel rootLevel = Props.get(props, KEY_ROOT_LEVEL, LogLevel::valueOf, defaultLevel);
+    final LogLevel baseLevel = Props.get(props, KEY_BASE_LEVEL, LogLevel::valueOf, defaultBaseLevel);
     final String logServiceClass = Props.get(props, KEY_LOG_SERVICE, String::valueOf, defaultLogServiceClass);
     
     final LogService logService = defaultLogServiceClass.equals(logServiceClass) 
         ? defaultLogService : instantiateLogService(logServiceClass);
     return new LogConfig()
-        .withRootLevel(rootLevel)
+        .withBaseLevel(baseLevel)
         .withLogService(logService);
   }
   
