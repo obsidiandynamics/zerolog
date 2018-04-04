@@ -28,7 +28,7 @@ public final class ZlgBuilder {
     this.name = name;
   }
   
-  ZlgBuilder withConfigService(ConfigService configService) {
+  public ZlgBuilder withConfigService(ConfigService configService) {
     this.configService = configService;
     return this;
   }

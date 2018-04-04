@@ -8,7 +8,7 @@ import squidpony.squidmath.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractOffVolumeTest {
   protected static final long TEST_RUN_TIME_NANOS = 10_000_000L;
-  protected static final long BENCHMARK_RUN_TIME_NANOS = 10_000_000_000L;
+  protected static final long BENCHMARK_RUN_TIME_NANOS = 30_000_000_000L;
   
   @FunctionalInterface
   protected interface TestCycle {
@@ -16,7 +16,7 @@ public abstract class AbstractOffVolumeTest {
   }
   
   protected static final void runBenchmark(String name, long runTimeNanos, TestCycle cycle) {
-    final long warmupTime = runTimeNanos / 2;
+    final long warmupTime = runTimeNanos / 4;
     final long checkRuns = 1_000_000L;
     boolean warmup = true;
     

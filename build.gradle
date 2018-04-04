@@ -125,7 +125,40 @@ dependencies {
   testCompile "org.slf4j:slf4j-api:1.7.25"
   testCompile "log4j:log4j:1.2.17"
   testCompile "org.tinylog:tinylog:1.3.4"
+  testRuntime "com.obsidiandynamics.fulcrum:fulcrum-launcher:${fulcrumVersion}"
   testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
+}
+
+project.ext.set("launcherClasspath", new org.gradle.api.internal.file.UnionFileCollection())
+project.ext.set("launcherClasses", new ArrayList())
+
+task addLauncherApps() {
+  project(":").launcherClasspath += sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.BaselineOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.JulOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.Log4jOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.MinLogOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.Slf4jOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.TinyLogOffVolumeTest"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.ZlgOffVolumeTest"
+}
+
+task launch() {
+  dependsOn allprojects*.tasks*.findByName("testClasses")
+  doLast {
+    def baseJvmArgs = "-XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark " + 
+                      "-XX:+UseBiasedLocking -Xms2G -Xmx2G -Xss1M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 " + 
+                      "-XX:InitiatingHeapOccupancyPercent=0 -Djava.net.preferIPv4Stack=true " + 
+                      "-Dlauncher.package.compress.level=3"
+    javaexec {
+      systemProperties = System.properties
+      classpath = project(":").launcherClasspath
+      main = "com.obsidiandynamics.launcher.Launcher"
+      args = project(":").launcherClasses
+      jvmArgs = Arrays.asList baseJvmArgs.split(" ")
+      standardInput = System.in
+    }
+  }
 }
 
 jar {

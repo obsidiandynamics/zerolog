@@ -21,7 +21,9 @@ public final class ZlgOffVolumeTest extends AbstractOffVolumeTest {
   }
 
   private static TestCycle cycle() {
-    final Zlg z = Zlg.forClass(AbstractOffVolumeTest.class).get();
+    final Zlg z = Zlg.forClass(AbstractOffVolumeTest.class)
+        .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
+        .get();
     assertFalse(z.isEnabled(LogLevel.TRACE));
     
     return (f, d, i, l) -> {
