@@ -1,13 +1,13 @@
 package com.obsidiandynamics.zerolog;
 
-public final class Slf4jBinding implements LogServiceBinding {
+public final class SysOutBinding implements LogServiceBinding {
   @Override
   public byte getPriority() {
-    return Byte.MAX_VALUE;
+    return 0;
   }
   
   @Override
   public LogService getLogService() {
-    return new Slf4jLogService();
+    return new SysOutLogService();
   }
 }

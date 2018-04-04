@@ -10,18 +10,37 @@ import java.util.*;
 import org.junit.*;
 
 public final class PropertiesConfigServiceTest {
+  public static class NopLogService implements LogService {
+    @Override
+    public LogTarget get(String name) {
+      throw new UnsupportedOperationException();
+    }
+  }
+  
+  @Test
+  public void testLoadConfigDefaultsAndCache() {
+    final PropertiesConfigService configService = new PropertiesConfigService(() -> new Properties());
+    final LogConfig config = configService.get();
+    assertNotNull(config);
+    assertEquals(LogConfig.getDefaultLevel(), config.getRootLevel());
+    assertSame(LogConfig.getDefaultLogService(), config.getLogService());
+    
+    final LogConfig config2 = configService.get();
+    assertSame(config, config2);
+  }
+  
   @Test
   public void testLoadConfigSuccessAndCache() {
     final Properties props = new Properties();
     props.setProperty(KEY_ROOT_LEVEL, LogLevel.WARN.name());
-    props.setProperty(KEY_LOG_SERVICE, SysOutLogService.class.getName());
+    props.setProperty(KEY_LOG_SERVICE, NopLogService.class.getName());
     
     final PropertiesConfigService configService = new PropertiesConfigService(() -> props);
     final LogConfig config = configService.get();
     assertNotNull(config);
     assertEquals(LogLevel.WARN, config.getRootLevel());
     assertNotNull(config.getLogService());
-    assertEquals(SysOutLogService.class, config.getLogService().getClass());
+    assertEquals(NopLogService.class, config.getLogService().getClass());
     
     final LogConfig config2 = configService.get();
     assertSame(config, config2);

@@ -4,16 +4,15 @@ import java.util.*;
 
 public final class LogConfig implements ConfigService {
   private static final LogLevel defaultLevel = LogLevel.CONF;
-  private static LogService defaultLogService = new SysOutLogService();
-  
-  private static void loadBinding(LogServiceBinding binding) {
-    defaultLogService = binding.getLogService();
-  }
+  private static LogService defaultLogService;
   
   static {
-    // load any bindings on the classpath; set defaultLogService to any one of the present bindings
+    // load any bindings on the classpath; set defaultLogService to the one with the highest priority
     final ServiceLoader<LogServiceBinding> serviceLoader = ServiceLoader.load(LogServiceBinding.class);
-    serviceLoader.forEach(LogConfig::loadBinding);
+    final List<LogServiceBinding> prioritisedBindings = new ArrayList<>();
+    serviceLoader.forEach(prioritisedBindings::add);
+    Collections.sort(prioritisedBindings, LogServiceBinding::byPriorityDecreasing);
+    defaultLogService = prioritisedBindings.get(0).getLogService();
   }
   
   public static LogLevel getDefaultLevel() { return defaultLevel; }
