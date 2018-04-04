@@ -1,1 +1,4 @@
 rootProject.name = "zerolog"
+
+include "zerolog-slf4j17"
+project(":zerolog-slf4j17").projectDir = new File(settingsDir, "slf4j17")

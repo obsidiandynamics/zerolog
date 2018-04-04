@@ -1,0 +1,81 @@
+def packageName = "zerolog-slf4j17"
+version = project(":").version
+
+dependencies {
+  compileOnly "org.slf4j:slf4j-api:1.7.25" // not exporting, so that any 1.7.x can be supplied by the user
+  compile project(":")
+  
+  testCompile "org.slf4j:slf4j-api:1.7.25"
+  testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
+  testRuntime "log4j:log4j:1.2.17"
+}
+
+jar {
+  baseName packageName
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  baseName packageName
+  classifier = "javadoc"
+  from "$buildDir/docs/javadoc"
+}
+ 
+task sourcesJar(type: Jar) {
+  baseName packageName
+  from sourceSets.main.allSource
+  classifier = "sources"
+}
+ 
+artifacts {
+  archives jar
+  archives javadocJar
+  archives sourcesJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId project(":").group
+      artifactId packageName
+      version project(":").version
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+    }
+  }
+  repositories {
+    maven {
+      url "${project(':').projectDir}/../repo"
+    }
+  }
+}
+
+def envUser = "BINTRAY_USER"
+def envKey = "BINTRAY_KEY"
+def packageDesc = "SLF4J 1.7.x binding for Zerolog"
+def repoName = "fulcrum"
+bintray {
+  user = System.getenv(envUser)
+  key = System.getenv(envKey)
+  publications = ["mavenJava"]
+  pkg {
+    repo = "${repoName}"
+    name = packageName
+    userOrg = "obsidiandynamics"
+    desc = packageDesc
+    websiteUrl = "https://github.com/obsidiandynamics/${repoName}"
+    licenses = ["BSD New"]
+    vcsUrl = "https://github.com/obsidiandynamics/${repoName}"
+    issueTrackerUrl = "https://github.com/obsidiandynamics/${repoName}/issues"
+    publicDownloadNumbers = true
+    githubRepo = "obsidiandynamics/${repoName}"
+    override = true
+    publish = false
+    version {
+      name = project(":").version
+      desc = packageDesc
+      released  = new Date()
+      vcsTag = project(":").version
+    }
+  }
+}

@@ -37,7 +37,7 @@ allprojects {
   }
   
   ext {
-    fulcrumVersion = "0.4.0"
+    fulcrumVersion = "0.6.0"
   }
   
   dependencies {
@@ -113,11 +113,17 @@ task jacocoRootReport(type: JacocoReport) {
 def packageName = "zerolog-core"
 
 dependencies {
+  compile "com.obsidiandynamics.fulcrum:fulcrum-func:${fulcrumVersion}"
+  compile "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
+  compile "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
+
   testCompile "com.obsidiandynamics.fulcrum:fulcrum-assert:${fulcrumVersion}"
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-await:${fulcrumVersion}"
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-junit:${fulcrumVersion}"
-  testCompile "org.slf4j:slf4j-log4j12:1.7.25"
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
+  testCompile "com.squidpony:squidlib-util:3.0.0-b9" // used for RNG
+  testCompile "org.slf4j:slf4j-api:1.7.25"
   testCompile "log4j:log4j:1.2.17"
+  testCompile "org.tinylog:tinylog:1.3.4"
+  testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
 }
 
 jar {
