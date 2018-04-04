@@ -53,7 +53,7 @@ publishing {
 def envUser = "BINTRAY_USER"
 def envKey = "BINTRAY_KEY"
 def packageDesc = "SLF4J 1.7.x binding for Zerolog"
-def repoName = "fulcrum"
+def repoName = "zerolog"
 bintray {
   user = System.getenv(envUser)
   key = System.getenv(envKey)
