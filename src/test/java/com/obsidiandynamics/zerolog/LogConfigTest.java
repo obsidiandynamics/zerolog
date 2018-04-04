@@ -18,11 +18,4 @@ public final class LogConfigTest {
     assertEquals(logService, config.getLogService());
     Assertions.assertToStringOverride(config);
   }
-  
-  @Test
-  public void testDefaults() {
-    final LogConfig config = new LogConfig();
-    assertEquals(LogConfig.getDefaultBaseLevel(), config.getBaseLevel());
-    assertEquals(LogConfig.getDefaultLogService(), config.getLogService());
-  }
 }

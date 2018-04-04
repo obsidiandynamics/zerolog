@@ -19,11 +19,15 @@ public final class PropertiesConfigServiceTest {
   
   @Test
   public void testLoadConfigDefaultsAndCache() {
+    final LogConfig defaultConfig = new LogConfig();
+    final LogLevel defaultBaseLevel = defaultConfig.getBaseLevel();
+    final LogService defaultLogService = defaultConfig.getLogService();
+    
     final PropertiesConfigService configService = new PropertiesConfigService(() -> new Properties());
     final LogConfig config = configService.get();
     assertNotNull(config);
-    assertEquals(LogConfig.getDefaultBaseLevel(), config.getBaseLevel());
-    assertSame(LogConfig.getDefaultLogService(), config.getLogService());
+    assertEquals(defaultBaseLevel, config.getBaseLevel());
+    assertSame(defaultLogService, config.getLogService());
     
     final LogConfig config2 = configService.get();
     assertSame(config, config2);

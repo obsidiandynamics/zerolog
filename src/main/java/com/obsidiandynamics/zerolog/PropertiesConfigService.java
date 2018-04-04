@@ -46,18 +46,17 @@ public final class PropertiesConfigService implements ConfigService {
   }
   
   private static LogConfig loadConfig(Properties props) {
-    final LogLevel defaultBaseLevel = LogConfig.getDefaultBaseLevel();
-    final LogService defaultLogService = LogConfig.getDefaultLogService();
-    final String defaultLogServiceClass = defaultLogService.getClass().getName();
+    final LogLevel baseLevel = Props.get(props, KEY_BASE_LEVEL, LogLevel::valueOf, null);
+    final String logServiceClass = Props.get(props, KEY_LOG_SERVICE, String::valueOf, null);
     
-    final LogLevel baseLevel = Props.get(props, KEY_BASE_LEVEL, LogLevel::valueOf, defaultBaseLevel);
-    final String logServiceClass = Props.get(props, KEY_LOG_SERVICE, String::valueOf, defaultLogServiceClass);
-    
-    final LogService logService = defaultLogServiceClass.equals(logServiceClass) 
-        ? defaultLogService : instantiateLogService(logServiceClass);
-    return new LogConfig()
-        .withBaseLevel(baseLevel)
-        .withLogService(logService);
+    final LogConfig config = new LogConfig();
+    if (baseLevel != null) {
+      config.withBaseLevel(baseLevel);
+    }
+    if (logServiceClass != null && ! logServiceClass.equals(config.getLogService().getClass().getName())) {
+      config.withLogService(instantiateLogService(logServiceClass));
+    }
+    return config;
   }
   
   private static LogService instantiateLogService(String logServiceClassName) {

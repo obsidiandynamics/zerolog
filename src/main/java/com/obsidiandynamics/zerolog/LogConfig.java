@@ -15,10 +15,6 @@ public final class LogConfig implements ConfigService {
     defaultLogService = prioritisedBindings.get(0).getLogService();
   }
   
-  public static LogLevel getDefaultBaseLevel() { return defaultBaseLevel; }
-  
-  public static LogService getDefaultLogService() { return defaultLogService; }
-  
   private LogLevel baseLevel = defaultBaseLevel;
   
   private LogService logService = defaultLogService;
