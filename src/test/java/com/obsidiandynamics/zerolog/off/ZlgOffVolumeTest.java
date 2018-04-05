@@ -21,14 +21,15 @@ public final class ZlgOffVolumeTest extends AbstractOffVolumeTest {
   }
 
   private static TestCycle cycle() {
-    final Zlg z = Zlg.forClass(AbstractOffVolumeTest.class)
+    final Zlg zlg = Zlg.forClass(AbstractOffVolumeTest.class)
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
-    assertFalse(z.isEnabled(LogLevel.TRACE));
+    assertFalse(zlg.isEnabled(LogLevel.TRACE));
+    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLevelChain"));
     
     return (f, d, i, l) -> {
       consumeArgs(f, d, i, l);
-      z.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
+      zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
     };
   }
   

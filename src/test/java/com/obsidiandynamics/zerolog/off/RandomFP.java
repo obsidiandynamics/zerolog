@@ -3,12 +3,12 @@ package com.obsidiandynamics.zerolog.off;
 /**
  *  Taken from {@code SplittableRandom}.
  */
-final class RandomFP {
+public final class RandomFP {
   private static final double DOUBLE_UNIT = 0x1.0p-53; // 1.0 / (1L << 53);
 
   private RandomFP() {}
 
-  static double toDouble(long z) {
+  public static double toDouble(long z) {
     return (mix64(z) >>> 11) * DOUBLE_UNIT;
   }
 
