@@ -1,4 +1,4 @@
-package com.obsidiandynamics.zerolog.off;
+package com.obsidiandynamics.zerolog;
 
 /**
  *  Taken from {@code SplittableRandom}.

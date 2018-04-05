@@ -3,6 +3,8 @@ package com.obsidiandynamics.zerolog.off;
 import org.junit.*;
 import org.junit.runners.*;
 
+import com.obsidiandynamics.zerolog.*;
+
 import squidpony.squidmath.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

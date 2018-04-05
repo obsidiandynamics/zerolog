@@ -2,22 +2,14 @@ package com.obsidiandynamics.zerolog.bench;
 
 import static org.junit.Assert.*;
 
-import org.openjdk.jmh.annotations.*;
-
-import com.obsidiandynamics.dyno.*;
 import com.obsidiandynamics.zerolog.*;
-import com.obsidiandynamics.zerolog.off.*;
 
-import squidpony.squidmath.*;
-
-public final class ZlgBenchmark implements BenchmarkTarget {
+public final class ZlgBenchmark extends AbstractBenchmark {
   private Zlg zlg;
-  
-  private final RandomnessSource random = new XoRoRNG();
   
   @Override
   public void setup() {
-    zlg = Zlg.forClass(AbstractOffVolumeTest.class)
+    zlg = Zlg.forClass(ZlgBenchmark.class)
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
     assertFalse(zlg.isEnabled(LogLevel.TRACE));
@@ -25,24 +17,11 @@ public final class ZlgBenchmark implements BenchmarkTarget {
   }
 
   @Override
-  public void cycle(Abyss abyss) {
-    final long randomLong = random.nextLong();
-    final double randomDouble = RandomFP.toDouble(randomLong);
-    final float randomFloat = (float) randomDouble;
-    final int randomInt = (int) (Integer.MAX_VALUE * randomFloat);
-    zlg.t("float: %f, double: %f, int: %d, long: %d").arg(randomFloat).arg(randomDouble).arg(randomInt).arg(randomLong).log();
-    abyss.consume(randomInt);
+  protected void cycle(float f, double d, int i, long l) {
+    zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
   }
   
   public static void main(String[] args) {
-    new Dyno()
-    .withBenchTime(5_000)
-    .withTarget(ZlgBenchmark.class)
-    .withDriver(new JmhDriver(opts -> opts
-                              .mode(Mode.Throughput)
-                              .measurementIterations(2)))
-    .withWarmupFraction(0.25)
-    .withOutput(System.out::println)
-    .run();
+    run(ZlgBenchmark.class);
   }
 }
