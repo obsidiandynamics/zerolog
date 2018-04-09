@@ -1,7 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
 public enum LogLevel {
-  OFF("OFF"), // highest possible level, used to turn off logging
+  OFF("OFF"), // highest conceivable level, used to turn off logging
   ERROR("ERR"),
   WARN("WRN"),
   INFO("INF"),
