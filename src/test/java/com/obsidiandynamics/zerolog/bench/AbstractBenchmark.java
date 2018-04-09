@@ -24,7 +24,7 @@ public abstract class AbstractBenchmark implements BenchmarkTarget {
   
   static final BenchmarkResult run(Class<? extends AbstractBenchmark> target) {
     return new Dyno()
-        .withBenchTime(30_000)
+        .withBenchmarkTime(30_000)
         .withTarget(target)
         .withDriver(new JmhDriver(opts -> opts
                                   .mode(Mode.AverageTime)
@@ -39,6 +39,6 @@ public abstract class AbstractBenchmark implements BenchmarkTarget {
   }
   
   static final double toNanos(BenchmarkResult result) {
-    return result.getPrimaryScore() * 1_000_000_000d;
+    return result.getScore() * 1_000_000_000d;
   }
 }
