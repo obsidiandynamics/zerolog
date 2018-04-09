@@ -1,5 +1,6 @@
 package com.obsidiandynamics.zerolog;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -19,6 +20,10 @@ public final class ZlgTest {
     when(z.e(any())).thenCallRealMethod();
     
     final LogChain chain = mock(LogChain.class);
+    when(chain.logb()).thenCallRealMethod();
+    assertTrue(chain.logb());
+    verify(chain).log();
+    
     when(z.level(any())).thenReturn(chain);
     
     z.t("trace");
@@ -46,6 +51,7 @@ public final class ZlgTest {
     verify(chain).format(eq("error"));
 
     verify(z, times(6)).level(any());
+    verify(chain).logb();
     verifyNoMoreInteractions(chain);
   }
 }

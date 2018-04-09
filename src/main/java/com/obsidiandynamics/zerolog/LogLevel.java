@@ -20,6 +20,10 @@ public enum LogLevel {
   }
   
   public boolean sameOrHigherThan(LogLevel other) {
-    return ordinal() <= other.ordinal();
+    return sameOrHigherThan(other.ordinal());
+  }
+  
+  public boolean sameOrHigherThan(int logLevelOrdinal) {
+    return ordinal() <= logLevelOrdinal;
   }
 }

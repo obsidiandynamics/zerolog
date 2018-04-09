@@ -29,6 +29,11 @@ public interface Zlg {
     LogChain stack(Throwable throwable);
     
     void log();
+    
+    default boolean logb() {
+      log();
+      return true;
+    }
   }
   
   LogChain level(LogLevel level);
