@@ -135,6 +135,14 @@ project.ext.set("launcherClasses", new ArrayList())
 
 task addLauncherApps() {
   project(":").launcherClasspath += sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.BaselineBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulLambdaBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Log4jBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.BaselineOffVolumeTest"
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.JulOffVolumeTest"
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.Log4jOffVolumeTest"
