@@ -31,7 +31,7 @@ final class Slf4jLogTarget implements LogTarget {
     void log(Marker marker, String message, Throwable throwable);
   }
   
-  private static class LogMapping {
+  static final class LogMapping {
     private final int intLevel;
     private final LogEnabled logEnabled;
     private final LogMessage logMessage;
