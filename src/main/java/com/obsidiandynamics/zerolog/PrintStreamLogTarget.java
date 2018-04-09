@@ -25,7 +25,7 @@ final class PrintStreamLogTarget implements LogTarget {
     final String time = dateFormat.format(new Date());
     final String message = String.format(format, argv);
     if (tag != null) {
-      line = time + " " + levelName + " [" + threadName + "] <" + tag + ">: " + message;
+      line = time + " " + levelName + " [" + threadName + "] [" + tag + "]: " + message;
     } else {
       line = time + " " + levelName + " [" + threadName + "]: " + message;
     }

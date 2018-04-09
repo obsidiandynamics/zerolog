@@ -65,7 +65,7 @@ final class NopLevelChain implements LogChain {
   }
 
   @Override
-  public LogChain stack(Throwable throwable) {
+  public LogChain threw(Throwable throwable) {
     return this;
   }
 

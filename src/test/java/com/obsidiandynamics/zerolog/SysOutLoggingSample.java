@@ -1,13 +1,25 @@
 package com.obsidiandynamics.zerolog;
 
+import java.io.*;
 import java.lang.invoke.*;
-import java.util.*;
 
 public final class SysOutLoggingSample {
   private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
   
+  public static void open(String address, int port, double timeoutSeconds) {
+    zlg.i("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+    try {
+      openSocket(address, port, timeoutSeconds);
+    } catch (IOException e) {
+      zlg.w("Error connecting to %s:%d").arg(address).arg(port).tag("I/O").threw(e).log();
+    }
+  }
+  
+  private static void openSocket(String address, int port, double timeoutSeconds) throws IOException {
+    throw new IOException("Connection timed out");
+  }
+  
   public static void main(String[] args) {
-    zlg.i("Starting with %d args: %s").arg(args.length).arg(Arrays.asList(args)).log();
-    zlg.w("An error occurred at %s").arg(new Date()).stack(new RuntimeException()).tag("I/O").log();
+    open("github.com", 80, 30);
   }
 }

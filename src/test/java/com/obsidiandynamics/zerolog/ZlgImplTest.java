@@ -92,7 +92,7 @@ public final class ZlgImplTest {
     final String format = "message %d, %d";
     final Exception exception = new Exception("simulated");
     
-    z.i(format).arg(100).arg(200).tag("tag").stack(exception).log();
+    z.i(format).arg(100).arg(200).tag("tag").threw(exception).log();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), eq("tag"), eq(format), eq(2), any(), eq(exception));
     assertArrayEquals(new Object[] {100, 200}, mocks.argv);
@@ -166,7 +166,7 @@ public final class ZlgImplTest {
   public void testDuplicateStack() {
     final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
     final Exception exception = new Exception("simulated");
-    z.i("message").stack(exception).stack(exception);
+    z.i("message").threw(exception).threw(exception);
   }
   
   @Test(expected=MissingValueException.class)

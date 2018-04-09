@@ -26,7 +26,7 @@ public interface Zlg {
     
     LogChain arg(Object arg);
     
-    LogChain stack(Throwable throwable);
+    LogChain threw(Throwable throwable);
     
     void log();
     

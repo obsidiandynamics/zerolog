@@ -22,7 +22,7 @@ public final class NopLevelChainTest {
         .arg(42L)
         .arg("string")
         .arg((short) 42)
-        .stack(null);
+        .threw(null);
     assertSame(chain, end);
   }
 }

@@ -100,7 +100,7 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
-    public LogChain stack(Throwable throwable) {
+    public LogChain threw(Throwable throwable) {
       if (this.throwable != null) throw new DuplicateValueException("Duplicate call to exception()");
       this.throwable = throwable;
       return this;
