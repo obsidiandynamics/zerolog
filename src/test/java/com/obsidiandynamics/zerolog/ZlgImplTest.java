@@ -11,16 +11,16 @@ import com.obsidiandynamics.zerolog.ZlgImpl.*;
 
 public final class ZlgImplTest {
   private static class LogMocks implements ConfigService {
-    private final LogLevel baseLevel;
+    private final int baseLevel;
     final LogService service = mock(LogService.class);
     final LogTarget target = mock(LogTarget.class);
     Object[] argv;
     
-    LogMocks(LogLevel baseLevel, LogLevel localLevel) {
+    LogMocks(int baseLevel, int localLevel) {
       this.baseLevel = baseLevel;
       
       when(service.get(any())).thenReturn(target);
-      when(target.isEnabled(any())).thenReturn(true);
+      when(target.isEnabled(anyInt())).thenReturn(true);
       
       doAnswer(invocation -> {
         final int argc = invocation.getArgument(3);
@@ -28,10 +28,10 @@ public final class ZlgImplTest {
         this.argv = new Object[argc];
         System.arraycopy(argv, 0, this.argv, 0, argc);
         return null;
-      }).when(target).log(any(), any(), any(), anyInt(), any(), any());
+      }).when(target).log(anyInt(), any(), any(), anyInt(), any(), any());
       
-      for (LogLevel level : LogLevel.values()) {
-        when(target.isEnabled(eq(level))).thenReturn(level.sameOrHigherThan(localLevel));
+      for (LogLevel.Enum level : LogLevel.Enum.values()) {
+        when(target.isEnabled(eq(level.getLevel()))).thenReturn(level.getLevel() >= localLevel);
       }
     }
     
@@ -129,10 +129,10 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.TRACE, LogLevel.TRACE);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    for (LogLevel level : LogLevel.values()) {
-      if (level != LogLevel.OFF) {
-        z.level(level).format("format").log();
-        verify(mocks.target).log(eq(level), isNull(), eq("format"), eq(0), any(), isNull());
+    for (LogLevel.Enum level : LogLevel.Enum.values()) {
+      if (level.getLevel() != LogLevel.OFF) {
+        z.level(level.getLevel()).format("format").log();
+        verify(mocks.target).log(eq(level.getLevel()), isNull(), eq("format"), eq(0), any(), isNull());
       }
     }
   }
@@ -142,9 +142,9 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.OFF, LogLevel.TRACE);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    for (LogLevel level : LogLevel.values()) {
-      if (level != LogLevel.OFF) {
-        z.level(level).format("format").log();
+    for (LogLevel.Enum level : LogLevel.Enum.values()) {
+      if (level.getLevel() != LogLevel.OFF) {
+        z.level(level.getLevel()).format("format").log();
       }
     }
     verifyNoMoreInteractions(mocks.target);

@@ -36,9 +36,9 @@ public interface Zlg {
     }
   }
   
-  LogChain level(LogLevel level);
+  LogChain level(int level);
   
-  boolean isEnabled(LogLevel level);
+  boolean isEnabled(int level);
   
   default LogChain e(String format) { return level(LogLevel.ERROR).format(format); }
   

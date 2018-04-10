@@ -9,7 +9,7 @@ import com.obsidiandynamics.assertion.*;
 public final class LogConfigTest {
   @Test
   public void test() {
-    final LogLevel baseLevel = LogLevel.DEBUG;
+    final int baseLevel = LogLevel.DEBUG;
     final LogService logService = __name -> null;
     final LogConfig config = new LogConfig()
         .withBaseLevel(baseLevel)

@@ -46,12 +46,12 @@ public final class PropertiesConfigService implements ConfigService {
   }
   
   private static LogConfig loadConfig(Properties props) {
-    final LogLevel baseLevel = Props.get(props, KEY_BASE_LEVEL, LogLevel::valueOf, null);
+    final LogLevel.Enum baseLevel = Props.get(props, KEY_BASE_LEVEL, LogLevel.Enum::valueOf, null);
     final String logServiceClass = Props.get(props, KEY_LOG_SERVICE, String::valueOf, null);
     
     final LogConfig config = new LogConfig();
     if (baseLevel != null) {
-      config.withBaseLevel(baseLevel);
+      config.withBaseLevel(baseLevel.getLevel());
     }
     if (logServiceClass != null && ! logServiceClass.equals(config.getLogService().getClass().getName())) {
       config.withLogService(instantiateLogService(logServiceClass));

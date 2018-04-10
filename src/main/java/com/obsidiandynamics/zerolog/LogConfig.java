@@ -3,7 +3,7 @@ package com.obsidiandynamics.zerolog;
 import java.util.*;
 
 public final class LogConfig implements ConfigService {
-  private static final LogLevel defaultBaseLevel = LogLevel.CONF;
+  private static final int defaultBaseLevel = LogLevel.CONF;
   private static LogService defaultLogService;
   
   static {
@@ -15,15 +15,15 @@ public final class LogConfig implements ConfigService {
     defaultLogService = prioritisedBindings.get(0).getLogService();
   }
   
-  private LogLevel baseLevel = defaultBaseLevel;
+  private int baseLevel = defaultBaseLevel;
   
   private LogService logService = defaultLogService;
 
-  LogLevel getBaseLevel() {
+  int getBaseLevel() {
     return baseLevel;
   }
 
-  public LogConfig withBaseLevel(LogLevel baseLevel) {
+  public LogConfig withBaseLevel(int baseLevel) {
     this.baseLevel = baseLevel;
     return this;
   }

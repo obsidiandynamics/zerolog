@@ -13,14 +13,14 @@ final class PrintStreamLogTarget implements LogTarget {
   }
 
   @Override
-  public boolean isEnabled(LogLevel level) {
+  public boolean isEnabled(int level) {
     return true;
   }
 
   @Override
-  public void log(LogLevel level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
+  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
     final String line;
-    final String levelName = level.getShortName();
+    final String levelName = LogLevel.Enum.match(level).getShortName();
     final String threadName = Thread.currentThread().getName();
     final String time = dateFormat.format(new Date());
     final String message = String.format(format, argv);

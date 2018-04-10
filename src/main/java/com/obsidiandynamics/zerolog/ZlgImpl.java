@@ -17,7 +17,7 @@ final class ZlgImpl implements Zlg {
   }
   
   final class LogChainImpl implements LogChain {
-    private LogLevel level;
+    private int level;
     private String tag;
     private String format;
     private int argc;
@@ -114,21 +114,21 @@ final class ZlgImpl implements Zlg {
     }
   }
   
-  private final int baseLevelOrdinal;
+  private final int baseLevel;
   
   private final LogTarget target;
   
   private final ThreadLocal<LogChainImpl> threadLocalChain = ThreadLocal.withInitial(LogChainImpl::new);
   
   ZlgImpl(String name, LogConfig config) {
-    baseLevelOrdinal = config.getBaseLevel().ordinal();
+    baseLevel = config.getBaseLevel();
     target = config.getLogService().get(name);
   }
   
   @Override
-  public LogChain level(LogLevel level) {
+  public LogChain level(int level) {
     if (isEnabled(level)) {
-      if (level == LogLevel.OFF) throw new IllegalArgumentException("Cannot log at level " + level.name());
+      if (level == LogLevel.OFF) throw new IllegalArgumentException("Cannot log at level " + LogLevel.Enum.OFF.name());
       
       final LogChainImpl chain = threadLocalChain.get();
       chain.level = level;
@@ -139,7 +139,7 @@ final class ZlgImpl implements Zlg {
   }
   
   @Override
-  public boolean isEnabled(LogLevel level) {
-    return level.sameOrHigherThan(baseLevelOrdinal) && target.isEnabled(level);
+  public boolean isEnabled(int level) {
+    return level >= baseLevel && target.isEnabled(level);
   }
 }

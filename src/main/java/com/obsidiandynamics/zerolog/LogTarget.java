@@ -1,7 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
 public interface LogTarget {
-  boolean isEnabled(LogLevel level);
+  boolean isEnabled(int level);
   
-  void log(LogLevel level, String tag, String format, int argc, Object[] argv, Throwable throwable);
+  void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable);
 }

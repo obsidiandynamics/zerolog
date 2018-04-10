@@ -24,7 +24,7 @@ public final class ZlgTest {
     assertTrue(chain.logb());
     verify(chain).log();
     
-    when(z.level(any())).thenReturn(chain);
+    when(z.level(anyInt())).thenReturn(chain);
     
     z.t("trace");
     verify(z).level(eq(LogLevel.TRACE));
@@ -50,7 +50,7 @@ public final class ZlgTest {
     verify(z).level(eq(LogLevel.ERROR));
     verify(chain).format(eq("error"));
 
-    verify(z, times(6)).level(any());
+    verify(z, times(6)).level(anyInt());
     verify(chain).logb();
     verifyNoMoreInteractions(chain);
   }

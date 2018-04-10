@@ -20,7 +20,7 @@ public final class PropertiesConfigServiceTest {
   @Test
   public void testLoadConfigDefaultsAndCache() {
     final LogConfig defaultConfig = new LogConfig();
-    final LogLevel defaultBaseLevel = defaultConfig.getBaseLevel();
+    final int defaultBaseLevel = defaultConfig.getBaseLevel();
     final LogService defaultLogService = defaultConfig.getLogService();
     
     final PropertiesConfigService configService = new PropertiesConfigService(() -> new Properties());
@@ -36,7 +36,7 @@ public final class PropertiesConfigServiceTest {
   @Test
   public void testLoadConfigSuccessAndCache() {
     final Properties props = new Properties();
-    props.setProperty(KEY_BASE_LEVEL, LogLevel.WARN.name());
+    props.setProperty(KEY_BASE_LEVEL, LogLevel.Enum.WARN.name());
     props.setProperty(KEY_LOG_SERVICE, NopLogService.class.getName());
     
     final PropertiesConfigService configService = new PropertiesConfigService(() -> props);

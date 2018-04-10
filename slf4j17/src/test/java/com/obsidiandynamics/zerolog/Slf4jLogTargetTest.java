@@ -8,7 +8,7 @@ import org.slf4j.*;
 import org.slf4j.spi.*;
 
 public final class Slf4jLogTargetTest {
-  private static void enableUpTo(Logger log, LogLevel level) {
+  private static void enableUpTo(Logger log, LogLevel.Enum level) {
     when(log.isTraceEnabled()).thenReturn(false);
     when(log.isDebugEnabled()).thenReturn(false);
     when(log.isInfoEnabled()).thenReturn(false);
@@ -38,13 +38,13 @@ public final class Slf4jLogTargetTest {
   @Test
   public void testIsEnabled() {
     final Logger log = mock(Logger.class);
-    final LogLevel enabledLevel = LogLevel.CONF;
+    final LogLevel.Enum enabledLevel = LogLevel.Enum.CONF;
     enableUpTo(log, enabledLevel);
     
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
-    for (LogLevel level : LogLevel.values()) {
-      if (level != LogLevel.OFF) {
-        assertEquals("level=" + level, level.sameOrHigherThan(enabledLevel), target.isEnabled(level));
+    for (LogLevel.Enum level : LogLevel.Enum.values()) {
+      if (level.getLevel() != LogLevel.OFF) {
+        assertEquals("level=" + level, level.getLevel() >= enabledLevel.getLevel(), target.isEnabled(level.getLevel()));
       }
     }
   }
