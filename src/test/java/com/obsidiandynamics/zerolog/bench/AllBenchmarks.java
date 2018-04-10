@@ -11,7 +11,6 @@ public final class AllBenchmarks {
     final boolean extras = Props.get("zlg.bench.extras", Boolean::parseBoolean, false);
     
     final double baseline = AbstractBenchmark.run(BaselineBenchmark.class).getScore();
-    System.out.format("Baseline: %,.3f ns\n", baseline);
     
     final Map<String, Class<? extends AbstractBenchmark>> benchmarks = new TreeMap<>();
     benchmarks.put("JUL (java.util.logging)", JulBenchmark.class);
@@ -48,7 +47,9 @@ public final class AllBenchmarks {
       .append(String.format("%-" + timeHeader.length() + "s", String.format("%,.3f", score * 1_000_000_000d)))
       .append("\n");
     }
-    
+
+    System.out.println("\n\n");
+    System.out.format("Baseline: %,.3f ns\n", baseline);
     System.out.println("\n\n" + out);
   }
 }
