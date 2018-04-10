@@ -2,12 +2,12 @@ package com.obsidiandynamics.zerolog;
 
 import com.obsidiandynamics.zerolog.Zlg.*;
 
-final class NopLevelChain implements LogChain {
-  private static final NopLevelChain instance = new NopLevelChain();
+public final class NopLogChain implements LogChain {
+  private static final NopLogChain instance = new NopLogChain();
   
-  static NopLevelChain getInstance() { return instance; }
+  public static NopLogChain getInstance() { return instance; }
   
-  private NopLevelChain() {}
+  private NopLogChain() {}
   
   @Override
   public LogChain tag(String tag) {

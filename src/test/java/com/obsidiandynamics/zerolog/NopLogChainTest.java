@@ -6,10 +6,10 @@ import org.junit.*;
 
 import com.obsidiandynamics.zerolog.Zlg.*;
 
-public final class NopLevelChainTest {
+public final class NopLogChainTest {
   @Test
   public void test() {
-    final NopLevelChain chain = NopLevelChain.getInstance();
+    final NopLogChain chain = NopLogChain.getInstance();
     final LogChain end = chain
         .tag("tag")
         .format("format")

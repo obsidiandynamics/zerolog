@@ -134,7 +134,7 @@ final class ZlgImpl implements Zlg {
       chain.level = level;
       return chain;
     } else {
-      return NopLevelChain.getInstance();
+      return NopLogChain.getInstance();
     }
   }
   

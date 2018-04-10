@@ -13,7 +13,7 @@ public final class ZlgAssertBenchmark extends AbstractBenchmark {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
     assertFalse(zlg.isEnabled(LogLevel.TRACE));
-    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLevelChain"));
+    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLogChain"));
   }
 
   @Override

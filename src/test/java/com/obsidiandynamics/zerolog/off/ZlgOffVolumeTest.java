@@ -25,7 +25,7 @@ public final class ZlgOffVolumeTest extends AbstractOffVolumeTest {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
     assertFalse(zlg.isEnabled(LogLevel.TRACE));
-    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLevelChain"));
+    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLogChain"));
     
     return (f, d, i, l) -> {
       consumeArgs(f, d, i, l);
