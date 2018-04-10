@@ -50,7 +50,9 @@ public final class AllBenchmarks {
     }
 
     System.out.println("\n\n");
-    System.out.format("Baseline: %,.3f ns\n", baseline);
+    System.out.println("<<<<<<<<<<<<<<<<<<<< RESULTS >>>>>>>>>>>>>>>>>>>>");
+    System.out.println("\n\n");
+    System.out.format("Baseline: %,.3f ns\n", baseline * 1_000_000_000d);
     System.out.println("\n\n" + out);
   }
 }
