@@ -7,20 +7,14 @@ import org.openjdk.jmh.runner.options.*;
 
 import com.obsidiandynamics.dyno.*;
 import com.obsidiandynamics.props.*;
-import com.obsidiandynamics.zerolog.*;
-
-import squidpony.squidmath.*;
 
 public abstract class AbstractBenchmark implements BenchmarkTarget {
-  private final RandomnessSource random = new XoRoRNG();
-
   @Override
   public final void cycle(Abyss abyss) {
-    final long randomLong = random.nextLong();
-    final double randomDouble = RandomFP.toDouble(randomLong);
-    final float randomFloat = (float) randomDouble;
-    final int randomInt = (int) (Integer.MAX_VALUE * randomFloat);
-    abyss.consume(randomInt);
+    final long randomLong = 2718281828459045235L;
+    final double randomDouble = 2.7182818284590452354d;
+    final float randomFloat = 2.7182818284590f;
+    final int randomInt = 271828182;
     cycle(randomFloat, randomDouble, randomInt, randomLong);
   }
 
