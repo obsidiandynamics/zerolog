@@ -4,7 +4,10 @@ import java.io.*;
 import java.lang.invoke.*;
 
 public final class SysOutLoggingSample {
-  private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+  private static final Zlg zlg = Zlg
+      .forClass(MethodHandles.lookup().lookupClass())
+      .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE))
+      .get();
   
   public static void open(String address, int port, double timeoutSeconds) {
     zlg.i("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();

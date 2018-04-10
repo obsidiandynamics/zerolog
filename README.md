@@ -15,7 +15,7 @@ ZeroLog (abbreviated to _Zlg_) is a logging façade with two fundamental design 
 Collectively, these objectives make Zlg suitable for use in ultra-high performance, low-latency applications and in high-assurance environments.
 
 # How fast is it?
-A JMH benchmark conducted on an [i7-870 Lynnfield](https://ark.intel.com/products/41315/Intel-Core-i7-870-Processor-8M-Cache-2_93-GHz) CPU with logging suppressed compares the per-invocation penalties for Zlg with some of the major loggers.
+A JMH benchmark conducted on an [i7-4770 Haswell](https://ark.intel.com/products/75122/Intel-Core-i7-4770-Processor-8M-Cache-up-to-3_90-GHz) CPU with logging suppressed compares the per-invocation penalties for Zlg with some of the major loggers.
 
 Logger implementation       |Avg. time (ns)
 ----------------------------|--------------
@@ -73,6 +73,9 @@ Some important things to note:
 * Each chain _must_ end with a `log()` for the log entry to be printed.
 * The format string is printf-style, unlike most other loggers that use the `{}` (stash) notation.
 
+# Tags
+
+
 # Log levels
 Zlg log levels are reasonably well-aligned with SLF4J (and most other loggers). Zlg introduces a new log level — `LogLevel.CONF` — logically situated between `DEBUG` and `INFO`. Loosely borrowed from JUL (`java.util.logging`), `CONF` is intended for logging initialisation and configuration parameters, useful when offering a variety of configuration options to the user.
 
@@ -110,7 +113,7 @@ While `zlg.properties` is optional, it is strongly recommended that `zlg.propert
 ## Changing the location of `zlg.properties`
 The default location of `zlg.properties` can be overridden by setting the `zlg.default.config.uri` system property. The default URI is `cp://zlg.properties`, `cp://` denoting 'classpath'. Alternatively, a file system location can be specified with the `file://` scheme.
 
-When overriding the default file location, ideally the `zlg.default.config.uri` property is passed in as `-D...` JVM argument, ensuring that the logging subsystem is initialised correctly before first use.
+When overriding the default file location, ideally the `zlg.default.config.uri` property is passed in as a `-D...` JVM argument, ensuring that the logging subsystem is bootstrapped correctly before initial use.
 
 ## In-line configuration
 
