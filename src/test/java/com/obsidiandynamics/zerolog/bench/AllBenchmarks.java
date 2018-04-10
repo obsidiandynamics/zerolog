@@ -31,26 +31,28 @@ public final class AllBenchmarks {
     
     final StringBuilder out = new StringBuilder()
     .append(String.format("%-" + longestBenchmarkName + "s", nameHeader))
-    .append("|")
+    .append('|')
     .append(timeHeader)
-    .append("\n");
+    .append('\n');
     
-    IntStream.range(0, longestBenchmarkName).forEach(i -> out.append("-"));
-    out.append("|");
-    IntStream.range(0, timeHeader.length()).forEach(i -> out.append("-"));
-    out.append("\n");
+    out.append(':');
+    IntStream.range(0, longestBenchmarkName - 1).forEach(i -> out.append('-'));
+    out.append('|');
+    IntStream.range(0, timeHeader.length() - 1).forEach(i -> out.append('-'));
+    out.append(':');
+    out.append('\n');
     
     for (Map.Entry<String, Class<? extends AbstractBenchmark>> entry : benchmarks.entrySet()) {
       final double score = Math.max(0, AbstractBenchmark.run(entry.getValue()).getScore() - baseline);
       out
       .append(String.format("%-" + longestBenchmarkName + "s", entry.getKey()))
-      .append("|")
+      .append('|')
       .append(String.format("%-" + timeHeader.length() + "s", String.format("%,.3f", score * 1_000_000_000d)))
-      .append("\n");
+      .append('\n');
     }
 
     System.out.println("\n\n");
-    System.out.println("<<<<<<<<<<<<<<<<<<<< RESULTS >>>>>>>>>>>>>>>>>>>>");
+    System.out.println("######################## RESULTS ########################");
     System.out.println("\n\n");
     System.out.format("Baseline: %,.3f ns\n", baseline * 1_000_000_000d);
     System.out.println("\n\n" + out);

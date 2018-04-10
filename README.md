@@ -74,7 +74,7 @@ Some important things to note:
 * The format string is printf-style, unlike most other loggers that use the `{}` (stash) notation.
 
 # Tags
-
+Zlg adds the concept of a _tag_ — an optional string value that can be used to decorate a log entry. A tag is equivalent to a marker in SLF4J, adding another dimension for slicing and dicing your log output.
 
 # Log levels
 Zlg log levels are reasonably well-aligned with SLF4J (and most other loggers). Zlg introduces a new log level — `LogLevel.CONF` — logically situated between `DEBUG` and `INFO`. Loosely borrowed from JUL (`java.util.logging`), `CONF` is intended for logging initialisation and configuration parameters, useful when offering a variety of configuration options to the user.
@@ -96,9 +96,10 @@ Being a façade, Zlg delegates all log calls to an actual logger — an implemen
 
 Zlg detects installed bindings using Java's [SPI](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html) plugin mechanism. By simply including a binding on the classpath, Zlg will switch over to the new binding by default.
 
-## Baseline configuration with `zlg.properties`
+## Logger configuration
 Like SLF4J, Zlg is largely hands-off when it comes to logger configuration management, leaving the configuration specifics to the bound logger implementation. Configuration Log4j 1.2, for example, would be done through `log4j.properties` — Zlg remains completely agnostic of this.
 
+## Baseline configuration with `zlg.properties`
 Zlg supports a _baseline_ configuration, by reading an optional `zlg.properties` file from the classpath. A baseline configuration comprises a list of optional properties. For example, it specifies the base log level (below which all logging is disabled) and can override the default binding. The following is an example of `zlg.properties`.
 
 ```
@@ -116,6 +117,41 @@ The default location of `zlg.properties` can be overridden by setting the `zlg.d
 When overriding the default file location, ideally the `zlg.default.config.uri` property is passed in as a `-D...` JVM argument, ensuring that the logging subsystem is bootstrapped correctly before initial use.
 
 ## In-line configuration
+In addition to `zlg.properties`, Zlg supports in-line configuration at the point when the logger is obtained:
+
+```java
+final Zlg zlg = Zlg
+    .forClass(MyAppClass.class)
+    .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE))
+    .get();
+```
+
+In-line configuration assumes priority, overriding any system-default values or values provided by `zlg.properties`. So, if you wanted to force a specific class to log to the console while using an SLF4J binding for all other classes, you could just do this:
+
+```java
+final Zlg zlg = Zlg
+    .forClass(MyAppClass.class)
+    .withConfigService(new LogConfig()
+                       .withBaseLevel(LogLevel.TRACE)
+                       .withLogService(new SysOutLogService()))
+    .get();
+```
 
 
+# FAQ
+**Aren't there enough loggers already?**
+
+**Okay, aren't there enough façades already?**
+
+**Why is it so fast?**
+
+**Why isn't a Tag called a Marker?**
+
+**Where are the bindings for other loggers?**
+
+**When delegating to SLF4J, is class/method/line location information preserved?**
+
+**I don't care about coverage, can I have a true <ins>zero</ins>-footprint logger?**
+
+**Can Zlg be mocked?**
 
