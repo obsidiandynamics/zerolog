@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
+import com.obsidiandynamics.assertion.*;
+
 public final class LogLevelTest {
   @Test
   public void testMatch() {
@@ -22,5 +24,10 @@ public final class LogLevelTest {
     for (LogLevel.Enum e : LogLevel.Enum.values()) {
       assertEquals(3, e.getShortName().length());
     }
+  }
+  
+  @Test
+  public void testConformance() {
+    Assertions.assertUtilityClassWellDefined(LogLevel.class);
   }
 }

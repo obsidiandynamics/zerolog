@@ -9,6 +9,8 @@ public final class LogLevel {
   public static final int DEBUG = 0x200;
   public static final int TRACE = 0x100;
   
+  private LogLevel() {}
+  
   /**
    *  Obtains the notional ordinal for the given log level. The ordinal is the zero-based position
    *  of the {@code int}-based {@code level} as it appears in {@link LogLevel}.
