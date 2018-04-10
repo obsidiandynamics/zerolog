@@ -22,6 +22,7 @@ public final class AllBenchmarks {
     if (extras) {
       benchmarks.put("JUL w/ lambda", JulLambdaBenchmark.class);
       benchmarks.put("Zlg w/ assert", ZlgAssertBenchmark.class);
+      benchmarks.put("Zlg w/ guard", ZlgGuardBenchmark.class);
     }
     
     final int longestBenchmarkName = benchmarks.keySet().stream().map(key -> key.length()).max(Integer::compare).get().intValue();
