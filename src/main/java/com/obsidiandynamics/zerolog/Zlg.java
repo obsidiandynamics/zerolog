@@ -2,7 +2,7 @@ package com.obsidiandynamics.zerolog;
 
 public interface Zlg {
   interface LogChain {
-    static int MAX_ARGS = 16;
+    static int MAX_ARGS = 64;
     
     LogChain tag(String tag);
     

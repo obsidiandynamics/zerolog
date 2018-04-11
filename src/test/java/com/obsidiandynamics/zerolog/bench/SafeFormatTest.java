@@ -17,14 +17,14 @@ public final class SafeFormatTest {
 
   @Test
   public void testFormatSuccess() {
-    assertEquals("pi is 3.14", SafeFormat.format("pi is %.2f", Math.PI));
+    assertEquals("pi is 3.14", SafeFormat.format("pi is %.2f", 1, new Object[] {Math.PI}));
   }
 
   @Test
   public void testFormatError() {
     final String format = "pi is %2d";
     final Object[] args = { Math.PI };
-    final String out = SafeFormat.format(format, Math.PI);
+    final String out = SafeFormat.format(format, 1, new Object[] {Math.PI});
     assertTrue("out=" + out, out.contains("WARNING -"));
     assertTrue("out=" + out, out.contains(format));
     assertTrue("out=" + out, out.contains(Arrays.asList(args).toString()));

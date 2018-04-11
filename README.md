@@ -184,7 +184,7 @@ To solve #1 and #2 (#3 will follow) using a traditional SLF4J-style API would im
 
 Zlg solves the above problems by accumulating primitives one-at-a-time into an instance of `Zlg.LogChain`. The `LogChain` API has an `arg()` method for each of Java's eight primitive types, as well as `Object`. By using the fluent chaining pattern, and dealing with one argument at a time, Zlg circumvents the arity problem with a tiny interface. When logging is suppressed, primitives are never boxed and arrays are never allocated — thus Zlg has a zero object allocation rate and zero impact on the GC. (This has been verified with GC profiling.)
 
-As a further optimisation, the interface-driven, inverted dependency design style of Zlg enables it to substitute its stateful (accumulator) log chain with a `NopLogChain` as soon as it concludes that logging has been disabled for the requested level. Because the `NopLogChain` implementation is a pre-instantiated singleton with no-op methods and no shared fields, JIT is able to aggressively inline the bulk of the chained calls. In our benchmarks we see no material difference between short and long chains; evidently JIT is doing its job.
+As a further optimisation, the interface-driven, inverted dependency design style of Zlg enables it to substitute its stateful (accumulator) log chain with a `NopLogChain` as soon as it concludes that logging has been disabled for the requested level. Because the `NopLogChain` implementation is a pre-instantiated singleton with no-op methods and no shared fields, it's subject to aggressive optimisation. Benchmarks conducted with a large number of formatting arguments indicate an incremental (per-arg) cost of around 0.05 ns.
 
 ## Can I combine Zlg with SLF4J?
 With the `zerolog-slf4j17` binding installed, Zlg acts as a lightweight layer above SLF4J; it does not prevent you from accessing SLF4J's `LoggerFactory` directly. Any code that is already logging with SLF4J's `Logger` may continue to do so unimpeded.
@@ -233,7 +233,12 @@ logger.debug(String.format("Connecting to %s:%d [timeout: %,.1f sec]", address, 
 
 There are two subtle problems with this approach. Firstly, `String.format()` will be unconditionally evaluated, irrespective of whether logging is enabled. This can be rather costly. Secondly, the penalty for getting the format specifiers wrong is severe — `format()` will throw an `IllegalFormatException`. The last thing you need when logging an error or a warning is to have the log call bail on you.
 
+Zlg uses a safe form of `String.format()` (called `SafeFormat.format()`) which is tolerant to format errors, printing the description of the error along with the original format string and arguments. It looks like this:
 
+```
+11:29:43.425 INF [main]: WARNING - could not format 'Pi is %d' with args [3.14]:
+java.util.IllegalFormatConversionException: d != java.lang.Double
+```
 
 ## Is class/method/line location information preserved?
 When using the `zerolog-slf4j17` binding, location information is correctly preserved for all location-aware loggers.
