@@ -23,7 +23,7 @@ final class PrintStreamLogTarget implements LogTarget {
     final String levelName = LogLevel.Enum.match(level).getShortName();
     final String threadName = Thread.currentThread().getName();
     final String time = dateFormat.format(new Date());
-    final String message = String.format(format, argv);
+    final String message = SafeFormat.format(format, argv);
     if (tag != null) {
       line = time + " " + levelName + " [" + threadName + "] [" + tag + "]: " + message;
     } else {

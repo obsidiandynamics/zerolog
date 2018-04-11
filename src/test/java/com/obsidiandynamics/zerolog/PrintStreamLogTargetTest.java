@@ -3,6 +3,7 @@ package com.obsidiandynamics.zerolog;
 import static org.junit.Assert.*;
 
 import java.io.*;
+import java.util.*;
 
 import org.junit.*;
 
@@ -66,5 +67,19 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     assertHas(out, exception.getMessage());
     assertHas(out, "at");
     assertHas(out, "testLogWithTagAndException");
+  }
+  
+  @Test
+  public void testLogWithBadFormat() {
+    final StringStream ss = new StringStream();
+    final PrintStreamLogTarget target = new PrintStreamLogTarget(new PrintStream(ss));
+    final String threadName = Thread.currentThread().getName();
+    target.log(LogLevel.TRACE, null, "message %d", 1, new Object[]{3.14}, null);
+    final String out = ss.getString();
+    
+    assertHas(out, threadName);
+    assertHas(out, "message %d");
+    assertHas(out, "[3.14]");
+    assertHas(out, IllegalFormatConversionException.class.getName());
   }
 }

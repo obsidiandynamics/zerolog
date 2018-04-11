@@ -138,7 +138,7 @@ final class Slf4jLogTarget implements LogTarget {
   
   private void logDirect(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
     final LogMapping mapping = map(level);
-    final String message = String.format(format, argv);
+    final String message = SafeFormat.format(format, argv);
     if (tag != null && throwable != null) {
       final Marker marker = MarkerFactory.getMarker(tag);
       mapping.logMarkerMessageThrowable.log(marker, message, throwable);
@@ -154,7 +154,7 @@ final class Slf4jLogTarget implements LogTarget {
 
   private void logWithLocation(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
     final Marker marker = tag != null ? MarkerFactory.getMarker(tag) : null;
-    final String message = String.format(format, argv);
+    final String message = SafeFormat.format(format, argv);
     final int intLevel = map(level).intLevel;
     ((LocationAwareLogger) log).log(marker, FQCN, intLevel, message, noArgs, throwable);
   }

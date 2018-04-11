@@ -78,6 +78,18 @@ public final class Slf4jLogTargetTest {
   }
   
   @Test
+  public void testLogWithLocationWithBadFormat() {
+    final LocationAwareLogger log = mock(LocationAwareLogger.class);
+    final Slf4jLogTarget target = new Slf4jLogTarget(log);
+    final Exception exception = new Exception("test exception");
+    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, exception);
+    
+    final String FQCN = ZlgImpl.LogChainImpl.class.getName();
+    verify(log).log(isNull(), eq(FQCN), eq(LocationAwareLogger.TRACE_INT), contains("WARNING -"), eq(new Object[0]), eq(exception));
+  }
+  
+  
+  @Test
   public void testLogWithoutLocationWithMessageAndTagAndThrowable() {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
@@ -115,5 +127,14 @@ public final class Slf4jLogTargetTest {
     target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, null);
     
     verify(log).trace(eq("format arg"));
+  }
+
+  @Test
+  public void testLogWithoutLocationWithBadFormat() {
+    final Logger log = mock(Logger.class);
+    final Slf4jLogTarget target = new Slf4jLogTarget(log);
+    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, null);
+    
+    verify(log).trace(contains("WARNING -"));
   }
 }

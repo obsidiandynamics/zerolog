@@ -172,37 +172,76 @@ A better question to ask is why typical loggers and logging façades are slow. A
 logger.trace("float: {}, double: {}, int: {}, long: {}", f, d, i, l);
 ```
 
-There are several problems with this approach, each a substantial performance drain.
+There are three problems with this approach, each a substantial performance drain.
 
-* **Use of varargs to pass parameters.** Typically beyond two or three formatting arguments, loggers will offer a varargs-based API to accommodate arbitrary number of arguments. Varargs are just syntactic sugar; the performance impact is that of array allocation. Furthermore, any escape analysis done by the optimiser will conclude that the array could be used beyond the scope of the method call and thus stack allocation will not be possible — a full heap allocation will ensue.
+1. **Use of varargs to pass parameters.** Typically beyond two or three (depending on the level of generosity of the API designer) formatting arguments, loggers will offer a varargs-based API to accommodate arbitrary number of arguments. Varargs are just syntactic sugar; the performance impact is that of array allocation. Furthermore, any escape analysis done ahead of optimisation will conclude that the array could be used beyond the scope of the method call and thus stack allocation will not be possible — a full heap allocation will ensue.
 
-* **Boxing of primitive types.** Formatting arguments are either `Object` types or vararg arrays of `Object`. Passing primitives to the API will result in autoboxing. The autobox cache is typically quite minuscule; only a relatively small handful of primitives are interned. Even the interned primitives still require branching, offset arithmetic and an array lookup to a resolve. (See `Integer.valueOf(int)` for how this is implemented in the JDK.)
+2. **Boxing of primitive types.** Formatting arguments are either `Object` types or vararg arrays of `Object`. Passing primitives to the API will result in autoboxing. The autobox cache is typically quite minuscule; only a relatively small handful of primitives are interned. Even the interned primitives still require branching, offset arithmetic and an array lookup to resolve. (See `Integer.valueOf(int)` for how this is implemented in the JDK.)
 
-* **Garbage collection.** Both varargs and autoboxing ultimately allocate lots of objects irrespective of whether logging is enabled or suppressed, especially when logging is done from tight loops. This reduces the application throughput and increases latency by introducing periodic pauses.
+3. **Garbage collection.** This is a further symptom of #1 and #2; both varargs and (non-interned) autoboxing ultimately allocate objects irrespective of whether logging is enabled or suppressed (unless accompanied with a 'guard' branch); the allocation rate is especially high when logging is done from tight loops. This negatively impacts application throughput and latency.
 
-Zlg solves the above problems by accumulating primitives one-at-a-time into an instance of `Zlg.LogChain`. The `LogChain` API has an `arg()` method for each of Java's eight primitive types, as well as `Object`. (There could be any number of inter-mixed primitives and object types, in any combination, and designing a single interface with all possible combinations of relevant data types is an exponential function of the arity of the argument domain. With four arguments, there will be 6,561 distinct methods. This would require some form of code generation to achieve, and would certain kill any IDE auto-complete feature. With seven arguments, this number is around four million.) By using the fluent chaining patter, and dealing with one argument at a time, Zlg circumvents the arity problem with a tiny interface. When logging is suppressed, primitives are never boxed and arrays are never allocated — thus Zlg has a zero object allocation rate and zero impact on the GC.
+To solve #1 and #2 (#3 will follow) using a traditional SLF4J-style API would imply providing an appropriately-typed argument for each of Java's eight primitive type as well as `Object`, for variable arity. Given that there could be any number of inter-mixed primitives and object types, in any combination, then crafting a single interface with all possible combinations of relevant data types is an exponential function of the arity of the argument domain. With four arguments, there will be 6,561 distinct overloaded methods. This would require some form of code generation to achieve, and would certain kill any IDE auto-complete feature. With seven arguments, this number is around four million.
 
-Interface-driven design also enables Zlg to substitute a log chain with a `NopLogChain` as soon as it determines that logging has been disabled for the requested level. Because the `NopLogChain` is a no-op, JIT is able to aggressively inline most of the chained calls. In our benchmarks we see no material difference between short and long chains; evidently JIT is doing its job.
+Zlg solves the above problems by accumulating primitives one-at-a-time into an instance of `Zlg.LogChain`. The `LogChain` API has an `arg()` method for each of Java's eight primitive types, as well as `Object`. By using the fluent chaining pattern, and dealing with one argument at a time, Zlg circumvents the arity problem with a tiny interface. When logging is suppressed, primitives are never boxed and arrays are never allocated — thus Zlg has a zero object allocation rate and zero impact on the GC. (This has been verified with GC profiling.)
 
-## Where should I use Zlg?
+As a further optimisation, the interface-driven, inverted dependency design style of Zlg enables it to substitute its stateful (accumulator) log chain with a `NopLogChain` as soon as it concludes that logging has been disabled for the requested level. Because the `NopLogChain` implementation is a pre-instantiated singleton with no-op methods and no shared fields, JIT is able to aggressively inline the bulk of the chained calls. In our benchmarks we see no material difference between short and long chains; evidently JIT is doing its job.
+
+## Can I combine Zlg with SLF4J?
+With the `zerolog-slf4j17` binding installed, Zlg acts as a lightweight layer above SLF4J; it does not prevent you from accessing SLF4J's `LoggerFactory` directly. Any code that is already logging with SLF4J's `Logger` may continue to do so unimpeded.
+
+Bear in mind that when logging via Zlg, you may need to set a lower baseline level in `zlg.properties` to forward `TRACE` and `DEBUG` calls to SLF4J. By default, only `CONF` and above are forwarded to the underlying logger.
 
 ## Should I replace all uses of SLF4J with Zlg?
+While Zlg wasn't intended as a general replacement for SLF4J, it's capable of this. (And there aren't any drawbacks that come to mind.)
+
+For performance-intensive code, switching to Zlg should be a no-brainer. For existing or new code that logs at `INFO` level or above, the choice depends largely on your appetite for uniformity and the importance of maintaining a consistent logging style. 
+
+In addition to performance gains, you'll get a few smaller benefits, such as printf-style formatting, as well as the ability to combine formatting arguments with a `Throwable` — something that's a little awkward with SLF4J.
+
+## Where should I use Zlg?
+Performance-intensive, latency-sensitive code and tight loops with sub-microsecond cycle duration. Our benchmarking has indicated that for a microsecond-long operation, a single unguarded SLF4J statement consumes in excess of 1% of CPU time (on Haswell microarchitecture), with logging suppressed. In an equivalent scenario, Zlg will stay under 0.05% of CPU time. For sub-microsecond operations (10's or 100's of nanoseconds range), the impact of SLF4J is much more dramatic, and you are _forced_ to use guard branches or static constants to either minimise the impact of autoboxing and varargs or to DCE out the logging statements altogether, both approaches producing unsightly code.
 
 ## Why isn't a Tag called a Marker?
+We felt that the term _tag_ was a more intuitive description of a decorator of log entries, whereas a _marker_ could mean a number of things to an uninitiated user. As markers, while available in Log4J and Logback are a rarely used feature, we felt that by using a substitute term, we wouldn't offend anyone in the developer community.
+
+Saying that, we don't have any strong feelings about this term either way, and will happily listen to suggestions. 
 
 ## Where are the bindings for other loggers?
+We chose to implement one mapping — SFL4J, with a view that it gives us access to just about every mainstream logger. Performance-wise, when logging is enabled, having an extra layer of indirection will carry a small penalty. If you need a direct binding for a specific logger that bypasses SLF4J, we'll gladly accept a PR.
 
-## When delegating to SLF4J, is class/method/line location information preserved?
+## How can I make my own binding?
+Bindings are fairly straightforward to add; just follow the [zerolog-slf4j17](https://github.com/obsidiandynamics/zerolog/tree/master/slf4j17) example.
+
+You need to implement three classes:
+
+* `LogService` — acts as an abstract factory for creating instances of `LogTarget`.
+* `LogTarget` — responsible for the actual logging delegation. Has two methods: 
+    + `boolean isEnabled(int level)` — for determining whether logging for the given level is enabled
+    + `void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable)` — for handling the log event
+* `LogServiceBinding` — loaded by [SPI](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) when the logging subsystem is bootstrapped.
+
+`LogTarget` is where the bulk of the implementation will reside; `LogService` and `LogServiceBinding` are typically one-liners. Expect a bit of boilerplate mapping code between Zlg and your target logger. For SLFL4J, we made heavy use of function references to streamline the mappings.
+
+Having implemented the above classes, you will also need to add a file named `com.obsidiandynamics.zerolog.LogServiceBinding` to `META-INF/services`. The file should have a single value — the fully qualified name of your `LogServiceBinding` implementation.
 
 ## Why use printf-style formatting?
+The printf style offers rich formatting options, whereas the traditional stash style is only good for substitution. In practice, when using SLF4J, one often succumbs to this style:
+
+```java
+logger.debug(String.format("Connecting to %s:%d [timeout: %,.1f sec]", address, port, timeout));
+```
+
+There are two subtle problems with this approach. Firstly, `String.format()` will be unconditionally evaluated, irrespective of whether logging is enabled. This can be rather costly. Secondly, the penalty for getting the format specifiers wrong is severe — `format()` will throw an `IllegalFormatException`. The last thing you need when logging an error or a warning is to have the log call bail on you.
 
 
 
+## Is class/method/line location information preserved?
+When using the `zerolog-slf4j17` binding, location information is correctly preserved for all location-aware loggers.
 
 ## I don't care about coverage, can I have a true _zero_-footprint logger?
 If sub-nanosecond penalties for suppressed logs are still too high and you require true zero, your only option is to strip out the logging instructions altogether. Fortunately, you don't need to do this during compilation; JIT DCE (dead code elimination) can intelligently do this for you on the fly. There are a couple of patterns that achieve zero footprint in different ways.
 
-**1. Branching on a static constant** — will lead to DCE for one of the branches. Example:
+1. **Branching on a static constant** — will lead to DCE for one of the branches. Example:
 
 ```java
 private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
@@ -214,7 +253,7 @@ public static void withStaticConstant(String address, int port, double timeoutSe
 }
 ```
 
-**2. Assertions** — when running with `-ea` logging instructions will be evaluated; otherwise they will be DCE'ed. Example:
+2. **Assertions** — when running with `-ea` logging instructions will be evaluated; otherwise they will be DCE'ed. Example:
 
 ```java
 private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
@@ -246,4 +285,4 @@ zlg.t("the value of Pi is %.3f").arg(Math.PI).log();
 Zlg.forName("no-op").withConfigService(new LogConfig().withBaseLevel(LogLevel.OFF)).get();
 ```
 
-The second reason for reliance on interface is not quite so banal, and more driven by performance. It enables Zlg to substitute a log chain with a `NopLogChain` as soon as it determines that the logging has been disabled for the requested level, thereby inlining most of the fluent calls.
+The second reason for reliance on interface is not quite so banal, and more driven by performance. It enables Zlg to substitute a log chain with a `NopLogChain` as soon as it determines that the logging has been disabled for the requested level, thereby inlining most of the chained calls.
