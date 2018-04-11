@@ -8,6 +8,7 @@ import java.util.function.*;
 
 import org.junit.*;
 
+import com.obsidiandynamics.func.*;
 import com.obsidiandynamics.zerolog.Zlg.*;
 import com.obsidiandynamics.zerolog.ZlgImpl.*;
 
@@ -225,7 +226,7 @@ public final class ZlgImplTest {
   }
   
   @Test
-  public void testSuppliers() {
+  public void testLazy() {
     final LogMocks mocks = new LogMocks(LogLevel.TRACE, LogLevel.TRACE);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
@@ -234,6 +235,7 @@ public final class ZlgImplTest {
     final IntSupplier intSupplier = mock(IntSupplier.class);
     final LongSupplier longSupplier = mock(LongSupplier.class);
     final Supplier<?> objectSupplier = mock(Supplier.class);
+    final Function<String, ?> transform = Classes.cast(mock(Function.class));
     z.
     i("format")
     .arg(booleanSupplier)
@@ -241,6 +243,7 @@ public final class ZlgImplTest {
     .arg(intSupplier)
     .arg(longSupplier)
     .arg(objectSupplier)
+    .arg("test", transform)
     .log();
     
     verify(booleanSupplier).getAsBoolean();
@@ -248,5 +251,6 @@ public final class ZlgImplTest {
     verify(intSupplier).getAsInt();
     verify(longSupplier).getAsLong();
     verify(objectSupplier).get();
+    verify(transform).apply(eq("test"));
   }
 }

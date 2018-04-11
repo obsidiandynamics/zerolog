@@ -7,6 +7,7 @@ import java.util.function.*;
 
 import org.junit.*;
 
+import com.obsidiandynamics.func.*;
 import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class NopLogChainTest {
@@ -32,13 +33,14 @@ public final class NopLogChainTest {
   }
   
   @Test
-  public void testSuppliers() {
+  public void testLazy() {
     final NopLogChain chain = NopLogChain.getInstance();
     final BooleanSupplier booleanSupplier = mock(BooleanSupplier.class);
     final DoubleSupplier doubleSupplier = mock(DoubleSupplier.class);
     final IntSupplier intSupplier = mock(IntSupplier.class);
     final LongSupplier longSupplier = mock(LongSupplier.class);
     final Supplier<?> objectSupplier = mock(Supplier.class);
+    final Function<String, ?> transform = Classes.cast(mock(Function.class));
     
     final LogChain end = chain
         .format("format")
@@ -46,7 +48,8 @@ public final class NopLogChainTest {
         .arg(doubleSupplier)
         .arg(intSupplier)
         .arg(longSupplier)
-        .arg(objectSupplier);
+        .arg(objectSupplier)
+        .arg("test", transform);
     assertSame(chain, end);
     
     end.log(); // does nothing
@@ -56,5 +59,6 @@ public final class NopLogChainTest {
     verifyNoMoreInteractions(intSupplier);
     verifyNoMoreInteractions(longSupplier);
     verifyNoMoreInteractions(objectSupplier);
+    verifyNoMoreInteractions(transform);
   }
 }

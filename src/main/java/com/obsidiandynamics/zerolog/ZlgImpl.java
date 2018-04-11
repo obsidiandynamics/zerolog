@@ -119,6 +119,11 @@ final class ZlgImpl implements Zlg {
     public LogChain arg(Supplier<?> supplier) {
       return appendArg(supplier.get());
     }
+    
+    @Override
+    public <T> LogChain arg(T value, Function<? super T, ?> transform) {
+      return appendArg(transform.apply(value));
+    }
 
     private LogChain appendArg(Object arg) {
       if (argc == MAX_ARGS) throw new TooManyArgsException("Number of args cannot exceed " + MAX_ARGS);
