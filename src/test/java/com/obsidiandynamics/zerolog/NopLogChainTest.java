@@ -17,7 +17,7 @@ public final class NopLogChainTest {
         .arg((byte) 0x01)
         .arg('c')
         .arg(3.14d)
-        .arg(3.14)
+        .arg(3.14f)
         .arg(42)
         .arg(42L)
         .arg("string")
