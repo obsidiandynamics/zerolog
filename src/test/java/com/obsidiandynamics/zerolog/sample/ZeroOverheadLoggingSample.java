@@ -1,6 +1,8 @@
-package com.obsidiandynamics.zerolog;
+package com.obsidiandynamics.zerolog.sample;
 
 import java.lang.invoke.*;
+
+import com.obsidiandynamics.zerolog.*;
 
 public final class ZeroOverheadLoggingSample {
   private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();

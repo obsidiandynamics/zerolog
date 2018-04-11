@@ -1,7 +1,9 @@
-package com.obsidiandynamics.zerolog;
+package com.obsidiandynamics.zerolog.sample;
 
 import java.lang.invoke.*;
 import java.util.*;
+
+import com.obsidiandynamics.zerolog.*;
 
 public final class Slf4jLoggingSample {
   private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();

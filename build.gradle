@@ -122,7 +122,6 @@ dependencies {
   testCompile "com.obsidiandynamics.fulcrum:fulcrum-assert:${fulcrumVersion}"
   testCompile "com.obsidiandynamics.fulcrum:fulcrum-dyno:${fulcrumVersion}"
   testCompile "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
-  testCompile "com.squidpony:squidlib-util:3.0.0-b9" // used for RNG
   testCompile "org.slf4j:slf4j-api:1.7.25"
   testCompile "log4j:log4j:1.2.17"
   testCompile "org.tinylog:tinylog:1.3.4"

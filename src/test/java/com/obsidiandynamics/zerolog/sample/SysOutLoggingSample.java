@@ -1,7 +1,9 @@
-package com.obsidiandynamics.zerolog;
+package com.obsidiandynamics.zerolog.sample;
 
 import java.io.*;
 import java.lang.invoke.*;
+
+import com.obsidiandynamics.zerolog.*;
 
 public final class SysOutLoggingSample {
   private static final Zlg zlg = Zlg
