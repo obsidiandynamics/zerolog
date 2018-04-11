@@ -1,5 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
+import java.util.function.*;
+
 import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class NopLogChain implements LogChain {
@@ -25,6 +27,11 @@ public final class NopLogChain implements LogChain {
   }
 
   @Override
+  public LogChain arg(BooleanSupplier supplier) {
+    return this;
+  }
+
+  @Override
   public LogChain arg(byte arg) {
     return this;
   }
@@ -40,6 +47,11 @@ public final class NopLogChain implements LogChain {
   }
 
   @Override
+  public LogChain arg(DoubleSupplier supplier) {
+    return this;
+  }
+
+  @Override
   public LogChain arg(float arg) {
     return this;
   }
@@ -50,7 +62,17 @@ public final class NopLogChain implements LogChain {
   }
 
   @Override
+  public LogChain arg(IntSupplier supplier) {
+    return this;
+  }
+
+  @Override
   public LogChain arg(long arg) {
+    return this;
+  }
+
+  @Override
+  public LogChain arg(LongSupplier supplier) {
     return this;
   }
 
@@ -61,6 +83,11 @@ public final class NopLogChain implements LogChain {
 
   @Override
   public LogChain arg(Object arg) {
+    return this;
+  }
+
+  @Override
+  public LogChain arg(Supplier<?> supplier) {
     return this;
   }
 

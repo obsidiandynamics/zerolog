@@ -1,5 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
+import java.util.function.*;
+
 final class ZlgImpl implements Zlg {
   static final class DuplicateValueException extends IllegalStateException {
     private static final long serialVersionUID = 1L;
@@ -54,6 +56,11 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
+    public LogChain arg(BooleanSupplier supplier) {
+      return appendArg(supplier.getAsBoolean());
+    }
+
+    @Override
     public LogChain arg(byte arg) {
       return appendArg(arg);
     }
@@ -69,6 +76,11 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
+    public LogChain arg(DoubleSupplier supplier) {
+      return appendArg(supplier.getAsDouble());
+    }
+
+    @Override
     public LogChain arg(float arg) {
       return appendArg(arg);
     }
@@ -79,8 +91,18 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
+    public LogChain arg(IntSupplier supplier) {
+      return appendArg(supplier.getAsInt());
+    }
+
+    @Override
     public LogChain arg(long arg) {
       return appendArg(arg);
+    }
+
+    @Override
+    public LogChain arg(LongSupplier supplier) {
+      return appendArg(supplier.getAsLong());
     }
 
     @Override
@@ -91,6 +113,11 @@ final class ZlgImpl implements Zlg {
     @Override
     public LogChain arg(Object arg) {
       return appendArg(arg);
+    }
+
+    @Override
+    public LogChain arg(Supplier<?> supplier) {
+      return appendArg(supplier.get());
     }
 
     private LogChain appendArg(Object arg) {

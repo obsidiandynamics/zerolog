@@ -82,4 +82,16 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     assertHas(out, "[3.14]");
     assertHas(out, IllegalFormatConversionException.class.getName());
   }
+  
+  @Test
+  public void testLogWithNull() {
+    final StringStream ss = new StringStream();
+    final PrintStreamLogTarget target = new PrintStreamLogTarget(new PrintStream(ss));
+    final String threadName = Thread.currentThread().getName();
+    target.log(LogLevel.TRACE, null, "message %s", 1, new Object[]{null}, null);
+    final String out = ss.getString();
+    
+    assertHas(out, threadName);
+    assertHas(out, "message null");
+  }
 }

@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.function.*;
+
 import org.junit.*;
 
 import com.obsidiandynamics.zerolog.Zlg.*;
@@ -49,7 +51,7 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.d("message").arg(100).arg(200).tag("tag").log();
+    z.d("message").arg(100).arg(200).arg((Object) null).tag("tag").log();
     verifyNoMoreInteractions(mocks.target);
   }
 
@@ -61,7 +63,7 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.c("message").arg(100).arg(200).tag("tag").log();
+    z.c("message").arg(100).arg(200).arg((Object) null).tag("tag").log();
     verify(mocks.target).isEnabled(eq(LogLevel.CONF));
     verifyNoMoreInteractions(mocks.target);
   }
@@ -86,7 +88,7 @@ public final class ZlgImplTest {
    *  as well as the tag and the exception elements.
    */
   @Test
-  public void testLogInfoWithTagAndStack() {
+  public void testLogInfoWithTagAndException() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message %d, %d";
@@ -122,6 +124,24 @@ public final class ZlgImplTest {
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(9), any(), isNull());
     assertArrayEquals(new Object[] {true, (byte) 0x01, 'c', 3.14d, 3.14f, 42, 42L, "string", (short) 42}, mocks.argv);
+  }
+
+  /**
+   *  Tests logging at info level with a null object.
+   */
+  @Test
+  public void testLogInfoWithNullArg() {
+    final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
+    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final String format = "message %s";
+    
+    z
+    .i(format)
+    .arg((Object) null)
+    .log();
+    verify(mocks.target).isEnabled(eq(LogLevel.INFO));
+    verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(1), any(), isNull());
+    assertArrayEquals(new Object[] {null}, mocks.argv);
   }
   
   @Test
@@ -202,5 +222,31 @@ public final class ZlgImplTest {
     
     // expect failure beyond any additional args
     chain.arg(LogChain.MAX_ARGS);
+  }
+  
+  @Test
+  public void testSuppliers() {
+    final LogMocks mocks = new LogMocks(LogLevel.TRACE, LogLevel.TRACE);
+    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    
+    final BooleanSupplier booleanSupplier = mock(BooleanSupplier.class);
+    final DoubleSupplier doubleSupplier = mock(DoubleSupplier.class);
+    final IntSupplier intSupplier = mock(IntSupplier.class);
+    final LongSupplier longSupplier = mock(LongSupplier.class);
+    final Supplier<?> objectSupplier = mock(Supplier.class);
+    z.
+    i("format")
+    .arg(booleanSupplier)
+    .arg(doubleSupplier)
+    .arg(intSupplier)
+    .arg(longSupplier)
+    .arg(objectSupplier)
+    .log();
+    
+    verify(booleanSupplier).getAsBoolean();
+    verify(doubleSupplier).getAsDouble();
+    verify(intSupplier).getAsInt();
+    verify(longSupplier).getAsLong();
+    verify(objectSupplier).get();
   }
 }

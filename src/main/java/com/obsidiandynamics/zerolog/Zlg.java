@@ -1,5 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
+import java.util.function.*;
+
 public interface Zlg {
   interface LogChain {
     static int MAX_ARGS = 64;
@@ -10,21 +12,31 @@ public interface Zlg {
     
     LogChain arg(boolean arg);
     
+    LogChain arg(BooleanSupplier supplier);
+    
     LogChain arg(byte arg);
     
     LogChain arg(char arg);
     
     LogChain arg(double arg);
     
+    LogChain arg(DoubleSupplier supplier);
+    
     LogChain arg(float arg);
     
     LogChain arg(int arg);
     
+    LogChain arg(IntSupplier supplier);
+    
     LogChain arg(long arg);
+    
+    LogChain arg(LongSupplier supplier);
     
     LogChain arg(short arg);
     
     LogChain arg(Object arg);
+    
+    LogChain arg(Supplier<?> supplier);
     
     LogChain threw(Throwable throwable);
     
