@@ -138,7 +138,7 @@ public final class MockLogTarget implements LogTarget {
       return filter(e -> e.level == level);
     }
     
-    public Entries above(int level) {
+    public Entries forLevelAndAbove(int level) {
       return filter(e -> e.level >= level);
     }
     

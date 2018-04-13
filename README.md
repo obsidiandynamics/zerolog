@@ -269,15 +269,28 @@ public static void withAssert(String address, int port, double timeoutSeconds) {
 The choice of using option one or two depends on whether you are targeting zero overhead for both production and testing scenarios or only for production. In case of the latter, the `-ea` flag naturally solves the problem, without forcing you to change your class before building. In either case, you will sacrifice code coverage, as both techniques introduce a parasitic branching instruction behind the scenes; only one path is traversed during the test.
 
 ## Can Zlg be mocked?
-Zlg's design is heavily interface-driven, for two main reasons. The first is to simplify mocking and testing, which in itself allows us to maintain Zlg with 100% instruction and branch coverage. The following is an example of mocking various parts of the log chain with Mockito 2.18:
+Zlg's design is heavily interface-driven, to simplify mocking and testing, which in itself allows us to maintain Zlg with 100% instruction and branch coverage. Even with interfaces, using mocking frameworks (like Mockito) didn't feel like a natural fit for the fluent-style chaining — there are too many methods to mock and verification needs to be depth-aware. (That's probably the only practical drawback of fluent chaining.) 
+
+Long story short, **the recommended way of mocking Zlg is using `MockLogTarget`**. Examples below.
 
 ```java
-final Zlg zlg = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
-final LogChain logChain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
-when(logChain.format(any())).thenReturn(NopLogChain.getInstance());
-when(zlg.level(anyInt())).thenReturn(logChain);
+final MockLogTarget target = new MockLogTarget();
+final Zlg zlg = target.logger();
 
-zlg.t("the value of Pi is %.3f").arg(Math.PI).log();
+// do some logging...
+zlg.t("Pi is %.2f").arg(Math.PI).tag("math").log();
+zlg.d("Euler's number is %.2f").arg(Math.E).tag("math").log();
+zlg.c("Avogadro constant is %.3e").arg(6.02214086e23).tag("chemistry").log();
+zlg.w("An I/O error has occurred").threw(new FileNotFoundException()).log();
+
+// find entries tagged with 'math'
+final List<Entry> math = target.entries().tagged("math").list();
+
+// find entries at or above debug
+final List<Entry> debugAndAbove = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
+
+// find entries containing an IOException (or subclass thereof)
+final List<Entry> withException = target.entries().withException(IOException.class).list();
 ```
 
 **Note:** If all you need is a no-op logger to quiesce any potential output, and don't care about mocking the fluent call chain, you can instantiate the logger with `LogLevel.OFF`:
@@ -286,4 +299,19 @@ zlg.t("the value of Pi is %.3f").arg(Math.PI).log();
 Zlg.forName("no-op").withConfigService(new LogConfig().withBaseLevel(LogLevel.OFF)).get();
 ```
 
-The second reason for reliance on interface is not quite so banal, and more motivated by performance. It enables Zlg to substitute a log chain with a `NopLogChain` as soon as it determines that the logging has been disabled for the requested level, benefiting from more optimisations.
+## Can I use Mockito for mocking Zlg?
+While we use Mockito internally to test the daylights out of Zlg, our _strong recommendation_ is to use `MockLogTarget` exclusively for any application-level mocking of the logger. If you _really_ must to use a mocking framework, here is an example of mocking various parts of the log chain with Mockito 2.18:
+
+```java
+final Zlg zlg = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
+final LogChain logChain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
+when(logChain.format(any())).thenReturn(logChain);
+when(logChain.arg(anyDouble())).thenReturn(logChain);
+when(zlg.level(anyInt())).thenReturn(logChain);
+
+zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+
+verify(logChain).format(contains("the value of Pi"));
+verify(logChain).arg(eq(Math.PI));
+verify(logChain).log();
+```

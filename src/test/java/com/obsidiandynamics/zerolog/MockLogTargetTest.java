@@ -96,7 +96,7 @@ public final class MockLogTargetTest {
     zlg.d("debug").log();
     zlg.c("conf").log();
     
-    final List<Entry> entries = target.entries().above(LogLevel.DEBUG).list();
+    final List<Entry> entries = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
     assertEquals(2, entries.size());
     assertEquals("debug", entries.get(0).getMessage());
     assertEquals("conf", entries.get(1).getMessage());
