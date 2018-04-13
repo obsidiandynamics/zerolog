@@ -5,7 +5,7 @@ apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 
 group = "com.obsidiandynamics.zerolog"
-version = "0.6.0"
+version = "0.7.0-SNAPSHOT"
   
 def envUser = "BINTRAY_USER"
 def envKey = "BINTRAY_KEY"
@@ -228,7 +228,7 @@ bintray {
     publicDownloadNumbers = true
     githubRepo = "obsidiandynamics/${repoName}"
     override = true
-    publish = false
+    publish = true
     version {
       name = project(":").version
       desc = packageDesc
