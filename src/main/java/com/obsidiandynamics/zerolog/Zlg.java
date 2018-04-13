@@ -42,6 +42,11 @@ public interface Zlg {
     
     LogChain threw(Throwable throwable);
     
+    default void with(Consumer<LogChain> logChainConsumer) {
+      logChainConsumer.accept(this);
+      log();
+    }
+    
     void log();
     
     default boolean logb() {

@@ -12,8 +12,9 @@ public final class SysOutLoggingSample {
       .get();
   
   public static void open(String address, int port, double timeoutSeconds) {
-    zlg.i("Pi is %d").arg(3.14).log(); //TODO
+    zlg.i("Pi is %d").arg(Math.PI).log();
     zlg.i("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+    
     try {
       openSocket(address, port, timeoutSeconds);
     } catch (IOException e) {

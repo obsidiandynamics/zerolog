@@ -4,23 +4,19 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.*;
+import java.util.function.*;
 
+import org.junit.*;
+import org.mockito.*;
+
+import com.obsidiandynamics.func.*;
 import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class ZlgTest {
   @Test
   public void testDefaultMethods() {
-    final Zlg z = mock(Zlg.class);
-    when(z.t(any())).thenCallRealMethod();
-    when(z.d(any())).thenCallRealMethod();
-    when(z.c(any())).thenCallRealMethod();
-    when(z.i(any())).thenCallRealMethod();
-    when(z.w(any())).thenCallRealMethod();
-    when(z.e(any())).thenCallRealMethod();
-    
-    final LogChain chain = mock(LogChain.class);
-    when(chain.logb()).thenCallRealMethod();
+    final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
+    final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     assertTrue(chain.logb());
     verify(chain).log();
     
@@ -53,5 +49,15 @@ public final class ZlgTest {
     verify(z, times(6)).level(anyInt());
     verify(chain).logb();
     verifyNoMoreInteractions(chain);
+  }
+  
+  @Test
+  public void testWithLambda() {
+    final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
+    final Consumer<LogChain> logChainConsumer = Classes.cast(mock(Consumer.class));
+    
+    chain.with(logChainConsumer);
+    verify(logChainConsumer).accept(eq(chain));
+    verify(chain).log();
   }
 }
