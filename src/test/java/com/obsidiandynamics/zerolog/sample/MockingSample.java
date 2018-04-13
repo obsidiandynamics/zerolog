@@ -12,10 +12,10 @@ public final class MockingSample {
     final Zlg zlg = target.logger();
     
     // do some logging...
-    zlg.t("Pi is %.2f").arg(Math.PI).tag("math").log();
-    zlg.d("Euler's number is %.2f").arg(Math.E).tag("math").log();
-    zlg.c("Avogadro constant is %.3e").arg(6.02214086e23).tag("chemistry").log();
-    zlg.w("An I/O error has occurred").threw(new FileNotFoundException()).log();
+    zlg.t("Pi is %.2f", z -> z.arg(Math.PI).tag("math"));
+    zlg.d("Euler's number is %.2f", z -> z.arg(Math.E).tag("math"));
+    zlg.c("Avogadro constant is %.3e", z -> z.arg(6.02214086e23).tag("chemistry"));
+    zlg.w("An I/O error has occurred", z -> z.threw(new FileNotFoundException()));
     
     // find entries tagged with 'math'
     final List<Entry> math = target.entries().tagged("math").list();

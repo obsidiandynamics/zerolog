@@ -52,7 +52,7 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.d("message").arg(100).arg(200).arg((Object) null).tag("tag").log();
+    z.d("message").arg(100).arg(200).arg((Object) null).tag("tag").done();
     verifyNoMoreInteractions(mocks.target);
   }
 
@@ -64,7 +64,7 @@ public final class ZlgImplTest {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.c("message").arg(100).arg(200).arg((Object) null).tag("tag").log();
+    z.c("message").arg(100).arg(200).arg((Object) null).tag("tag").done();
     verify(mocks.target).isEnabled(eq(LogLevel.CONF));
     verifyNoMoreInteractions(mocks.target);
   }
@@ -78,7 +78,7 @@ public final class ZlgImplTest {
     final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message";
     
-    z.i(format).log();
+    z.i(format).done();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(0), any(), isNull());
     assertArrayEquals(new Object[] {}, mocks.argv);
@@ -95,7 +95,7 @@ public final class ZlgImplTest {
     final String format = "message %d, %d";
     final Exception exception = new Exception("simulated");
     
-    z.i(format).arg(100).arg(200).tag("tag").threw(exception).log();
+    z.i(format).arg(100).arg(200).tag("tag").threw(exception).done();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), eq("tag"), eq(format), eq(2), any(), eq(exception));
     assertArrayEquals(new Object[] {100, 200}, mocks.argv);
@@ -121,7 +121,7 @@ public final class ZlgImplTest {
     .arg(42L)
     .arg("string")
     .arg((short) 42)
-    .log();
+    .done();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(9), any(), isNull());
     assertArrayEquals(new Object[] {true, (byte) 0x01, 'c', 3.14d, 3.14f, 42, 42L, "string", (short) 42}, mocks.argv);
@@ -139,7 +139,7 @@ public final class ZlgImplTest {
     z
     .i(format)
     .arg((Object) null)
-    .log();
+    .done();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(1), any(), isNull());
     assertArrayEquals(new Object[] {null}, mocks.argv);
@@ -152,7 +152,7 @@ public final class ZlgImplTest {
     
     for (LogLevel.Enum level : LogLevel.Enum.values()) {
       if (level.getLevel() != LogLevel.OFF) {
-        z.level(level.getLevel()).format("format").log();
+        z.level(level.getLevel()).format("format").done();
         verify(mocks.target).log(eq(level.getLevel()), isNull(), eq("format"), eq(0), any(), isNull());
       }
     }
@@ -165,7 +165,7 @@ public final class ZlgImplTest {
     
     for (LogLevel.Enum level : LogLevel.Enum.values()) {
       if (level.getLevel() != LogLevel.OFF) {
-        z.level(level.getLevel()).format("format").log();
+        z.level(level.getLevel()).format("format").done();
       }
     }
     verifyNoMoreInteractions(mocks.target);
@@ -193,7 +193,7 @@ public final class ZlgImplTest {
   @Test(expected=MissingValueException.class)
   public void testMissingFormat() {
     final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    z.level(LogLevel.INFO).log();
+    z.level(LogLevel.INFO).done();
   }
   
   @Test(expected=IllegalArgumentException.class)
@@ -244,7 +244,7 @@ public final class ZlgImplTest {
     .arg(longSupplier)
     .arg(objectSupplier)
     .arg("test", transform)
-    .log();
+    .done();
     
     verify(booleanSupplier).getAsBoolean();
     verify(doubleSupplier).getAsDouble();

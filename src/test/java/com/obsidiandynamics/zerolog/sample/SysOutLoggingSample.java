@@ -2,6 +2,7 @@ package com.obsidiandynamics.zerolog.sample;
 
 import java.io.*;
 import java.lang.invoke.*;
+import java.util.*;
 
 import com.obsidiandynamics.zerolog.*;
 
@@ -12,13 +13,16 @@ public final class SysOutLoggingSample {
       .get();
   
   public static void open(String address, int port, double timeoutSeconds) {
-    zlg.i("Pi is %d").arg(Math.PI).log();
-    zlg.i("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+    final List<Integer> numbers = Arrays.asList(5, 6, 7, 8);
+    zlg.i("The list %s has %d elements", z -> z.arg(numbers).arg(numbers::size).tag("list"));
+    
+    zlg.i("Pi is %.2f", z -> z.arg(Math.PI));
+    zlg.i("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
     
     try {
       openSocket(address, port, timeoutSeconds);
     } catch (IOException e) {
-      zlg.w("Error connecting to %s:%d").arg(address).arg(port).tag("I/O").threw(e).log();
+      zlg.w("Error connecting to %s:%d", z -> z.arg(address).arg(port).tag("I/O").threw(e));
     }
   }
   

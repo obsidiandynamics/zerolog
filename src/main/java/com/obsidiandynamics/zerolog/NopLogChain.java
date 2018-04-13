@@ -102,5 +102,5 @@ public final class NopLogChain implements LogChain {
   }
 
   @Override
-  public void log() {}
+  public void done() {}
 }

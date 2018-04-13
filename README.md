@@ -12,7 +12,7 @@ ZeroLog (abbreviated to Zlg) is a logging façade with two fundamental design ob
 1. **Ultra-low overhead for suppressed logging.** In other words, the cost of calling a log method when logging for that level has been disabled is negligible.
 2. **Uncompromised code coverage.** Suppression of logging should not impact statement and branch coverage metrics. A log entry is a statement like any other.
 
-Collectively, these objectives make Zlg suitable for use in ultra-high performance, low-latency applications and in high-assurance environments.
+Collectively, these goals make Zlg suitable for use in ultra-high performance, low-latency applications and in high-assurance environments.
 
 # How fast is it?
 A JMH benchmark conducted on an [i7-4770 Haswell](https://ark.intel.com/products/75122/Intel-Core-i7-4770-Processor-8M-Cache-up-to-3_90-GHz) CPU with logging suppressed compares the per-invocation penalties for Zlg with some of the major loggers. Four primitives are passed to each logger for formatting, which is a fair representation of a typical log entry.
@@ -55,11 +55,13 @@ public final class SysOutLoggingSample {
   private static final Zlg zlg = Zlg.forClass(SysOutLoggingSample.class).get();
   
   public static void open(String address, int port, double timeoutSeconds) {
-    zlg.i("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+    zlg.i("Pi is %.2f", z -> z.arg(Math.PI));
+    zlg.i("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
+    
     try {
       openSocket(address, port, timeoutSeconds);
     } catch (IOException e) {
-      zlg.w("Error connecting to %s:%d").arg(address).arg(port).tag("I/O").threw(e).log();
+      zlg.w("Error connecting to %s:%d", z -> z.arg(address).arg(port).tag("I/O").threw(e));
     }
   }
 }
@@ -69,8 +71,60 @@ Some important things to note:
 
 * A logger is a `Zlg` instance, created for a specific class (`forClass()`) or an arbitrary name (`forName()`). By convention, we name the field `zlg`.
 * Logging is invoked via a fluent chain, starting with the log level (abbreviated to the first letter) specifying a mandatory format string, followed by any optional arguments (primitives or object types), an optional tag, and an optional exception.
-* Each chain _must_ end with a `log()` for the log entry to be printed.
 * The format string is printf-style, unlike most other loggers that use the `{}` (stash) notation.
+
+# Lazy args
+The chained args pattern works well when the values are _already_ available and can be fed to the logger as-is. If further work is needed to formulate the arguments, then log suppression will not prevent those expressions from being evaluated. For example, the following call will invoke the `size()` method on a `List` irrespective of whether logging is enabled or suppressed.
+
+```java
+final List<Integer> numbers = Arrays.asList(5, 6, 7, 8);
+zlg.i("The list %s has %d elements", z -> z.arg(numbers).arg(numbers.size()).tag("list"));
+```
+
+## Suppliers
+To avoid unnecessary argument evaluation, Zlg supports FP-style suppliers and transforms. The above example can be re-written, using a method reference to supply the primitive value via a getter method reference.
+
+```java
+zlg.i("The list %s has %d elements", z -> z.arg(numbers).arg(numbers::size).tag("list"));
+```
+
+By simply changing `list.size()` to `list::size` we avoid a potentially superfluous method call. Our recommendation is to always favour method references over lambda-style closures. This way _no new code is produced_ and there is no impact on code coverage.
+
+## Transforms
+Often we won't have the luxury of invoking a single no-arg method on an object to obtain a nice, log-friendly representation. Zlg provides a convenient way of extracting a lazily-evaluated transform into a separate static method, taking a single argument — the object to transform. 
+
+In the next example, we are searching for a person's name from a list of people. If the name isn't found, we'd like to log the list's contents, but not reveal people's surnames. The transform in question is a static `tokeniseSurnames()` function, taking a collection of `Name` objects. To append the transform, we call the overloaded `arg(T value, Function<? super T, ?> transform)` method in the log chain, providing both the raw (untransformed) value and the transform method reference. The rest is Zlg's problem.
+
+```java
+private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+
+public static final class Name {
+  final String forename;
+  final String surname;
+  
+  Name(String forename, String surname) {
+    this.forename = forename;
+    this.surname = surname;
+  }
+}
+
+public static void logWithDescriber() {
+  final List<Name> hackers = Arrays.asList(new Name("Kevin", "Flynn"), 
+                                           new Name("Thomas", "Anderson"), 
+                                           new Name("Angela", "Bennett"));
+  final String surnameToFind = "Smith";
+  
+  if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
+    zlg.i("%s not found among %s", z -> z.arg(surnameToFind).arg(hackers, LazyLogSample::tokeniseSurnames));
+  }
+}
+
+public static List<String> tokeniseSurnames(Collection<Name> names) {
+  return names.stream().map(n -> n.forename + " " + n.surname.replaceAll(".", "X")).collect(toList());
+}
+```
+
+One thing to note about transforms and suppliers: they are code like any other and should be unit tested accordingly. You might have a buggy transform and, due to its lazy evaluation, fail to pick up on it when testing code that contains the log instruction (if logging was suppressed). Because transforms and suppliers are simple, single-responsibility 'pure' functions, unit testing them should be straightforward.
 
 # Tags
 Zlg adds the concept of a _tag_ — an optional string value that can be used to decorate a log entry. A tag is equivalent to a marker in SLF4J, adding another dimension for slicing and dicing your log output.
@@ -229,7 +283,7 @@ logger.debug(String.format("Connecting to %s:%d [timeout: %,.1f sec]", address, 
 
 There are two subtle problems with this approach. Firstly, `String.format()` will be unconditionally evaluated, irrespective of whether logging is enabled. This can be rather costly. Secondly, the penalty for getting the format specifiers wrong is severe — `format()` will throw an `IllegalFormatException`. The last thing you need when logging an error or a warning is to have the log call bail on you.
 
-Zlg uses a safe form of `String.format()` (called `SafeFormat.format()`) which is tolerant to format errors, printing the description of the error along with the original format string and arguments. It looks like this:
+Zlg uses a safe form of `String.format()` (called `SafeFormat.format()`) which is tolerant of format errors, printing the description of the error along with the original format string and arguments. It looks like this:
 
 ```
 11:29:43.425 INF [main]: WARNING - could not format 'Pi is %d' with args [3.14]:
@@ -250,7 +304,9 @@ private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()
 private static final boolean TRACE_ENABLED = false;
 
 public static void withStaticConstant(String address, int port, double timeoutSeconds) {
-  if (TRACE_ENABLED) zlg.t("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+  if (TRACE_ENABLED) {
+    zlg.t("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
+  }
 }
 ```
 
@@ -260,13 +316,15 @@ public static void withStaticConstant(String address, int port, double timeoutSe
 private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
 
 public static void withAssert(String address, int port, double timeoutSeconds) {
-  assert zlg.t("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).logb();
+  assert zlg.t("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
 }
 ```
 
-**Note:** Rather than using `log()`, the assertion example uses `logb()`, which works identically to `log()` but returns a constant `true`. If assertions are enabled with the `-ea` JVM argument, the log instruction will be evaluated and will never fail the assertion. Otherwise, the entire fluent chain will be dropped by DCE.
+**Note:** Rather than chaining arguments within a lambda, the assertion example uses a continuous chaining style, culminating with a call to `log()`, which returns a constant `true`. If assertions are enabled with the `-ea` JVM argument, the log instruction will be evaluated and will never fail the assertion. Otherwise, the entire fluent chain will be dropped by DCE.
 
 The choice of using option one or two depends on whether you are targeting zero overhead for both production and testing scenarios or only for production. In case of the latter, the `-ea` flag naturally solves the problem, without forcing you to change your class before building. In either case, you will sacrifice code coverage, as both techniques introduce a parasitic branching instruction behind the scenes; only one path is traversed during the test.
+
+**Note:** Outside of the `assert` example, using of the continuous chaining style is strongly discouraged. You run the risk of forgetting to append the final `log()` at the end of the chain, which will have the effect of 'swallowing' the log without forwarding the log event to the underlying logger.
 
 ## Can Zlg be mocked?
 Zlg's design is heavily interface-driven, to simplify mocking and testing, which in itself allows us to maintain Zlg with 100% instruction and branch coverage. Even with interfaces, using mocking frameworks (like Mockito) didn't feel like a natural fit for the fluent-style chaining — there are too many methods to mock and verification needs to be depth-aware. (That's probably the only practical drawback of fluent chaining.) 
@@ -278,19 +336,22 @@ final MockLogTarget target = new MockLogTarget();
 final Zlg zlg = target.logger();
 
 // do some logging...
-zlg.t("Pi is %.2f").arg(Math.PI).tag("math").log();
-zlg.d("Euler's number is %.2f").arg(Math.E).tag("math").log();
-zlg.c("Avogadro constant is %.3e").arg(6.02214086e23).tag("chemistry").log();
-zlg.w("An I/O error has occurred").threw(new FileNotFoundException()).log();
+zlg.t("Pi is %.2f", z -> z.arg(Math.PI).tag("math"));
+zlg.d("Euler's number is %.2f", z -> z.arg(Math.E).tag("math"));
+zlg.c("Avogadro constant is %.3e", z -> z.arg(6.02214086e23).tag("chemistry"));
+zlg.w("An I/O error has occurred", z -> z.threw(new FileNotFoundException()));
 
 // find entries tagged with 'math'
 final List<Entry> math = target.entries().tagged("math").list();
+System.out.println(math);
 
 // find entries at or above debug
 final List<Entry> debugAndAbove = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
+System.out.println(debugAndAbove);
 
 // find entries containing an IOException (or subclass thereof)
 final List<Entry> withException = target.entries().withException(IOException.class).list();
+System.out.println(withException);
 ```
 
 **Note:** If all you need is a no-op logger to quiesce any potential output, and don't care about mocking the fluent call chain, you can instantiate the logger with `LogLevel.OFF`:
@@ -309,9 +370,9 @@ when(logChain.format(any())).thenReturn(logChain);
 when(logChain.arg(anyDouble())).thenReturn(logChain);
 when(zlg.level(anyInt())).thenReturn(logChain);
 
-zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI));
 
 verify(logChain).format(contains("the value of Pi"));
 verify(logChain).arg(eq(Math.PI));
-verify(logChain).log();
+verify(logChain).done();
 ```

@@ -139,7 +139,7 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
-    public void log() {
+    public void done() {
       if (format == null) throw new MissingValueException("Missing call to format()");
       target.log(level, tag, format, argc, argv, throwable);
       reset();

@@ -18,7 +18,7 @@ public final class ZlgGuardBenchmark extends AbstractBenchmark {
 
   @Override
   protected void cycle(float f, double d, int i, long l) {
-    if (zlg.isEnabled(LogLevel.TRACE)) zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
+    if (zlg.isEnabled(LogLevel.TRACE)) zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).done();
   }
   
   public static void main(String[] args) {

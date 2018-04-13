@@ -44,13 +44,13 @@ public interface Zlg {
     
     default void with(Consumer<LogChain> logChainConsumer) {
       logChainConsumer.accept(this);
-      log();
+      done();
     }
     
-    void log();
+    void done();
     
-    default boolean logb() {
-      log();
+    default boolean log() {
+      done();
       return true;
     }
   }
@@ -61,15 +61,39 @@ public interface Zlg {
   
   default LogChain e(String format) { return level(LogLevel.ERROR).format(format); }
   
+  default void e(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.ERROR).format(format).with(logChainConsumer);
+  }
+  
   default LogChain w(String format) { return level(LogLevel.WARN).format(format); }
+  
+  default void w(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.WARN).format(format).with(logChainConsumer);
+  }
   
   default LogChain i(String format) { return level(LogLevel.INFO).format(format); }
   
+  default void i(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.INFO).format(format).with(logChainConsumer);
+  }
+  
   default LogChain c(String format) { return level(LogLevel.CONF).format(format); }
+  
+  default void c(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.CONF).format(format).with(logChainConsumer);
+  }
   
   default LogChain d(String format) { return level(LogLevel.DEBUG).format(format); }
   
+  default void d(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.DEBUG).format(format).with(logChainConsumer);
+  }
+  
   default LogChain t(String format) { return level(LogLevel.TRACE).format(format); }
+  
+  default void t(String format, Consumer<LogChain> logChainConsumer) {
+    level(LogLevel.TRACE).format(format).with(logChainConsumer);
+  }
   
   static ZlgBuilder forName(String name) {
     return new ZlgBuilder(name);

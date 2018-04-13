@@ -29,7 +29,7 @@ public final class NopLogChainTest {
         .threw(null);
     assertSame(chain, end);
     
-    end.log(); // does nothing
+    end.done(); // does nothing
   }
   
   @Test
@@ -52,7 +52,7 @@ public final class NopLogChainTest {
         .arg("test", transform);
     assertSame(chain, end);
     
-    end.log(); // does nothing
+    end.done(); // does nothing
     
     verifyNoMoreInteractions(booleanSupplier);
     verifyNoMoreInteractions(doubleSupplier);

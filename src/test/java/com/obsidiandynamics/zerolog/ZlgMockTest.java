@@ -17,11 +17,11 @@ public final class ZlgMockTest {
     when(logChain.arg(anyDouble())).thenReturn(logChain);
     when(zlg.level(anyInt())).thenReturn(logChain);
     
-    zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI));
     
     verify(logChain).format(contains("the value of Pi"));
     verify(logChain).arg(eq(Math.PI));
-    verify(logChain).log();
+    verify(logChain).done();
   }
   
   @Test
@@ -32,7 +32,7 @@ public final class ZlgMockTest {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE).withLogService(__ -> logTarget))
         .get();
     
-    zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+    zlg.t("the value of Pi is %.2f").arg(Math.PI).done();
     verify(logTarget).log(eq(LogLevel.TRACE), 
                           isNull(), 
                           eq("the value of Pi is %.2f"), 

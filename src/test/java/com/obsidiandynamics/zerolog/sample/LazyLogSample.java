@@ -15,7 +15,7 @@ public final class LazyLogSample {
     final int index = 4;
     
     if (index >= numbers.size()) {
-      zlg.i("invalid index %d, must be 0 < index < %d").arg(index).arg(numbers::size).log();
+      zlg.i("invalid index %d, must be 0 < index < %d", z -> z.arg(index).arg(numbers::size));
     }
   }
   
@@ -36,7 +36,7 @@ public final class LazyLogSample {
     final String surnameToFind = "Smith";
     
     if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
-      zlg.i("%s not found among %s").arg(surnameToFind).arg(hackers, LazyLogSample::tokeniseSurnames).log();
+      zlg.i("%s not found among %s", z -> z.arg(surnameToFind).arg(hackers, LazyLogSample::tokeniseSurnames));
     }
   }
   

@@ -18,7 +18,7 @@ public final class ZlgAssertBenchmark extends AbstractBenchmark {
 
   @Override
   protected void cycle(float f, double d, int i, long l) {
-    assert zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).logb();
+    assert zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
   }
   
   public static void main(String[] args) {
