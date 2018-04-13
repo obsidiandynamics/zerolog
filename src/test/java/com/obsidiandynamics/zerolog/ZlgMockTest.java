@@ -10,12 +10,29 @@ import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class ZlgMockTest {
   @Test
-  public void testMock() {
+  public void testMockEntireStack() {
     final Zlg zlg = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain logChain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(logChain.format(any())).thenReturn(NopLogChain.getInstance());
     when(zlg.level(anyInt())).thenReturn(logChain);
     
-    zlg.t("the value of Pi is %.3f").arg(Math.PI).log();
+    zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+  }
+  
+  @Test
+  public void testMockLogTarget() {
+    final LogTarget logTarget = mock(LogTarget.class);
+    when(logTarget.isEnabled(eq(LogLevel.TRACE))).thenReturn(true);
+    final Zlg zlg = Zlg.forName("mock")
+        .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE).withLogService(__ -> logTarget))
+        .get();
+    
+    zlg.t("the value of Pi is %.2f").arg(Math.PI).log();
+    verify(logTarget).log(eq(LogLevel.TRACE), 
+                          isNull(), 
+                          eq("the value of Pi is %.2f"), 
+                          eq(1), 
+                          isNotNull(),
+                          isNull());
   }
 }

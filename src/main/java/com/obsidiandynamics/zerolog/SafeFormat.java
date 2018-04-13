@@ -9,9 +9,13 @@ public final class SafeFormat {
     try {
       return String.format(format, argv);
     } catch (Throwable e) {
-      final Object[] args = new Object[argc];
-      System.arraycopy(argv, 0, args, 0, argc);
-      return "WARNING - could not format '" + format + "' with args " + Arrays.asList(args) + ":\n" + e;
+      return "WARNING - could not format '" + format + "' with args " + Arrays.asList(copyArgs(argc, argv)) + ":\n" + e;
     }
+  }
+  
+  public static Object[] copyArgs(int argc, Object[] argv) {
+    final Object[] args = new Object[argc];
+    System.arraycopy(argv, 0, args, 0, argc);
+    return args;
   }
 }
