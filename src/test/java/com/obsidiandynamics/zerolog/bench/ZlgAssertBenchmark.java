@@ -13,12 +13,12 @@ public final class ZlgAssertBenchmark extends AbstractBenchmark {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
     assertFalse(zlg.isEnabled(LogLevel.TRACE));
-    assertTrue(zlg.t("msg").getClass().getSimpleName().equals("NopLogChain"));
+    assertTrue(zlg.level(LogLevel.TRACE).format("msg").getClass().getSimpleName().equals("NopLogChain"));
   }
 
   @Override
   protected void cycle(float f, double d, int i, long l) {
-    assert zlg.t("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
+    assert zlg.level(LogLevel.TRACE).format("float: %f, double: %f, int: %d, long: %d").arg(f).arg(d).arg(i).arg(l).log();
   }
   
   public static void main(String[] args) {

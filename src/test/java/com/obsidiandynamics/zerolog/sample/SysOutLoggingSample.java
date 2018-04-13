@@ -13,6 +13,8 @@ public final class SysOutLoggingSample {
       .get();
   
   public static void open(String address, int port, double timeoutSeconds) {
+    zlg.i("Hello world");
+    
     final List<Integer> numbers = Arrays.asList(5, 6, 7, 8);
     zlg.i("The list %s has %d elements", z -> z.arg(numbers).arg(numbers::size).tag("list"));
     

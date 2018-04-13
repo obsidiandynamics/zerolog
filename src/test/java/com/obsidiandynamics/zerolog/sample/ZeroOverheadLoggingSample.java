@@ -9,14 +9,14 @@ public final class ZeroOverheadLoggingSample {
   
   private static final boolean TRACE_ENABLED = false;
   
-  public static void withStaticConstant(String address, int port, double timeoutSeconds) {
+  public static void withStaticConstant(String address, int port, double timeout) {
     if (TRACE_ENABLED) {
-      zlg.t("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
+      zlg.t("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeout));
     }
   }
   
-  public static void withAssert(String address, int port, double timeoutSeconds) {
-    assert zlg.t("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+  public static void withAssert(String address, int port, double timeout) {
+    assert zlg.level(LogLevel.TRACE).format("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeout).log();
   }
   
   public static void main(String[] args) {

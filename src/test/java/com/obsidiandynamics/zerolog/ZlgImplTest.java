@@ -50,9 +50,9 @@ public final class ZlgImplTest {
   @Test
   public void testLogDebug() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.d("message").arg(100).arg(200).arg((Object) null).tag("tag").done();
+    zlg.d("message", z -> z.arg(100).arg(200).arg((Object) null).tag("tag"));
     verifyNoMoreInteractions(mocks.target);
   }
 
@@ -62,9 +62,9 @@ public final class ZlgImplTest {
   @Test
   public void testLogConf() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     
-    z.c("message").arg(100).arg(200).arg((Object) null).tag("tag").done();
+    zlg.c("message", z -> z.arg(100).arg(200).arg((Object) null).tag("tag"));
     verify(mocks.target).isEnabled(eq(LogLevel.CONF));
     verifyNoMoreInteractions(mocks.target);
   }
@@ -75,10 +75,10 @@ public final class ZlgImplTest {
   @Test
   public void testLogInfoWithoutArgsTagOrStack() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message";
     
-    z.i(format).done();
+    zlg.i(format);
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(0), any(), isNull());
     assertArrayEquals(new Object[] {}, mocks.argv);
@@ -91,11 +91,11 @@ public final class ZlgImplTest {
   @Test
   public void testLogInfoWithTagAndException() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message %d, %d";
     final Exception exception = new Exception("simulated");
     
-    z.i(format).arg(100).arg(200).tag("tag").threw(exception).done();
+    zlg.i(format, z -> z.arg(100).arg(200).tag("tag").threw(exception));
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), eq("tag"), eq(format), eq(2), any(), eq(exception));
     assertArrayEquals(new Object[] {100, 200}, mocks.argv);
@@ -107,11 +107,12 @@ public final class ZlgImplTest {
   @Test
   public void testLogInfoWithAllArgTypes() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message";
     
-    z
-    .i(format)
+    zlg
+    .level(LogLevel.INFO)
+    .format(format)
     .arg(true)
     .arg((byte) 0x01)
     .arg('c')
@@ -133,11 +134,12 @@ public final class ZlgImplTest {
   @Test
   public void testLogInfoWithNullArg() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     final String format = "message %s";
     
-    z
-    .i(format)
+    zlg
+    .level(LogLevel.INFO)
+    .format(format)
     .arg((Object) null)
     .done();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
@@ -148,11 +150,11 @@ public final class ZlgImplTest {
   @Test
   public void testLogAllLevels() {
     final LogMocks mocks = new LogMocks(LogLevel.TRACE, LogLevel.TRACE);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     
     for (LogLevel.Enum level : LogLevel.Enum.values()) {
       if (level.getLevel() != LogLevel.OFF) {
-        z.level(level.getLevel()).format("format").done();
+        zlg.level(level.getLevel()).format("format").done();
         verify(mocks.target).log(eq(level.getLevel()), isNull(), eq("format"), eq(0), any(), isNull());
       }
     }
@@ -161,11 +163,11 @@ public final class ZlgImplTest {
   @Test
   public void testLogOffAllLevels() {
     final LogMocks mocks = new LogMocks(LogLevel.OFF, LogLevel.TRACE);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     
     for (LogLevel.Enum level : LogLevel.Enum.values()) {
       if (level.getLevel() != LogLevel.OFF) {
-        z.level(level.getLevel()).format("format").done();
+        zlg.level(level.getLevel()).format("format").done();
       }
     }
     verifyNoMoreInteractions(mocks.target);
@@ -173,39 +175,39 @@ public final class ZlgImplTest {
   
   @Test(expected=DuplicateValueException.class)
   public void testDuplicateTag() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    z.i("message").tag("tag").tag("tag");
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    zlg.i("message", z -> z.tag("tag").tag("tag"));
   }
   
   @Test(expected=DuplicateValueException.class)
   public void testDuplicateFormat() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    z.i("message").format("message");
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    zlg.level(LogLevel.INFO).format("message").format("message");
   }
   
   @Test(expected=DuplicateValueException.class)
   public void testDuplicateStack() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
     final Exception exception = new Exception("simulated");
-    z.i("message").threw(exception).threw(exception);
+    zlg.i("message", z -> z.threw(exception).threw(exception));
   }
   
   @Test(expected=MissingValueException.class)
   public void testMissingFormat() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    z.level(LogLevel.INFO).done();
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    zlg.level(LogLevel.INFO).done();
   }
   
   @Test(expected=IllegalArgumentException.class)
   public void testLogOff() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    z.level(LogLevel.OFF);
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    zlg.level(LogLevel.OFF);
   }
   
   @Test
   public void testSufficientArgs() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    final LogChain chain = z.i("format");
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    final LogChain chain = zlg.level(LogLevel.INFO).format("format");
     // should be able to add up to MAX_ARGS arguments without failure
     for (int i = 0; i < LogChain.MAX_ARGS; i++) {
       chain.arg(i);
@@ -214,8 +216,8 @@ public final class ZlgImplTest {
   
   @Test(expected=TooManyArgsException.class)
   public void testTooManyArgs() {
-    final Zlg z = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    final LogChain chain = z.i("format");
+    final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
+    final LogChain chain = zlg.level(LogLevel.INFO).format("format");
     // should be able to add up to MAX_ARGS arguments
     for (int i = 0; i < LogChain.MAX_ARGS; i++) {
       chain.arg(i);
@@ -228,7 +230,7 @@ public final class ZlgImplTest {
   @Test
   public void testLazy() {
     final LogMocks mocks = new LogMocks(LogLevel.TRACE, LogLevel.TRACE);
-    final Zlg z = Zlg.forName("test").withConfigService(mocks).get();
+    final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
     
     final BooleanSupplier booleanSupplier = mock(BooleanSupplier.class);
     final DoubleSupplier doubleSupplier = mock(DoubleSupplier.class);
@@ -236,8 +238,9 @@ public final class ZlgImplTest {
     final LongSupplier longSupplier = mock(LongSupplier.class);
     final Supplier<?> objectSupplier = mock(Supplier.class);
     final Function<String, ?> transform = Classes.cast(mock(Function.class));
-    z.
-    i("format")
+    zlg
+    .level(LogLevel.INFO)
+    .format("format")
     .arg(booleanSupplier)
     .arg(doubleSupplier)
     .arg(intSupplier)

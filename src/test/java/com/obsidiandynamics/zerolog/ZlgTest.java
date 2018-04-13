@@ -17,9 +17,7 @@ public final class ZlgTest {
   public void testDefaultMethods() {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
-    assertTrue(chain.log());
-    verify(chain).done();
-    
+    when(chain.format(any())).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     
     z.t("trace");
@@ -45,9 +43,12 @@ public final class ZlgTest {
     z.e("error");
     verify(z).level(eq(LogLevel.ERROR));
     verify(chain).format(eq("error"));
+    
+    assertTrue(chain.log());
+    verify(chain).log();
 
     verify(z, times(6)).level(anyInt());
-    verify(chain).log();
+    verify(chain, times(7)).done();
     verifyNoMoreInteractions(chain);
   }
   

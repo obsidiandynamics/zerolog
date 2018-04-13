@@ -32,7 +32,7 @@ public final class ZlgMockTest {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE).withLogService(__ -> logTarget))
         .get();
     
-    zlg.t("the value of Pi is %.2f").arg(Math.PI).done();
+    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI));
     verify(logTarget).log(eq(LogLevel.TRACE), 
                           isNull(), 
                           eq("the value of Pi is %.2f"), 

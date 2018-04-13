@@ -55,6 +55,7 @@ public final class SysOutLoggingSample {
   private static final Zlg zlg = Zlg.forClass(SysOutLoggingSample.class).get();
   
   public static void open(String address, int port, double timeoutSeconds) {
+    zlg.i("Hello world");
     zlg.i("Pi is %.2f", z -> z.arg(Math.PI));
     zlg.i("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
     
@@ -303,9 +304,9 @@ private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()
 
 private static final boolean TRACE_ENABLED = false;
 
-public static void withStaticConstant(String address, int port, double timeoutSeconds) {
+public static void withStaticConstant(String address, int port, double timeout) {
   if (TRACE_ENABLED) {
-    zlg.t("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeoutSeconds));
+    zlg.t("Connecting to %s:%d [timeout: %.1f sec]", z -> z.arg(address).arg(port).arg(timeout));
   }
 }
 ```
@@ -315,12 +316,12 @@ public static void withStaticConstant(String address, int port, double timeoutSe
 ```java
 private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
 
-public static void withAssert(String address, int port, double timeoutSeconds) {
-  assert zlg.t("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeoutSeconds).log();
+public static void withAssert(String address, int port, double timeout) {
+  assert zlg.level(LogLevel.TRACE).format("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeout).log();
 }
 ```
 
-**Note:** Rather than chaining arguments within a lambda, the assertion example uses a continuous chaining style, culminating with a call to `log()`, which returns a constant `true`. If assertions are enabled with the `-ea` JVM argument, the log instruction will be evaluated and will never fail the assertion. Otherwise, the entire fluent chain will be dropped by DCE.
+**Note:** Rather than chaining arguments within a lambda, the assertion example uses a slightly longer, continuous chaining style, culminating with a call to `log()`, which returns a constant `true`. If assertions are enabled with the `-ea` JVM argument, the log instruction will be evaluated and will never fail the assertion. Otherwise, the entire fluent chain will be dropped by DCE.
 
 The choice of using option one or two depends on whether you are targeting zero overhead for both production and testing scenarios or only for production. In case of the latter, the `-ea` flag naturally solves the problem, without forcing you to change your class before building. In either case, you will sacrifice code coverage, as both techniques introduce a parasitic branching instruction behind the scenes; only one path is traversed during the test.
 

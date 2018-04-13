@@ -16,7 +16,7 @@ public final class MockLogTargetTest {
     final MockLogTarget target = new MockLogTarget(LogLevel.TRACE);
     final Zlg zlg = target.logger();
     
-    zlg.t("message").done();
+    zlg.t("message");
     final List<Entry> entries = target.entries().list();
     assertNotNull(entries);
     assertEquals(1, entries.size());
@@ -67,7 +67,7 @@ public final class MockLogTargetTest {
   public void testEntriesIterator() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("message").done();
+    zlg.t("message");
     
     final Iterator<Entry> it = target.entries().iterator();
     assertTrue(it.hasNext());
@@ -79,9 +79,9 @@ public final class MockLogTargetTest {
   public void testForLevel() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug");
+    zlg.c("conf");
     
     final List<Entry> entries = target.entries().forLevel(LogLevel.DEBUG).list();
     assertEquals(1, entries.size());
@@ -92,9 +92,9 @@ public final class MockLogTargetTest {
   public void testForLevelAndAbove() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug");
+    zlg.c("conf");
     
     final List<Entry> entries = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
     assertEquals(2, entries.size());
@@ -107,9 +107,9 @@ public final class MockLogTargetTest {
     final long startTime = System.currentTimeMillis();
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug");
+    zlg.c("conf");
     final long endTime = System.currentTimeMillis();
     
     assertEquals(3, target.entries().after(startTime - 1).list().size());
@@ -123,9 +123,9 @@ public final class MockLogTargetTest {
   public void testTag() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").tag("tag").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug", z -> z.tag("tag"));
+    zlg.c("conf");
     
     assertEquals(1, target.entries().tagged("tag").list().size());
   }
@@ -134,9 +134,9 @@ public final class MockLogTargetTest {
   public void testWithException() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").threw(new IOException("simulated")).done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug", z -> z.threw(new IOException("simulated")));
+    zlg.c("conf");
 
     assertEquals(0, target.entries().withException(RuntimeException.class).list().size());
     assertEquals(1, target.entries().withException(IOException.class).list().size());
@@ -146,9 +146,9 @@ public final class MockLogTargetTest {
   public void testContaining() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug");
+    zlg.c("conf");
     
     assertEquals(1, target.entries().containing("bug").list().size());
   }
@@ -157,9 +157,9 @@ public final class MockLogTargetTest {
   public void testReset() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace").done();
-    zlg.d("debug").done();
-    zlg.c("conf").done();
+    zlg.t("trace");
+    zlg.d("debug");
+    zlg.c("conf");
     
     assertEquals(3, target.entries().list().size());
     
