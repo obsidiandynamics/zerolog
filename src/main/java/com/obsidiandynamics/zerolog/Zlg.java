@@ -59,48 +59,72 @@ public interface Zlg {
   
   boolean isEnabled(int level);
   
-  default void e(String format) { 
-    level(LogLevel.ERROR).format(format).done(); 
+  default void e(String message) { 
+    level(LogLevel.ERROR).format(message).done(); 
+  }
+  
+  default void e(String summary, Throwable cause) {
+    level(LogLevel.ERROR).format(summary).arg(cause).done(); 
   }
   
   default void e(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.ERROR).format(format).with(logChainConsumer);
   }
   
-  default void w(String format) { 
-    level(LogLevel.WARN).format(format).done(); 
+  default void w(String message) { 
+    level(LogLevel.WARN).format(message).done(); 
+  }
+  
+  default void w(String summary, Throwable cause) {
+    level(LogLevel.WARN).format(summary).arg(cause).done(); 
   }
   
   default void w(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.WARN).format(format).with(logChainConsumer);
   }
   
-  default void i(String format) { 
-    level(LogLevel.INFO).format(format).done(); 
+  default void i(String message) { 
+    level(LogLevel.INFO).format(message).done(); 
+  }
+  
+  default void i(String summary, Throwable cause) {
+    level(LogLevel.INFO).format(summary).arg(cause).done(); 
   }
   
   default void i(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.INFO).format(format).with(logChainConsumer);
   }
   
-  default void c(String format) { 
-    level(LogLevel.CONF).format(format).done();
+  default void c(String message) { 
+    level(LogLevel.CONF).format(message).done();
+  }
+  
+  default void c(String summary, Throwable cause) {
+    level(LogLevel.CONF).format(summary).arg(cause).done(); 
   }
   
   default void c(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.CONF).format(format).with(logChainConsumer);
   }
   
-  default void d(String format) { 
-    level(LogLevel.DEBUG).format(format).done(); 
+  default void d(String message) { 
+    level(LogLevel.DEBUG).format(message).done(); 
+  }
+
+  default void d(String summary, Throwable cause) {
+    level(LogLevel.DEBUG).format(summary).arg(cause).done(); 
   }
   
   default void d(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.DEBUG).format(format).with(logChainConsumer);
   }
   
-  default void t(String format) {
-    level(LogLevel.TRACE).format(format).done(); 
+  default void t(String message) {
+    level(LogLevel.TRACE).format(message).done(); 
+  }
+  
+  default void t(String summary, Throwable cause) {
+    level(LogLevel.TRACE).format(summary).arg(cause).done(); 
   }
   
   default void t(String format, Consumer<LogChain> logChainConsumer) {

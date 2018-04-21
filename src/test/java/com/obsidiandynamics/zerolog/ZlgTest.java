@@ -14,7 +14,7 @@ import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class ZlgTest {
   @Test
-  public void testDefaultMethods() {
+  public void testDefaultMessageMethods() {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
@@ -49,6 +49,46 @@ public final class ZlgTest {
 
     verify(z, times(6)).level(anyInt());
     verify(chain, times(7)).done();
+    verifyNoMoreInteractions(chain);
+  }
+  
+  @Test
+  public void testDefaultSummaryAndThrowableMethods() {
+    final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
+    final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
+    when(chain.format(any())).thenReturn(chain);
+    when(z.level(anyInt())).thenReturn(chain);
+    when(chain.arg(isA(Throwable.class))).thenReturn(chain);
+    
+    final Throwable cause = new Throwable("test");
+    
+    z.t("trace", cause);
+    verify(z).level(eq(LogLevel.TRACE));
+    verify(chain).format(eq("trace"));
+
+    z.d("debug", cause);
+    verify(z).level(eq(LogLevel.DEBUG));
+    verify(chain).format(eq("debug"));
+
+    z.c("conf", cause);
+    verify(z).level(eq(LogLevel.CONF));
+    verify(chain).format(eq("conf"));
+
+    z.i("info", cause);
+    verify(z).level(eq(LogLevel.INFO));
+    verify(chain).format(eq("info"));
+
+    z.w("warn", cause);
+    verify(z).level(eq(LogLevel.WARN));
+    verify(chain).format(eq("warn"));
+
+    z.e("error", cause);
+    verify(z).level(eq(LogLevel.ERROR));
+    verify(chain).format(eq("error"));
+    
+    verify(z, times(6)).level(anyInt());
+    verify(chain, times(6)).arg(eq(cause));
+    verify(chain, times(6)).done();
     verifyNoMoreInteractions(chain);
   }
   
