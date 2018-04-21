@@ -379,3 +379,17 @@ verify(logChain).format(contains("the value of Pi"));
 verify(logChain).arg(eq(Math.PI));
 verify(logChain).done();
 ```
+
+## How can I wrap an existing SLF4J logger?
+Use `Slf4jWrapper.of(Logger)`, as shown in the example below.
+
+```java
+final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+final Zlg zlg = Zlg.forName("wrapper")
+    .withConfigService(new LogConfig().withLogService(Slf4jWrapper.of(logger))).get();
+
+zlg.i("Logging to a wrapped SLF4J instance");
+```
+
+**Note:** The name passed to `forName()` has no effect in the above example, as `Slf4jWrapper` will return a pre-canned logger.
