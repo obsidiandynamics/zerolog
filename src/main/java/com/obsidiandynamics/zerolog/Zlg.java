@@ -40,8 +40,6 @@ public interface Zlg {
     
     LogChain arg(Supplier<?> supplier);
     
-    <T> LogChain arg(T value, Function<? super T, ?> transform);
-    
     LogChain threw(Throwable throwable);
     
     default void with(Consumer<LogChain> logChainConsumer) {

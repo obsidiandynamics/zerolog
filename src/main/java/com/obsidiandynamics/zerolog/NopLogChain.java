@@ -92,11 +92,6 @@ public final class NopLogChain implements LogChain {
   }
   
   @Override
-  public <T> LogChain arg(T value, Function<? super T, ?> transform) {
-    return this;
-  }
-
-  @Override
   public LogChain threw(Throwable throwable) {
     return this;
   }

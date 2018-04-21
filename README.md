@@ -96,7 +96,7 @@ By simply changing `list.size()` to `list::size` we avoid a potentially superflu
 ## Transforms
 Often we won't have the luxury of invoking a single no-arg method on an object to obtain a nice, log-friendly representation. Zlg provides a convenient way of extracting a lazily-evaluated transform into a separate static method, taking a single argument — the object to transform. 
 
-In the next example, we are searching for a person's name from a list of people. If the name isn't found, we'd like to log the list's contents, but not reveal people's surnames. The transform in question is a static `tokeniseSurnames()` function, taking a collection of `Name` objects. To append the transform, we call the overloaded `arg(T value, Function<? super T, ?> transform)` method in the log chain, providing both the raw (untransformed) value and the transform method reference. The rest is Zlg's problem.
+In the next example, we are searching for a person's name from a list of people. If the name isn't found, we'd like to log the list's contents, but not reveal people's surnames. The transform in question is a static `tokeniseSurnames()` function, taking a collection of `Name` objects. To append the transform, we use the `Args.map(Supplier, Function)` utility method, providing both the raw (untransformed) value reference and the transform method reference. The rest is Zlg's problem.
 
 ```java
 private static final Zlg zlg = Zlg.forDeclaringClass().get();
@@ -111,19 +111,34 @@ public static final class Name {
   }
 }
 
-public static void logWithDescriber() {
+public static void logWithTransform() {
   final List<Name> hackers = Arrays.asList(new Name("Kevin", "Flynn"), 
                                            new Name("Thomas", "Anderson"), 
                                            new Name("Angela", "Bennett"));
   final String surnameToFind = "Smith";
   
   if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
-    zlg.i("%s not found among %s", z -> z.arg(surnameToFind).arg(hackers, LazyLogSample::tokeniseSurnames));
+    zlg.i("%s not found among %s", 
+          z -> z.arg(surnameToFind).arg(Args.map(Args.ref(hackers), LazyLogSample::tokeniseSurnames)));
   }
 }
 
-public static List<String> tokeniseSurnames(Collection<Name> names) {
+private static List<String> tokeniseSurnames(Collection<Name> names) {
   return names.stream().map(n -> n.forename + " " + n.surname.replaceAll(".", "X")).collect(toList());
+}
+```
+
+The value being transformed may itself be retrieved lazily. The example below prints the current time using a custom `DateFormat`; the `Date` object is conditionally instantiated.
+
+```java
+private static final Zlg zlg = Zlg.forDeclaringClass().get();
+
+public static void logWithSupplierAndTransform() {
+  zlg.i("The current time is %s", z -> z.arg(Args.map(Date::new, LazyLogSample::formatDate)));
+}
+
+private static String formatDate(Date date) {
+  return new SimpleDateFormat("MMM dd HH:mm:ss").format(date);
 }
 ```
 

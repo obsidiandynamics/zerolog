@@ -236,8 +236,9 @@ public final class ZlgImplTest {
     final DoubleSupplier doubleSupplier = mock(DoubleSupplier.class);
     final IntSupplier intSupplier = mock(IntSupplier.class);
     final LongSupplier longSupplier = mock(LongSupplier.class);
-    final Supplier<?> objectSupplier = mock(Supplier.class);
-    final Function<String, ?> transform = Classes.cast(mock(Function.class));
+    final Supplier<String> stringSupplier = Classes.cast(mock(Supplier.class));
+    when(stringSupplier.get()).thenReturn("suppliedString");
+    
     zlg
     .level(LogLevel.INFO)
     .format("format")
@@ -245,15 +246,13 @@ public final class ZlgImplTest {
     .arg(doubleSupplier)
     .arg(intSupplier)
     .arg(longSupplier)
-    .arg(objectSupplier)
-    .arg("test", transform)
+    .arg(stringSupplier)
     .done();
     
     verify(booleanSupplier).getAsBoolean();
     verify(doubleSupplier).getAsDouble();
     verify(intSupplier).getAsInt();
     verify(longSupplier).getAsLong();
-    verify(objectSupplier).get();
-    verify(transform).apply(eq("test"));
+    verify(stringSupplier).get();
   }
 }

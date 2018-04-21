@@ -39,8 +39,7 @@ public final class NopLogChainTest {
     final DoubleSupplier doubleSupplier = mock(DoubleSupplier.class);
     final IntSupplier intSupplier = mock(IntSupplier.class);
     final LongSupplier longSupplier = mock(LongSupplier.class);
-    final Supplier<?> objectSupplier = mock(Supplier.class);
-    final Function<String, ?> transform = Classes.cast(mock(Function.class));
+    final Supplier<String> stringSupplier = Classes.cast(mock(Supplier.class));
     
     final LogChain end = chain
         .format("format")
@@ -48,8 +47,7 @@ public final class NopLogChainTest {
         .arg(doubleSupplier)
         .arg(intSupplier)
         .arg(longSupplier)
-        .arg(objectSupplier)
-        .arg("test", transform);
+        .arg(stringSupplier);
     assertSame(chain, end);
     
     end.done(); // does nothing
@@ -58,7 +56,6 @@ public final class NopLogChainTest {
     verifyNoMoreInteractions(doubleSupplier);
     verifyNoMoreInteractions(intSupplier);
     verifyNoMoreInteractions(longSupplier);
-    verifyNoMoreInteractions(objectSupplier);
-    verifyNoMoreInteractions(transform);
+    verifyNoMoreInteractions(stringSupplier);
   }
 }

@@ -2,6 +2,7 @@ package com.obsidiandynamics.zerolog.sample;
 
 import static java.util.stream.Collectors.*;
 
+import java.text.*;
 import java.util.*;
 
 import com.obsidiandynamics.zerolog.*;
@@ -28,23 +29,33 @@ public final class LazyLogSample {
     }
   }
   
-  public static void logWithDescriber() {
+  public static void logWithTransform() {
     final List<Name> hackers = Arrays.asList(new Name("Kevin", "Flynn"), 
                                              new Name("Thomas", "Anderson"), 
                                              new Name("Angela", "Bennett"));
     final String surnameToFind = "Smith";
     
     if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
-      zlg.i("%s not found among %s", z -> z.arg(surnameToFind).arg(hackers, LazyLogSample::tokeniseSurnames));
+      zlg.i("%s not found among %s", 
+            z -> z.arg(surnameToFind).arg(Args.map(Args.ref(hackers), LazyLogSample::tokeniseSurnames)));
     }
   }
   
-  public static List<String> tokeniseSurnames(Collection<Name> names) {
+  private static List<String> tokeniseSurnames(Collection<Name> names) {
     return names.stream().map(n -> n.forename + " " + n.surname.replaceAll(".", "X")).collect(toList());
+  }
+  
+  public static void logWithSupplierAndTransform() {
+    zlg.i("The current time is %s", z -> z.arg(Args.map(Date::new, LazyLogSample::formatDate)));
+  }
+  
+  private static String formatDate(Date date) {
+    return new SimpleDateFormat("MMM dd HH:mm:ss").format(date);
   }
   
   public static void main(String[] args) {
     logWithSupplier();
-    logWithDescriber();
+    logWithTransform();
+    logWithSupplierAndTransform();
   }
 }
