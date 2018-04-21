@@ -64,7 +64,7 @@ public interface Zlg {
   }
   
   default void e(String summary, Throwable cause) {
-    level(LogLevel.ERROR).format(summary).arg(cause).done(); 
+    level(LogLevel.ERROR).format(summary).threw(cause).done(); 
   }
   
   default void e(String format, Consumer<LogChain> logChainConsumer) {
@@ -76,7 +76,7 @@ public interface Zlg {
   }
   
   default void w(String summary, Throwable cause) {
-    level(LogLevel.WARN).format(summary).arg(cause).done(); 
+    level(LogLevel.WARN).format(summary).threw(cause).done(); 
   }
   
   default void w(String format, Consumer<LogChain> logChainConsumer) {
@@ -88,7 +88,7 @@ public interface Zlg {
   }
   
   default void i(String summary, Throwable cause) {
-    level(LogLevel.INFO).format(summary).arg(cause).done(); 
+    level(LogLevel.INFO).format(summary).threw(cause).done(); 
   }
   
   default void i(String format, Consumer<LogChain> logChainConsumer) {
@@ -100,7 +100,7 @@ public interface Zlg {
   }
   
   default void c(String summary, Throwable cause) {
-    level(LogLevel.CONF).format(summary).arg(cause).done(); 
+    level(LogLevel.CONF).format(summary).threw(cause).done(); 
   }
   
   default void c(String format, Consumer<LogChain> logChainConsumer) {
@@ -112,7 +112,7 @@ public interface Zlg {
   }
 
   default void d(String summary, Throwable cause) {
-    level(LogLevel.DEBUG).format(summary).arg(cause).done(); 
+    level(LogLevel.DEBUG).format(summary).threw(cause).done(); 
   }
   
   default void d(String format, Consumer<LogChain> logChainConsumer) {
@@ -124,7 +124,7 @@ public interface Zlg {
   }
   
   default void t(String summary, Throwable cause) {
-    level(LogLevel.TRACE).format(summary).arg(cause).done(); 
+    level(LogLevel.TRACE).format(summary).threw(cause).done(); 
   }
   
   default void t(String format, Consumer<LogChain> logChainConsumer) {

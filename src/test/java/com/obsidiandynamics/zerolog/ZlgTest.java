@@ -58,7 +58,7 @@ public final class ZlgTest {
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
-    when(chain.arg(isA(Throwable.class))).thenReturn(chain);
+    when(chain.threw(isA(Throwable.class))).thenReturn(chain);
     
     final Throwable cause = new Throwable("test");
     
@@ -87,7 +87,7 @@ public final class ZlgTest {
     verify(chain).format(eq("error"));
     
     verify(z, times(6)).level(anyInt());
-    verify(chain, times(6)).arg(eq(cause));
+    verify(chain, times(6)).threw(eq(cause));
     verify(chain, times(6)).done();
     verifyNoMoreInteractions(chain);
   }
