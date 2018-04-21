@@ -52,7 +52,7 @@ Getting a logger instance isn't too different from SLF4J. Typically, a named log
 
 ```java
 public final class SysOutLoggingSample {
-  private static final Zlg zlg = Zlg.forClass(SysOutLoggingSample.class).get();
+  private static final Zlg zlg = Zlg.forDeclaringClass().get();
   
   public static void open(String address, int port, double timeoutSeconds) {
     zlg.i("Hello world");
@@ -70,7 +70,9 @@ public final class SysOutLoggingSample {
 
 Some important things to note:
 
-* A logger is a `Zlg` instance, created for a specific class (`forClass()`) or an arbitrary name (`forName()`). By convention, we name the field `zlg`.
+* A logger is a `Zlg` instance, created for a specific class (using `forClass()`) or an arbitrary name (using `forName()`). 
+* Calling `forDeclaringClass()` is a shorthand equivalent of `forClass(TheDeclaringClass.class)`, where `TheDeclaringClass` is the name of the class which declares the logger.
+* By convention we assign the logger to a field named `zlg`.
 * Logging is invoked via a fluent chain, starting with the log level (abbreviated to the first letter) specifying a mandatory format string, followed by any optional arguments (primitives or object types), an optional tag, and an optional exception.
 * The format string is printf-style, unlike most other loggers that use the `{}` (stash) notation.
 
@@ -97,7 +99,7 @@ Often we won't have the luxury of invoking a single no-arg method on an object t
 In the next example, we are searching for a person's name from a list of people. If the name isn't found, we'd like to log the list's contents, but not reveal people's surnames. The transform in question is a static `tokeniseSurnames()` function, taking a collection of `Name` objects. To append the transform, we call the overloaded `arg(T value, Function<? super T, ?> transform)` method in the log chain, providing both the raw (untransformed) value and the transform method reference. The rest is Zlg's problem.
 
 ```java
-private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+private static final Zlg zlg = Zlg.forDeclaringClass().get();
 
 public static final class Name {
   final String forename;
@@ -175,7 +177,7 @@ In addition to `zlg.properties`, Zlg supports in-line configuration at the point
 
 ```java
 final Zlg zlg = Zlg
-    .forClass(MyAppClass.class)
+    .forDeclaringClass()
     .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE))
     .get();
 ```
@@ -184,7 +186,7 @@ In-line configuration assumes priority, overriding any system-default values or 
 
 ```java
 final Zlg zlg = Zlg
-    .forClass(MyAppClass.class)
+    .forDeclaringClass()
     .withConfigService(new LogConfig()
                        .withBaseLevel(LogLevel.TRACE)
                        .withLogService(new SysOutLogService()))
@@ -300,7 +302,7 @@ If sub-nanosecond penalties for suppressed logs are still too high and you requi
 1. **Branching on a static constant** — will lead to DCE for one of the branches. Example:
 
 ```java
-private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+private static final Zlg zlg = Zlg.forDeclaringClass().get();
 
 private static final boolean TRACE_ENABLED = false;
 
@@ -314,7 +316,7 @@ public static void withStaticConstant(String address, int port, double timeout) 
 2. **Assertions** — when running with `-ea` logging instructions will be evaluated; otherwise they will be DCE'ed. Example:
 
 ```java
-private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+private static final Zlg zlg = Zlg.forDeclaringClass().get();
 
 public static void withAssert(String address, int port, double timeout) {
   assert zlg.level(LogLevel.TRACE).format("Connecting to %s:%d [timeout: %.1f sec]").arg(address).arg(port).arg(timeout).log();
