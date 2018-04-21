@@ -4,6 +4,8 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
+import com.obsidiandynamics.zerolog.util.*;
+
 final class PrintStreamLogTarget implements LogTarget {
   private static final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
   private final PrintStream stream;

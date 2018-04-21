@@ -1,4 +1,4 @@
-package com.obsidiandynamics.zerolog;
+package com.obsidiandynamics.zerolog.util;
 
 import java.util.*;
 

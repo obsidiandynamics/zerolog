@@ -2,13 +2,12 @@ package com.obsidiandynamics.zerolog.sample;
 
 import static java.util.stream.Collectors.*;
 
-import java.lang.invoke.*;
 import java.util.*;
 
 import com.obsidiandynamics.zerolog.*;
 
 public final class LazyLogSample {
-  private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+  private static final Zlg zlg = Zlg.forDeclaringClass().get();
   
   public static void logWithSupplier() {
     final List<Integer> numbers = Arrays.asList(0, 1, 2, 3);

@@ -3,6 +3,8 @@ package com.obsidiandynamics.zerolog;
 import org.slf4j.*;
 import org.slf4j.spi.*;
 
+import com.obsidiandynamics.zerolog.util.*;
+
 final class Slf4jLogTarget implements LogTarget {
   private static String FQCN = ZlgImpl.LogChainImpl.class.getName();
   

@@ -5,6 +5,8 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import com.obsidiandynamics.zerolog.util.*;
+
 /**
  *  A mock {@link LogTarget} that accumulates all log entries and provides a fluent
  *  query API for subsequent retrieval.

@@ -1,11 +1,9 @@
 package com.obsidiandynamics.zerolog.sample;
 
-import java.lang.invoke.*;
-
 import com.obsidiandynamics.zerolog.*;
 
 public final class ZeroOverheadLoggingSample {
-  private static final Zlg zlg = Zlg.forClass(MethodHandles.lookup().lookupClass()).get();
+  private static final Zlg zlg = Zlg.forDeclaringClass().get();
   
   private static final boolean TRACE_ENABLED = false;
   

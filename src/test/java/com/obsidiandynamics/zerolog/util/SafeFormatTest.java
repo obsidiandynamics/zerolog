@@ -1,4 +1,4 @@
-package com.obsidiandynamics.zerolog.bench;
+package com.obsidiandynamics.zerolog.util;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,6 @@ import java.util.*;
 import org.junit.*;
 
 import com.obsidiandynamics.assertion.*;
-import com.obsidiandynamics.zerolog.*;
 
 public final class SafeFormatTest {
   @Test

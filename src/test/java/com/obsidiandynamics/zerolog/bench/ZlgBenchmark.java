@@ -9,7 +9,7 @@ public final class ZlgBenchmark extends AbstractBenchmark {
   
   @Override
   public void setup() {
-    zlg = Zlg.forClass(ZlgBenchmark.class)
+    zlg = Zlg.forDeclaringClass()
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.CONF).get())
         .get();
     assertFalse(zlg.isEnabled(LogLevel.TRACE));

@@ -132,4 +132,12 @@ public final class ZlgTest {
     verify(logChainConsumer, times(6)).accept(eq(chain));
     verify(chain, times(6)).done();
   }
+  
+  @Test
+  public void testForDeclaringClass() {
+    final LogService logService = mock(LogService.class);
+    final Zlg zlg = Zlg.forDeclaringClass().withConfigService(new LogConfig().withLogService(logService)).get();
+    assertNotNull(zlg);
+    verify(logService).get(eq(ZlgTest.class.getName()));
+  }
 }

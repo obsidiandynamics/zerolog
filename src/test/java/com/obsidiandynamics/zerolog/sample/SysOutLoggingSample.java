@@ -1,14 +1,12 @@
 package com.obsidiandynamics.zerolog.sample;
 
 import java.io.*;
-import java.lang.invoke.*;
 import java.util.*;
 
 import com.obsidiandynamics.zerolog.*;
 
 public final class SysOutLoggingSample {
-  private static final Zlg zlg = Zlg
-      .forClass(MethodHandles.lookup().lookupClass())
+  private static final Zlg zlg = Zlg.forDeclaringClass()
       .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE))
       .get();
   

@@ -2,6 +2,8 @@ package com.obsidiandynamics.zerolog;
 
 import java.util.function.*;
 
+import com.obsidiandynamics.zerolog.util.*;
+
 public interface Zlg {
   interface LogChain {
     static int MAX_ARGS = 64;
@@ -137,5 +139,9 @@ public interface Zlg {
   
   static ZlgBuilder forClass(Class<?> cls) {
     return forName(cls.getName());
+  }
+  
+  static ZlgBuilder forDeclaringClass() {
+    return forClass(CallingClass.forDepth(2));
   }
 }
