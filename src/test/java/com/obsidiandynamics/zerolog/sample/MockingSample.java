@@ -8,7 +8,10 @@ import com.obsidiandynamics.zerolog.MockLogTarget.*;
 
 public final class MockingSample {
   public static void doSomeMocking() {
+    // sink for our mock logs
     final MockLogTarget target = new MockLogTarget();
+    
+    // pipe logs to a mock target
     final Zlg zlg = target.logger();
     
     // do some logging...
@@ -28,6 +31,15 @@ public final class MockingSample {
     // find entries containing an IOException (or subclass thereof)
     final List<LogEntry> withException = target.entries().withThrowableType(IOException.class).list();
     System.out.println(withException);
+    
+    // count number of entries containing the substring 'is'
+    System.out.println("Entries containing 'is': " + target.entries().containing("is").count());
+    
+    // assert that only one entry contained an exception
+    target.entries().withThrowable().assertCount(1);
+    
+    // of all the tagged entries, assert that at most two weren't tagged 'chemistry'
+    target.entries().tagged().not().tagged("chemistry").assertCountAtMost(2);
   }
   
   public static void main(String[] args) {

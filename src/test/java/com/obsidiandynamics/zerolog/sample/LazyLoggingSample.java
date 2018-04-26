@@ -7,7 +7,7 @@ import java.util.*;
 
 import com.obsidiandynamics.zerolog.*;
 
-public final class LazyLogSample {
+public final class LazyLoggingSample {
   private static final Zlg zlg = Zlg.forDeclaringClass().get();
   
   public static void logWithSupplier() {
@@ -37,7 +37,7 @@ public final class LazyLogSample {
     
     if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
       zlg.i("%s not found among %s", 
-            z -> z.arg(surnameToFind).arg(Args.map(Args.ref(hackers), LazyLogSample::tokeniseSurnames)));
+            z -> z.arg(surnameToFind).arg(Args.map(Args.ref(hackers), LazyLoggingSample::tokeniseSurnames)));
     }
   }
   
@@ -46,7 +46,7 @@ public final class LazyLogSample {
   }
   
   public static void logWithSupplierAndTransform() {
-    zlg.i("The current time is %s", z -> z.arg(Args.map(Date::new, LazyLogSample::formatDate)));
+    zlg.i("The current time is %s", z -> z.arg(Args.map(Date::new, LazyLoggingSample::formatDate)));
   }
   
   private static String formatDate(Date date) {

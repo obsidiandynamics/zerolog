@@ -91,7 +91,7 @@ To avoid unnecessary argument evaluation, Zlg supports FP-style suppliers and tr
 zlg.i("The list %s has %d elements", z -> z.arg(numbers).arg(numbers::size).tag("list"));
 ```
 
-By simply changing `list.size()` to `list::size` we avoid a potentially superfluous method call. Our recommendation is to always favour method references over lambda-style closures. This way _no new code is produced_ and there is no impact on code coverage.
+By simply changing `list.size()` to `list::size` we avoid a potentially superfluous method call. Our recommendation is to always favour method references over lambda-style closures. This way _no new code is written_ and there is no impact on code coverage.
 
 ## Transforms
 Often we won't have the luxury of invoking a single no-arg method on an object to obtain a nice, log-friendly representation. Zlg provides a convenient way of extracting a lazily-evaluated transform into a separate static method, taking a single argument — the object to transform. 
@@ -264,13 +264,13 @@ While Zlg wasn't intended as a general replacement for SLF4J, it's capable of th
 
 For performance-intensive code, switching to Zlg should be a no-brainer. For existing or new code that logs at `INFO` level or above, the choice depends largely on your appetite for uniformity and the importance of maintaining a consistent logging style. 
 
-In addition to performance gains, you'll get a few smaller benefits, such as printf-style formatting, as well as the ability to combine formatting arguments with a `Throwable` — something that's a little awkward with SLF4J.
+In addition to performance gains, you'll get a few smaller benefits, such as printf-style formatting, as well as the ability to combine formatting arguments with a `Throwable` — something that's a little awkward with SLF4J. At the risk of sounding subjective, printf-style formatting is a big enough reason to convert all SLF4J calls to Zlg.
 
 ## Where should I use Zlg?
 Performance-intensive, latency-sensitive code and tight loops with sub-microsecond cycle duration. Our benchmarking has indicated that for a microsecond-long operation, a single unguarded SLF4J statement consumes in excess of 1% of CPU time (on Haswell microarchitecture), with logging suppressed. In an equivalent scenario, Zlg will stay under 0.05% of CPU time. For sub-microsecond operations (10's or 100's of nanoseconds range), the impact of SLF4J is much more dramatic, and you are _forced_ to use guard branches or static constants to either minimise the impact of autoboxing and varargs or to DCE out the logging statements altogether, both approaches producing unsightly code.
 
 ## Why isn't a Tag called a Marker?
-We felt that the term _tag_ was a more intuitive description of a decorator of log entries, whereas a _marker_ could mean a number of things to an uninitiated user. As markers, while available in Log4J and Logback, are a rarely used feature, we felt that by using a substitute term we wouldn't offend anyone in the developer community.
+We felt that the term _tag_ was a more intuitive description of a decorator of log entries, whereas a _marker_ could mean a number of things to an uninitiated user. (For example, a marker has an entirely different meaning when working with I/O streams.) As markers, while available in Log4J and Logback, are a rarely used feature, we felt that by using a substitute term we wouldn't offend anyone in the developer community.
 
 Saying that, we don't have any strong feelings about this term either way, and will happily listen to suggestions. 
 
@@ -285,12 +285,14 @@ You need to implement three classes:
 * `LogService` — acts as an abstract factory for creating instances of `LogTarget`.
 * `LogTarget` — responsible for the actual logging delegation. Has two methods: 
     + `boolean isEnabled(int level)` — for determining whether logging for the given level is enabled
-    + `void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable)` — for handling the log event
+    + `void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint)` — for handling the log event
 * `LogServiceBinding` — loaded by [SPI](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) when the logging subsystem is bootstrapped, responsible for supplying a `LogService` instance.
 
 `LogService` and `LogServiceBinding` are typically one-liners; `LogTarget` is where the bulk of the implementation will reside. Expect a bit of boilerplate mapping code between Zlg and your target logger. For SLFL4J, we made heavy use of function references to streamline the mappings.
 
 Having implemented the above classes, you will also need to add a file named `com.obsidiandynamics.zerolog.LogServiceBinding` to `META-INF/services`. It should contain a single line — the fully qualified name of your `LogServiceBinding` implementation.
+
+**Note:** If, for whatever reason, you are bundling multiple log bindings into an 'uber' jar, make sure you correctly use merge service files. Using the [Gradle Shadow](https://github.com/johnrengelman/shadow) with the `mergeServiceFiles()` option set will take care of this.
 
 ## Why use printf-style formatting?
 The printf style offers rich formatting options, whereas the traditional stash style is only good for substitution. In practice, when using SLF4J, one often succumbs to this style:
@@ -350,7 +352,10 @@ Zlg's design is heavily interface-driven, to simplify mocking and testing, which
 Long story short, **the recommended way of mocking Zlg is using `MockLogTarget`**. Examples below.
 
 ```java
+// sink for our mock logs
 final MockLogTarget target = new MockLogTarget();
+
+// pipe logs to a mock target
 final Zlg zlg = target.logger();
 
 // do some logging...
@@ -370,13 +375,18 @@ System.out.println(debugAndAbove);
 // find entries containing an IOException (or subclass thereof)
 final List<Entry> withException = target.entries().withException(IOException.class).list();
 System.out.println(withException);
+
+// count number of entries containing the substring 'is'
+System.out.println("Entries containing 'is': " + target.entries().containing("is").count());
+    
+// assert that only one entry contained an exception
+target.entries().withThrowable().assertCount(1);
+    
+// of all the tagged entries, assert that at most two weren't tagged 'chemistry'
+target.entries().tagged().not().tagged("chemistry").assertCountAtMost(2);
 ```
 
-**Note:** If all you need is a no-op logger to quiesce any potential output, and don't care about mocking the fluent call chain, you can instantiate the logger with `LogLevel.OFF`:
-
-```java
-Zlg.forName("no-op").withConfigService(new LogConfig().withBaseLevel(LogLevel.OFF)).get();
-```
+**Note:** If all you need is a no-op logger to quiesce any potential output, and don't care about mocking the fluent call chain, just use `Zlg.nop()` to obtain a silent logger.
 
 ## Can I use Mockito for mocking Zlg?
 While we use Mockito internally to test the daylights out of Zlg, our _strong recommendation_ is to use `MockLogTarget` exclusively for any application-level mocking of the logger. If you _really_ must to use a mocking framework, here is an example of mocking various parts of the log chain with Mockito 2.18:

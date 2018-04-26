@@ -109,6 +109,22 @@ public final class MockLogTargetTest {
     assertFalse(it.hasNext());
   }
   
+  @Test(expected=IncompleteStateException.class)
+  public void testIncompleteNotNotPermitted() {
+    final MockLogTarget target = new MockLogTarget();
+    final Zlg zlg = target.logger();
+    zlg.t("message");
+    target.entries().not().count();
+  }
+  
+  @Test(expected=IncompleteStateException.class)
+  public void testDoubleNotNotPermitted() {
+    final MockLogTarget target = new MockLogTarget();
+    final Zlg zlg = target.logger();
+    zlg.t("message");
+    target.entries().not().not();
+  }
+  
   @Test
   public void testForLevel() {
     final MockLogTarget target = new MockLogTarget();
@@ -120,6 +136,8 @@ public final class MockLogTargetTest {
     final List<LogEntry> entries = target.entries().forLevel(LogLevel.DEBUG).list();
     assertEquals(1, entries.size());
     assertEquals("debug", entries.get(0).getMessage());
+    
+    target.entries().not().forLevel(LogLevel.DEBUG).assertCount(2);
   }
   
   @Test
@@ -136,6 +154,7 @@ public final class MockLogTargetTest {
     assertEquals("conf", entries.get(1).getMessage());
     
     target.entries().forLevelAndAbove(LogLevel.INFO).assertCount(0);
+    target.entries().not().forLevelAndAbove(LogLevel.INFO).assertCount(3);
   }
   
   @Test
@@ -152,6 +171,7 @@ public final class MockLogTargetTest {
     assertEquals("debug", entries.get(1).getMessage());
 
     target.entries().forLevelAndBelow(LogLevel.INFO).assertCount(3);
+    target.entries().not().forLevelAndBelow(LogLevel.INFO).assertCount(0);
   }
   
   @Test
@@ -164,11 +184,23 @@ public final class MockLogTargetTest {
     zlg.c("conf");
     final long endTime = System.currentTimeMillis();
     
+    // test after()
     assertEquals(3, target.entries().after(startTime - 1).count());
     assertEquals(0, target.entries().after(endTime).count());
+    assertEquals(3, target.entries().not().after(endTime).count());
     
+    // test before()
     assertEquals(3, target.entries().before(endTime + 1).count());
     assertEquals(0, target.entries().before(startTime).count());
+    assertEquals(3, target.entries().not().before(startTime).count());
+    
+    // test 'between', as a conjunction of after() and before()
+    assertEquals(3, target.entries().after(startTime - 1).before(endTime + 1).count());
+    assertEquals(0, target.entries().after(endTime + 1).before(startTime - 1).count());
+    
+    // test that not().before() ≡ after(), as well as not().after() ≡ before()
+    assertEquals(0, target.entries().not().after(startTime - 1).not().before(endTime + 1).count());
+    assertEquals(3, target.entries().not().after(endTime + 1).not().before(startTime - 1).count());
   }
   
   @Test
@@ -182,6 +214,12 @@ public final class MockLogTargetTest {
     assertEquals(1, target.entries().tagged("tag").count());
     assertEquals(0, target.entries().tagged("foo").count());
     assertEquals(2, target.entries().tagged(null).count());
+    
+    // 'not().tagged()' ≡ 'tagged(null)'
+    assertEquals(2, target.entries().not().tagged().count());
+    
+    // 'not().tagged(null)' ≡ 'tagged()'
+    assertEquals(1, target.entries().not().tagged(null).count());
   }
   
   @Test
@@ -199,13 +237,14 @@ public final class MockLogTargetTest {
   public void testWithThrowableType() {
     final MockLogTarget target = new MockLogTarget();
     final Zlg zlg = target.logger();
-    zlg.t("trace");
+    zlg.t("trace", z -> z.threw(new RuntimeException("simulated")));
     zlg.d("debug", z -> z.threw(new IOException("simulated")));
     zlg.c("conf");
 
-    assertEquals(0, target.entries().withThrowableType(RuntimeException.class).count());
+    assertEquals(1, target.entries().withThrowableType(RuntimeException.class).count());
     assertEquals(1, target.entries().withThrowableType(IOException.class).count());
-    assertEquals(1, target.entries().withThrowableType(Throwable.class).count());
+    assertEquals(2, target.entries().withThrowableType(Throwable.class).count());
+    assertEquals(1, target.entries().not().withThrowableType(Throwable.class).count());
   }
   
   @Test
@@ -219,6 +258,23 @@ public final class MockLogTargetTest {
 
     assertEquals(1, target.entries().withThrowable(exception).count());
     assertEquals(2, target.entries().withThrowable(null).count());
+    
+    assertEquals(1, target.entries().not().withThrowable(null).count());
+  }
+  
+  @Test
+  public void testWithThrowable() {
+    final MockLogTarget target = new MockLogTarget();
+    final IOException exception = new IOException("simulated");
+    final Zlg zlg = target.logger();
+    zlg.t("trace");
+    zlg.d("debug", z -> z.threw(exception));
+    zlg.c("conf");
+   
+    assertEquals(1, target.entries().withThrowable().count());
+    
+    // not().withThrowable(null) ≡ withThrowable()
+    assertEquals(1, target.entries().not().withThrowable(null).count());
   }
   
   @Test
@@ -232,6 +288,8 @@ public final class MockLogTargetTest {
     assertEquals(1, target.entries().withArg("string").count());
     assertEquals(1, target.entries().withArg(Math.PI).count());
     assertEquals(0, target.entries().withArg(Math.E).count());
+    assertEquals(0, target.entries().withArg(null).count());
+    
     assertEquals(0, target.entries().withArg(null).count());
   }
   
@@ -248,6 +306,17 @@ public final class MockLogTargetTest {
     assertEquals(0, target.entries().withArgType(Integer.class).count());
     assertEquals(1, target.entries().withArgType(Object.class).count());
   }
+  
+  @Test
+  public void testWithArg() {
+    final MockLogTarget target = new MockLogTarget();
+    final Zlg zlg = target.logger();
+    zlg.t("trace");
+    zlg.d("debug", z -> z.arg("string").arg(Math.PI));
+    zlg.c("conf");
+
+    assertEquals(1, target.entries().withArg().count());
+  }
 
   @Test
   public void testWithEntrypoint() {
@@ -259,6 +328,9 @@ public final class MockLogTargetTest {
 
     assertEquals(2, target.entries().withEntrypoint(Zlg.ENTRYPOINT).count());
     assertEquals(1, target.entries().withEntrypoint("entrypoint").count());
+
+    // all log entries should have an entrypoint
+    assertEquals(3, target.entries().not().withEntrypoint(null).count());
   }
 
   @Test
@@ -296,7 +368,9 @@ public final class MockLogTargetTest {
     zlg.c("conf %d", z -> z.arg(3));
     
     assertEquals(1, target.entries().containing("bug 3").count());
+    assertEquals(2, target.entries().not().containing("bug 3").count());
     assertEquals(3, target.entries().containing("3").count());
+    assertEquals(0, target.entries().not().containing("3").count());
     assertEquals(0, target.entries().containing("foo").count());
     assertEquals(3, target.entries().containing("").count());
   }

@@ -142,13 +142,6 @@ task addLauncherApps() {
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
   project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.BaselineOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.JulOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.Log4jOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.MinLogOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.Slf4jOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.TinyLogOffVolumeTest"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.off.ZlgOffVolumeTest"
 }
 
 task launch() {

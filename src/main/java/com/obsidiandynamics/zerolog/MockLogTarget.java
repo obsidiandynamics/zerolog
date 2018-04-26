@@ -124,22 +124,39 @@ public final class MockLogTarget implements LogTarget {
     CountAssertionError(String m) { super(m); }
   }
   
+  static final class IncompleteStateException extends IllegalStateException {
+    private static final long serialVersionUID = 1L;
+    IncompleteStateException(String m) { super(m); }
+  }
+  
   /**
    *  A queryable view over the underlying entries, allowing for chained application of
-   *  {@link Predicate} filters to progressively narrow down the view.
+   *  {@link Predicate} filters to progressively narrow down the view, inspect and enact 
+   *  assertions over the filtered elements.
    */
   public final class LogEntries implements Iterable<LogEntry> {
     private final Predicate<LogEntry> predicate;
+    
+    private boolean not;
+    
+    private void ensureCompletableState() {
+      if (not) {
+        throw new IncompleteStateException("Fluent chain appears to be incomplete; "
+            + "did you forget to append a predicate after not()?");
+      }
+    }
     
     LogEntries(Predicate<LogEntry> predicate) {
       this.predicate = predicate;
     }
     
     public List<LogEntry> list() {
+      ensureCompletableState();
       return Collections.unmodifiableList(entries).stream().filter(predicate).collect(Collectors.toList());
     }
     
     public int count() {
+      ensureCompletableState();
       return list().size();
     }
     
@@ -163,76 +180,99 @@ public final class MockLogTarget implements LogTarget {
     
     @Override
     public String toString() {
+      ensureCompletableState();
       return list().toString();
     }
 
     @Override
     public Iterator<LogEntry> iterator() {
+      ensureCompletableState();
       return list().iterator();
     }
     
-    public LogEntries filter(Predicate<LogEntry> predicate) {
-      return new LogEntries(this.predicate.and(predicate));
+    public LogEntries not() {
+      ensureCompletableState();
+      not = true;
+      return this;
+    }
+    
+    public LogEntries where(Predicate<LogEntry> predicate) {
+      final Predicate<LogEntry> predicateToAppend;
+      if (not) {
+        predicateToAppend = predicate.negate();
+        not = false;
+      } else {
+        predicateToAppend = predicate;
+      }
+      return new LogEntries(this.predicate.and(predicateToAppend));
     }
     
     public LogEntries forLevel(int level) {
-      return filter(e -> e.level == level);
+      return where(e -> e.level == level);
     }
     
     public LogEntries forLevelAndBelow(int level) {
-      return filter(e -> e.level <= level);
+      return where(e -> e.level <= level);
     }
     
     public LogEntries forLevelAndAbove(int level) {
-      return filter(e -> e.level >= level);
+      return where(e -> e.level >= level);
     }
     
     public LogEntries tagged() {
-      return filter(e -> e.tag != null);
+      return where(e -> e.tag != null);
     }
     
     public LogEntries tagged(String tag) {
-      return filter(e -> Objects.equals(e.tag, tag));
+      return where(e -> Objects.equals(e.tag, tag));
     }
     
     public LogEntries before(long timestamp) {
-      return filter(e -> e.timestamp < timestamp);
+      return where(e -> e.timestamp < timestamp);
     }
     
     public LogEntries after(long timestamp) {
-      return filter(e -> e.timestamp > timestamp);
+      return where(e -> e.timestamp > timestamp);
+    }
+    
+    public LogEntries withArg() {
+      return where(e -> ! e.getArgs().isEmpty());
     }
     
     public LogEntries withArg(Object arg) {
-      return filter(e -> e.getArgs().contains(arg));
+      return where(e -> e.getArgs().contains(arg));
     }
     
     public LogEntries withArgType(Class<?> argClass) {
-      return filter(e -> e.getArgs().stream().filter(argClass::isInstance).findFirst().isPresent());
+      return where(e -> e.getArgs().stream().filter(argClass::isInstance).findFirst().isPresent());
     }
     
     public LogEntries withFormat(CharSequence format) {
-      return filter(e -> e.format.equals(format));
+      return where(e -> e.format.equals(format));
     }
     
     public LogEntries withMessage(CharSequence message) {
-      return filter(e -> e.message.equals(message));
+      return where(e -> e.message.equals(message));
     }
     
     public LogEntries containing(CharSequence substring) {
-      return filter(e -> e.message.contains(substring));
+      return where(e -> e.message.contains(substring));
     }
     
     public LogEntries withThrowableType(Class<? extends Throwable> throwableClass) {
-      return filter(e -> e.throwable != null && throwableClass.isInstance(e.throwable));
+      return where(e -> e.throwable != null && throwableClass.isInstance(e.throwable));
     }
     
     public LogEntries withThrowable(Throwable throwable) {
-      return filter(e -> Objects.equals(throwable, e.throwable));
+      return where(e -> Objects.equals(throwable, e.throwable));
+    }
+    
+    public LogEntries withThrowable() {
+      return where(e -> e.throwable != null);
     }
     
     public LogEntries withEntrypoint(String entrypoint) {
-      return filter(e -> e.entrypoint.equals(entrypoint));
+      return where(e -> e.entrypoint.equals(entrypoint));
     }
   }
   

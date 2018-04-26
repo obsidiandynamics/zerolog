@@ -160,4 +160,13 @@ public interface Zlg {
   static ZlgBuilder forDeclaringClass() {
     return forClass(CallingClass.forDepth(2));
   }
+  
+  /** Pre-canned no-op logger. */
+  static Zlg nop = Zlg.forName("no-op").withConfigService(new LogConfig()
+                                                          .withBaseLevel(LogLevel.OFF)
+                                                          .withLogService(LogService.nop())).get();
+  
+  static Zlg nop() {
+    return nop;
+  }
 }
