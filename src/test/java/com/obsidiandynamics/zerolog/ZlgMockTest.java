@@ -22,7 +22,7 @@ public final class ZlgMockTest {
     
     verify(logChain).format(contains("the value of Pi"));
     verify(logChain).arg(eq(Math.PI));
-    verify(logChain)._done();
+    verify(logChain).flush(eq(Zlg.ENTRYPOINT));
   }
   
   @Test

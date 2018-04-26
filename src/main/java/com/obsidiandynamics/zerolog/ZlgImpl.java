@@ -25,7 +25,7 @@ final class ZlgImpl implements Zlg {
     private int argc;
     private Object[] argv = new Object[MAX_ARGS];
     private Throwable throwable;
-    private String entrypoint = Zlg.ENTRYPOINT;
+    private String entrypoint;
     
     private void reset() {
       tag = null;
@@ -35,7 +35,7 @@ final class ZlgImpl implements Zlg {
       }
       argc = 0;
       throwable = null;
-      entrypoint = Zlg.ENTRYPOINT;
+      entrypoint = null;
     }
 
     @Override
@@ -142,9 +142,10 @@ final class ZlgImpl implements Zlg {
     }
 
     @Override
-    public void _done() {
+    public void flush(String assumedEntrypoint) {
       if (format == null) throw new MissingValueException("Missing call to format()");
-      target.log(level, tag, format, argc, argv, throwable, entrypoint);
+      final String entrypoint = this.entrypoint;
+      target.log(level, tag, format, argc, argv, throwable, entrypoint != null ? entrypoint : assumedEntrypoint);
       reset();
     }
   }

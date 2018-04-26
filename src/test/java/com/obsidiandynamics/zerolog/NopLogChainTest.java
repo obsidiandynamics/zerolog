@@ -30,7 +30,7 @@ public final class NopLogChainTest {
         .entrypoint("entrypoint");
     assertSame(chain, end);
     
-    end._done(); // does nothing
+    end.log(); // does nothing
   }
   
   @Test
@@ -51,7 +51,7 @@ public final class NopLogChainTest {
         .arg(stringSupplier);
     assertSame(chain, end);
     
-    end._done(); // does nothing
+    end.log(); // does nothing
     
     verifyNoMoreInteractions(booleanSupplier);
     verifyNoMoreInteractions(doubleSupplier);

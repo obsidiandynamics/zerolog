@@ -49,8 +49,8 @@ public final class ZlgTest {
     verify(chain).log();
 
     verify(z, times(6)).level(anyInt());
-    verify(chain, times(1)).entrypoint(notNull());
-    verify(chain, times(7))._done();
+    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
+    verify(chain, times(1)).flush(eq(LogChain.ENTRYPOINT));
     verifyNoMoreInteractions(chain);
   }
   
@@ -91,7 +91,7 @@ public final class ZlgTest {
     
     verify(z, times(6)).level(anyInt());
     verify(chain, times(6)).threw(eq(cause));
-    verify(chain, times(6))._done();
+    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
     verifyNoMoreInteractions(chain);
   }
   
@@ -100,9 +100,9 @@ public final class ZlgTest {
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     final Consumer<LogChain> logChainConsumer = Classes.cast(mock(Consumer.class));
     
-    chain._done(logChainConsumer);
+    chain.flush(logChainConsumer);
     verify(logChainConsumer).accept(eq(chain));
-    verify(chain)._done();
+    verify(chain).flush(eq(Zlg.ENTRYPOINT));
   }
   
   @Test
@@ -134,7 +134,7 @@ public final class ZlgTest {
     verify(z).level(eq(LogLevel.ERROR));
     
     verify(logChainConsumer, times(6)).accept(eq(chain));
-    verify(chain, times(6))._done();
+    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
   }
   
   @Test

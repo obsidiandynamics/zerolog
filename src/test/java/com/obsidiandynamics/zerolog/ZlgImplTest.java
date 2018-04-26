@@ -198,7 +198,7 @@ public final class ZlgImplTest {
   @Test(expected=MissingValueException.class)
   public void testMissingFormat() {
     final Zlg zlg = Zlg.forName("test").withConfigService(new LogConfig()).get();
-    zlg.level(LogLevel.INFO)._done();
+    zlg.level(LogLevel.INFO).log();
   }
   
   @Test(expected=IllegalArgumentException.class)
@@ -250,7 +250,7 @@ public final class ZlgImplTest {
     .arg(intSupplier)
     .arg(longSupplier)
     .arg(stringSupplier)
-    ._done();
+    .log();
     
     verify(booleanSupplier).getAsBoolean();
     verify(doubleSupplier).getAsDouble();

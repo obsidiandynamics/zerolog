@@ -102,5 +102,5 @@ public final class NopLogChain implements LogChain {
   }
 
   @Override
-  public void _done() {}
+  public void flush(String assumedEntrypoint) {}
 }
