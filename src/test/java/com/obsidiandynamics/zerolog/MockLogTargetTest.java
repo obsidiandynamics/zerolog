@@ -46,7 +46,7 @@ public final class MockLogTargetTest {
     final String format = "entry #%d";
     final Exception cause = new Exception("simulated");
     for (int i = 0; i < numEntries; i++) {
-      zlg.level(logLevel).format(format).arg(i).tag(String.valueOf(i)).threw(cause)._done();
+      zlg.level(logLevel).format(format).arg(i).tag(String.valueOf(i)).threw(cause).log();
     }
     
     final List<Entry> entries = target.entries().list();

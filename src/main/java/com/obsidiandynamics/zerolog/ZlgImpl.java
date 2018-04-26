@@ -25,7 +25,7 @@ final class ZlgImpl implements Zlg {
     private int argc;
     private Object[] argv = new Object[MAX_ARGS];
     private Throwable throwable;
-    private String entrypoint = LogChain.ENTRYPOINT;
+    private String entrypoint = Zlg.ENTRYPOINT;
     
     private void reset() {
       tag = null;
@@ -35,7 +35,7 @@ final class ZlgImpl implements Zlg {
       }
       argc = 0;
       throwable = null;
-      entrypoint = LogChain.ENTRYPOINT;
+      entrypoint = Zlg.ENTRYPOINT;
     }
 
     @Override

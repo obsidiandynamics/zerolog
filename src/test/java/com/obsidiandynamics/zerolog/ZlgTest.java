@@ -49,7 +49,7 @@ public final class ZlgTest {
     verify(chain).log();
 
     verify(z, times(6)).level(anyInt());
-    verify(chain, times(6)).entrypoint(notNull());
+    verify(chain, times(1)).entrypoint(notNull());
     verify(chain, times(7))._done();
     verifyNoMoreInteractions(chain);
   }
@@ -91,7 +91,6 @@ public final class ZlgTest {
     
     verify(z, times(6)).level(anyInt());
     verify(chain, times(6)).threw(eq(cause));
-    verify(chain, times(6)).entrypoint(notNull());
     verify(chain, times(6))._done();
     verifyNoMoreInteractions(chain);
   }
