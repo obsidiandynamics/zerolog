@@ -18,15 +18,15 @@ public final class MockingSample {
     zlg.w("An I/O error has occurred", z -> z.threw(new FileNotFoundException()));
     
     // find entries tagged with 'math'
-    final List<Entry> math = target.entries().tagged("math").list();
+    final List<LogEntry> math = target.entries().tagged("math").list();
     System.out.println(math);
     
     // find entries at or above debug
-    final List<Entry> debugAndAbove = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
+    final List<LogEntry> debugAndAbove = target.entries().forLevelAndAbove(LogLevel.DEBUG).list();
     System.out.println(debugAndAbove);
     
     // find entries containing an IOException (or subclass thereof)
-    final List<Entry> withException = target.entries().withException(IOException.class).list();
+    final List<LogEntry> withException = target.entries().withThrowableType(IOException.class).list();
     System.out.println(withException);
   }
   

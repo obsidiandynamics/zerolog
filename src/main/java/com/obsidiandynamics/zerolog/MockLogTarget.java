@@ -16,7 +16,7 @@ public final class MockLogTarget implements LogTarget {
    *  A single record log entry, comprising the log attributes as they were handed
    *  to this mock by {@link ZlgImpl}.
    */
-  public static final class Entry {
+  public static final class LogEntry {
     private final long timestamp;
     private final int level;
     private final String tag;
@@ -26,8 +26,8 @@ public final class MockLogTarget implements LogTarget {
     private final Throwable throwable;
     private final String entrypoint;
     
-    Entry(long timestamp, int level, String tag, String format, Object[] args, String message, 
-          Throwable throwable, String entrypoint) {
+    LogEntry(long timestamp, int level, String tag, String format, Object[] args, String message, 
+             Throwable throwable, String entrypoint) {
       this.timestamp = timestamp;
       this.level = level;
       this.tag = tag;
@@ -54,8 +54,8 @@ public final class MockLogTarget implements LogTarget {
       return format;
     }
 
-    public Object[] getArgs() {
-      return args;
+    public List<Object> getArgs() {
+      return Arrays.asList(args);
     }
 
     public String getMessage() {
@@ -72,7 +72,7 @@ public final class MockLogTarget implements LogTarget {
 
     @Override
     public String toString() {
-      return Entry.class.getSimpleName() + " [timestamp=" + new Date(timestamp) + ", level=" + level 
+      return LogEntry.class.getSimpleName() + " [timestamp=" + new Date(timestamp) + ", level=" + level 
           + ", tag=" + tag + ", format=" + format 
           + ", args=" + Arrays.toString(args) + ", message=" + message + ", throwable=" + throwable + "]";
     }
@@ -80,7 +80,7 @@ public final class MockLogTarget implements LogTarget {
   
   private final int enabledLevel;
   
-  private final List<Entry> entries = new CopyOnWriteArrayList<>();
+  private final List<LogEntry> entries = new CopyOnWriteArrayList<>();
   
   /**
    *  Creates a new mock target at the lowest log level — {@link LogLevel#TRACE}.
@@ -108,7 +108,7 @@ public final class MockLogTarget implements LogTarget {
     final long timestamp = System.currentTimeMillis();
     final Object[] args = SafeFormat.copyArgs(argc, argv);
     final String message = SafeFormat.format(format, argc, argv);
-    final Entry entry = new Entry(timestamp, level, tag, format, args, message, throwable, entrypoint);
+    final LogEntry entry = new LogEntry(timestamp, level, tag, format, args, message, throwable, entrypoint);
     entries.add(entry);
   }
   
@@ -119,70 +119,130 @@ public final class MockLogTarget implements LogTarget {
     entries.clear();
   }
   
+  static final class CountAssertionError extends AssertionError {
+    private static final long serialVersionUID = 1L;
+    CountAssertionError(String m) { super(m); }
+  }
+  
   /**
    *  A queryable view over the underlying entries, allowing for chained application of
    *  {@link Predicate} filters to progressively narrow down the view.
    */
-  public final class Entries implements Iterable<Entry> {
-    private final Predicate<Entry> predicate;
+  public final class LogEntries implements Iterable<LogEntry> {
+    private final Predicate<LogEntry> predicate;
     
-    Entries(Predicate<Entry> predicate) {
+    LogEntries(Predicate<LogEntry> predicate) {
       this.predicate = predicate;
     }
     
-    public List<Entry> list() {
+    public List<LogEntry> list() {
       return Collections.unmodifiableList(entries).stream().filter(predicate).collect(Collectors.toList());
+    }
+    
+    public int count() {
+      return list().size();
+    }
+    
+    public void assertCount(int expected) {
+      if (count() != expected) {
+        throw new CountAssertionError(String.format("Expected %,d; was %,d", expected, count()));
+      }
+    }
+    
+    public void assertCountAtLeast(int minExpected) {
+      if (count() < minExpected) {
+        throw new CountAssertionError(String.format("Expected at least %,d; was %,d", minExpected, count()));
+      }
+    }
+    
+    public void assertCountAtMost(int maxExpected) {
+      if (count() > maxExpected) {
+        throw new CountAssertionError(String.format("Expected at most %,d; was %,d", maxExpected, count()));
+      }
+    }
+    
+    @Override
+    public String toString() {
+      return list().toString();
     }
 
     @Override
-    public Iterator<Entry> iterator() {
+    public Iterator<LogEntry> iterator() {
       return list().iterator();
     }
     
-    public Entries filter(Predicate<Entry> predicate) {
-      return new Entries(this.predicate.and(predicate));
+    public LogEntries filter(Predicate<LogEntry> predicate) {
+      return new LogEntries(this.predicate.and(predicate));
     }
     
-    public Entries forLevel(int level) {
+    public LogEntries forLevel(int level) {
       return filter(e -> e.level == level);
     }
     
-    public Entries forLevelAndAbove(int level) {
+    public LogEntries forLevelAndBelow(int level) {
+      return filter(e -> e.level <= level);
+    }
+    
+    public LogEntries forLevelAndAbove(int level) {
       return filter(e -> e.level >= level);
     }
     
-    public Entries tagged(String tag) {
+    public LogEntries tagged() {
+      return filter(e -> e.tag != null);
+    }
+    
+    public LogEntries tagged(String tag) {
       return filter(e -> Objects.equals(e.tag, tag));
     }
     
-    public Entries before(long timestamp) {
+    public LogEntries before(long timestamp) {
       return filter(e -> e.timestamp < timestamp);
     }
     
-    public Entries after(long timestamp) {
+    public LogEntries after(long timestamp) {
       return filter(e -> e.timestamp > timestamp);
     }
     
-    public Entries containing(CharSequence substring) {
+    public LogEntries withArg(Object arg) {
+      return filter(e -> e.getArgs().contains(arg));
+    }
+    
+    public LogEntries withArgType(Class<?> argClass) {
+      return filter(e -> e.getArgs().stream().filter(argClass::isInstance).findFirst().isPresent());
+    }
+    
+    public LogEntries withFormat(CharSequence format) {
+      return filter(e -> e.format.equals(format));
+    }
+    
+    public LogEntries withMessage(CharSequence message) {
+      return filter(e -> e.message.equals(message));
+    }
+    
+    public LogEntries containing(CharSequence substring) {
       return filter(e -> e.message.contains(substring));
     }
     
-    public Entries withException(Class<? extends Throwable> exceptionClass) {
-      return filter(e -> e.throwable != null && exceptionClass.isInstance(e.throwable));
+    public LogEntries withThrowableType(Class<? extends Throwable> throwableClass) {
+      return filter(e -> e.throwable != null && throwableClass.isInstance(e.throwable));
     }
     
-    public Entries withEntrypoint(String entrypoint) {
+    public LogEntries withThrowable(Throwable throwable) {
+      return filter(e -> Objects.equals(throwable, e.throwable));
+    }
+    
+    public LogEntries withEntrypoint(String entrypoint) {
       return filter(e -> e.entrypoint.equals(entrypoint));
     }
   }
   
   /**
-   *  Obtains a queryable view of the stored {@link Entry} records.
+   *  Obtains a queryable view of the stored {@link LogEntry} records.
    *  
    *  @return A queryable view of log entries.
    */
-  public Entries entries() {
-    return new Entries(__ -> true);
+  public LogEntries entries() {
+    return new LogEntries(__ -> true);
   }
 
   /**
