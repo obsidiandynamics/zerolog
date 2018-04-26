@@ -134,6 +134,8 @@ public final class MockLogTargetTest {
     assertEquals(2, entries.size());
     assertEquals("debug", entries.get(0).getMessage());
     assertEquals("conf", entries.get(1).getMessage());
+    
+    target.entries().forLevelAndAbove(LogLevel.INFO).assertCount(0);
   }
   
   @Test
@@ -148,6 +150,8 @@ public final class MockLogTargetTest {
     assertEquals(2, entries.size());
     assertEquals("trace", entries.get(0).getMessage());
     assertEquals("debug", entries.get(1).getMessage());
+
+    target.entries().forLevelAndBelow(LogLevel.INFO).assertCount(3);
   }
   
   @Test
@@ -201,6 +205,7 @@ public final class MockLogTargetTest {
 
     assertEquals(0, target.entries().withThrowableType(RuntimeException.class).count());
     assertEquals(1, target.entries().withThrowableType(IOException.class).count());
+    assertEquals(1, target.entries().withThrowableType(Throwable.class).count());
   }
   
   @Test
@@ -241,6 +246,7 @@ public final class MockLogTargetTest {
     assertEquals(1, target.entries().withArgType(String.class).count());
     assertEquals(1, target.entries().withArgType(Double.class).count());
     assertEquals(0, target.entries().withArgType(Integer.class).count());
+    assertEquals(1, target.entries().withArgType(Object.class).count());
   }
 
   @Test
