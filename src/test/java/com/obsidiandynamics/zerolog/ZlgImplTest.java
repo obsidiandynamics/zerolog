@@ -103,17 +103,19 @@ public final class ZlgImplTest {
   }
 
   /**
-   *  Tests logging at info level with all argument types.
+   *  Tests logging at info level with all argument types. The first pass uses all argument types;
+   *  the second pass is used to verify that the thread-local chain is reset correctly after flushing.
    */
   @Test
   public void testLogInfoWithAllArgTypes() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
-    final String format = "message";
+    final String firstMessage = "message";
+    final Exception exception = new Exception("test exception");
     
     zlg
     .level(LogLevel.INFO)
-    .format(format)
+    .format(firstMessage)
     .arg(true)
     .arg((byte) 0x01)
     .arg('c')
@@ -123,11 +125,25 @@ public final class ZlgImplTest {
     .arg(42L)
     .arg("string")
     .arg((short) 42)
+    .threw(exception)
+    .entrypoint("entrypoint")
     .log();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target)
-    .log(eq(LogLevel.INFO), isNull(), eq(format), eq(9), any(), isNull(), eq(LogChain.ENTRYPOINT));
+    .log(eq(LogLevel.INFO), isNull(), eq(firstMessage), eq(9), any(), eq(exception), eq("entrypoint"));
     assertArrayEquals(new Object[] {true, (byte) 0x01, 'c', 3.14d, 3.14f, 42, 42L, "string", (short) 42}, mocks.argv);
+    
+    // tests the resetting of the log chain
+    final String secondMessage = "another message";
+    
+    zlg
+    .level(LogLevel.WARN)
+    .format(secondMessage)
+    .log();
+    verify(mocks.target).isEnabled(eq(LogLevel.WARN));
+    verify(mocks.target)
+    .log(eq(LogLevel.WARN), isNull(), eq(secondMessage), eq(0), any(), isNull(), eq(LogChain.ENTRYPOINT));
+    assertArrayEquals(new Object[0], mocks.argv);
   }
 
   /**
