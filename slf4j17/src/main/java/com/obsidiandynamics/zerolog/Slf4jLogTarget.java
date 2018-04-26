@@ -6,8 +6,6 @@ import org.slf4j.spi.*;
 import com.obsidiandynamics.zerolog.util.*;
 
 final class Slf4jLogTarget implements LogTarget {
-  private static String FQCN = ZlgImpl.LogChainImpl.class.getName();
-  
   @FunctionalInterface
   private interface LogEnabled {
     boolean isEnabled();
@@ -130,9 +128,9 @@ final class Slf4jLogTarget implements LogTarget {
   private static final Object[] noArgs = {};
 
   @Override
-  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
+  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint) {
     if (isLocationAware) {
-      logWithLocation(level, tag, format, argc, argv, throwable);
+      logWithLocation(level, tag, format, argc, argv, throwable, entrypoint);
     } else {
       logDirect(level, tag, format, argc, argv, throwable);
     }
@@ -154,10 +152,11 @@ final class Slf4jLogTarget implements LogTarget {
     }
   }
 
-  private void logWithLocation(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
+  private void logWithLocation(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, 
+                               String entrypoint) {
     final Marker marker = tag != null ? MarkerFactory.getMarker(tag) : null;
     final String message = SafeFormat.format(format, argc, argv);
     final int intLevel = map(level).intLevel;
-    ((LocationAwareLogger) log).log(marker, FQCN, intLevel, message, noArgs, throwable);
+    ((LocationAwareLogger) log).log(marker, entrypoint, intLevel, message, noArgs, throwable);
   }
 }

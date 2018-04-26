@@ -9,6 +9,7 @@ import org.junit.*;
 
 import com.obsidiandynamics.assertion.*;
 import com.obsidiandynamics.zerolog.MockLogTarget.*;
+import com.obsidiandynamics.zerolog.Zlg.*;
 
 public final class MockLogTargetTest {
   @Test
@@ -45,7 +46,7 @@ public final class MockLogTargetTest {
     final String format = "entry #%d";
     final Exception cause = new Exception("simulated");
     for (int i = 0; i < numEntries; i++) {
-      zlg.level(logLevel).format(format).arg(i).tag(String.valueOf(i)).threw(cause).done();
+      zlg.level(logLevel).format(format).arg(i).tag(String.valueOf(i)).threw(cause)._done();
     }
     
     final List<Entry> entries = target.entries().list();
@@ -60,6 +61,7 @@ public final class MockLogTargetTest {
       assertArrayEquals(new Object[] {i}, entry.getArgs());
       assertEquals(cause, entry.getThrowable());
       assertEquals("entry #" + i, entry.getMessage());
+      assertEquals(LogChain.ENTRYPOINT, entry.getEntrypoint());
     }
   }
   
@@ -141,6 +143,19 @@ public final class MockLogTargetTest {
     assertEquals(0, target.entries().withException(RuntimeException.class).list().size());
     assertEquals(1, target.entries().withException(IOException.class).list().size());
   }
+
+  @Test
+  public void testWithEntrypoint() {
+    final MockLogTarget target = new MockLogTarget();
+    final Zlg zlg = target.logger();
+    zlg.t("trace");
+    zlg.d("debug", z -> z.entrypoint("entrypoint"));
+    zlg.c("conf");
+
+    assertEquals(2, target.entries().withEntrypoint(Zlg.ENTRYPOINT).list().size());
+    assertEquals(1, target.entries().withEntrypoint("entrypoint").list().size());
+  }
+  
   
   @Test
   public void testContaining() {

@@ -26,10 +26,11 @@ public final class NopLogChainTest {
         .arg(42L)
         .arg("string")
         .arg((short) 42)
-        .threw(null);
+        .threw(null)
+        .entrypoint("entrypoint");
     assertSame(chain, end);
     
-    end.done(); // does nothing
+    end._done(); // does nothing
   }
   
   @Test
@@ -50,7 +51,7 @@ public final class NopLogChainTest {
         .arg(stringSupplier);
     assertSame(chain, end);
     
-    end.done(); // does nothing
+    end._done(); // does nothing
     
     verifyNoMoreInteractions(booleanSupplier);
     verifyNoMoreInteractions(doubleSupplier);

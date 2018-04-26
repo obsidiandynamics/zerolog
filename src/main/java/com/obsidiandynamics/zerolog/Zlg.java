@@ -5,7 +5,11 @@ import java.util.function.*;
 import com.obsidiandynamics.zerolog.util.*;
 
 public interface Zlg {
+  static String ENTRYPOINT = Zlg.class.getName();
+  
   interface LogChain {
+    static String ENTRYPOINT = LogChain.class.getName();
+    
     static int MAX_ARGS = 64;
     
     LogChain tag(String tag);
@@ -42,15 +46,26 @@ public interface Zlg {
     
     LogChain threw(Throwable throwable);
     
-    default void with(Consumer<LogChain> logChainConsumer) {
+    LogChain entrypoint(String entrypoint);
+    
+    /**
+     *  Feeds the log chain into a consumer.
+     *  
+     *  @param logChainConsumer Consumer for the log chain.
+     */
+    default void _done(Consumer<LogChain> logChainConsumer) {
       logChainConsumer.accept(this);
-      done();
+      _done();
     }
     
-    void done();
+    /**
+     *  Completes the log chain. <em>Must only to be called by the framework</em> in order to 
+     *  preserve location information.
+     */
+    void _done();
     
     default boolean log() {
-      done();
+      _done();
       return true;
     }
   }
@@ -60,75 +75,75 @@ public interface Zlg {
   boolean isEnabled(int level);
   
   default void e(String message) { 
-    level(LogLevel.ERROR).format(message).done(); 
+    level(LogLevel.ERROR).format(message).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void e(String summary, Throwable cause) {
-    level(LogLevel.ERROR).format(summary).threw(cause).done(); 
+    level(LogLevel.ERROR).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void e(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.ERROR).format(format).with(logChainConsumer);
+    level(LogLevel.ERROR).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   default void w(String message) { 
-    level(LogLevel.WARN).format(message).done(); 
+    level(LogLevel.WARN).format(message).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void w(String summary, Throwable cause) {
-    level(LogLevel.WARN).format(summary).threw(cause).done(); 
+    level(LogLevel.WARN).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void w(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.WARN).format(format).with(logChainConsumer);
+    level(LogLevel.WARN).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   default void i(String message) { 
-    level(LogLevel.INFO).format(message).done(); 
+    level(LogLevel.INFO).format(message).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void i(String summary, Throwable cause) {
-    level(LogLevel.INFO).format(summary).threw(cause).done(); 
+    level(LogLevel.INFO).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void i(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.INFO).format(format).with(logChainConsumer);
+    level(LogLevel.INFO).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   default void c(String message) { 
-    level(LogLevel.CONF).format(message).done();
+    level(LogLevel.CONF).format(message).entrypoint(ENTRYPOINT)._done();
   }
   
   default void c(String summary, Throwable cause) {
-    level(LogLevel.CONF).format(summary).threw(cause).done(); 
+    level(LogLevel.CONF).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void c(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.CONF).format(format).with(logChainConsumer);
+    level(LogLevel.CONF).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   default void d(String message) { 
-    level(LogLevel.DEBUG).format(message).done(); 
+    level(LogLevel.DEBUG).format(message).entrypoint(ENTRYPOINT)._done(); 
   }
 
   default void d(String summary, Throwable cause) {
-    level(LogLevel.DEBUG).format(summary).threw(cause).done(); 
+    level(LogLevel.DEBUG).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void d(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.DEBUG).format(format).with(logChainConsumer);
+    level(LogLevel.DEBUG).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   default void t(String message) {
-    level(LogLevel.TRACE).format(message).done(); 
+    level(LogLevel.TRACE).format(message).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void t(String summary, Throwable cause) {
-    level(LogLevel.TRACE).format(summary).threw(cause).done(); 
+    level(LogLevel.TRACE).format(summary).threw(cause).entrypoint(ENTRYPOINT)._done(); 
   }
   
   default void t(String format, Consumer<LogChain> logChainConsumer) {
-    level(LogLevel.TRACE).format(format).with(logChainConsumer);
+    level(LogLevel.TRACE).format(format).entrypoint(ENTRYPOINT)._done(logChainConsumer);
   }
   
   static ZlgBuilder forName(String name) {

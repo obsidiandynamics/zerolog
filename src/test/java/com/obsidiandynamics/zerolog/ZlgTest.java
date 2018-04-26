@@ -18,6 +18,7 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
+    when(chain.entrypoint(any())).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     
     z.t("trace");
@@ -48,7 +49,8 @@ public final class ZlgTest {
     verify(chain).log();
 
     verify(z, times(6)).level(anyInt());
-    verify(chain, times(7)).done();
+    verify(chain, times(6)).entrypoint(notNull());
+    verify(chain, times(7))._done();
     verifyNoMoreInteractions(chain);
   }
   
@@ -57,6 +59,7 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
+    when(chain.entrypoint(any())).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     when(chain.threw(isA(Throwable.class))).thenReturn(chain);
     
@@ -88,7 +91,8 @@ public final class ZlgTest {
     
     verify(z, times(6)).level(anyInt());
     verify(chain, times(6)).threw(eq(cause));
-    verify(chain, times(6)).done();
+    verify(chain, times(6)).entrypoint(notNull());
+    verify(chain, times(6))._done();
     verifyNoMoreInteractions(chain);
   }
   
@@ -97,15 +101,16 @@ public final class ZlgTest {
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     final Consumer<LogChain> logChainConsumer = Classes.cast(mock(Consumer.class));
     
-    chain.with(logChainConsumer);
+    chain._done(logChainConsumer);
     verify(logChainConsumer).accept(eq(chain));
-    verify(chain).done();
+    verify(chain)._done();
   }
   
   @Test
   public void testZlgWithLambda() {
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
+    when(chain.entrypoint(any())).thenReturn(chain);
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     when(z.level(anyInt())).thenReturn(chain);
     
@@ -130,7 +135,7 @@ public final class ZlgTest {
     verify(z).level(eq(LogLevel.ERROR));
     
     verify(logChainConsumer, times(6)).accept(eq(chain));
-    verify(chain, times(6)).done();
+    verify(chain, times(6))._done();
   }
   
   @Test

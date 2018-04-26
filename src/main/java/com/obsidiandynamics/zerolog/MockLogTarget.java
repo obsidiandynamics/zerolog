@@ -24,8 +24,10 @@ public final class MockLogTarget implements LogTarget {
     private final Object[] args;
     private final String message;
     private final Throwable throwable;
+    private final String entrypoint;
     
-    Entry(long timestamp, int level, String tag, String format, Object[] args, String message, Throwable throwable) {
+    Entry(long timestamp, int level, String tag, String format, Object[] args, String message, 
+          Throwable throwable, String entrypoint) {
       this.timestamp = timestamp;
       this.level = level;
       this.tag = tag;
@@ -33,6 +35,7 @@ public final class MockLogTarget implements LogTarget {
       this.args = args;
       this.message = message;
       this.throwable = throwable;
+      this.entrypoint = entrypoint;
     }
     
     public long getTimestamp() {
@@ -61,6 +64,10 @@ public final class MockLogTarget implements LogTarget {
 
     public Throwable getThrowable() {
       return throwable;
+    }
+    
+    public String getEntrypoint() {
+      return entrypoint;
     }
 
     @Override
@@ -97,11 +104,11 @@ public final class MockLogTarget implements LogTarget {
   }
 
   @Override
-  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
+  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint) {
     final long timestamp = System.currentTimeMillis();
     final Object[] args = SafeFormat.copyArgs(argc, argv);
     final String message = SafeFormat.format(format, argc, argv);
-    final Entry entry = new Entry(timestamp, level, tag, format, args, message, throwable);
+    final Entry entry = new Entry(timestamp, level, tag, format, args, message, throwable, entrypoint);
     entries.add(entry);
   }
   
@@ -162,6 +169,10 @@ public final class MockLogTarget implements LogTarget {
     
     public Entries withException(Class<? extends Throwable> exceptionClass) {
       return filter(e -> e.throwable != null && exceptionClass.isInstance(e.throwable));
+    }
+    
+    public Entries withEntrypoint(String entrypoint) {
+      return filter(e -> e.entrypoint.equals(entrypoint));
     }
   }
   

@@ -95,7 +95,12 @@ public final class NopLogChain implements LogChain {
   public LogChain threw(Throwable throwable) {
     return this;
   }
+  
+  @Override
+  public LogChain entrypoint(String entrypoint) {
+    return this;
+  }
 
   @Override
-  public void done() {}
+  public void _done() {}
 }

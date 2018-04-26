@@ -14,6 +14,7 @@ public final class ZlgMockTest {
     final Zlg zlg = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain logChain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(logChain.format(any())).thenReturn(logChain);
+    when(logChain.entrypoint(any())).thenReturn(logChain);
     when(logChain.arg(anyDouble())).thenReturn(logChain);
     when(zlg.level(anyInt())).thenReturn(logChain);
     
@@ -21,7 +22,7 @@ public final class ZlgMockTest {
     
     verify(logChain).format(contains("the value of Pi"));
     verify(logChain).arg(eq(Math.PI));
-    verify(logChain).done();
+    verify(logChain)._done();
   }
   
   @Test
@@ -32,12 +33,13 @@ public final class ZlgMockTest {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE).withLogService(__ -> logTarget))
         .get();
     
-    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI));
+    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI).entrypoint("entrypoint"));
     verify(logTarget).log(eq(LogLevel.TRACE), 
                           isNull(), 
                           eq("the value of Pi is %.2f"), 
                           eq(1), 
                           isNotNull(),
-                          isNull());
+                          isNull(),
+                          eq("entrypoint"));
   }
 }

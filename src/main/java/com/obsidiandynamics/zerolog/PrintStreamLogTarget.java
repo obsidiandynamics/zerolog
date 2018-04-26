@@ -20,7 +20,7 @@ final class PrintStreamLogTarget implements LogTarget {
   }
 
   @Override
-  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable) {
+  public void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint) {
     final String line;
     final String levelName = LogLevel.Enum.match(level).getShortName();
     final String threadName = Thread.currentThread().getName();

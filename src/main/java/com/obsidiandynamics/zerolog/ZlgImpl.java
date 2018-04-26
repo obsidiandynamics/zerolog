@@ -17,7 +17,7 @@ final class ZlgImpl implements Zlg {
     private static final long serialVersionUID = 1L;
     TooManyArgsException(String m) { super(m); }
   }
-  
+
   final class LogChainImpl implements LogChain {
     private int level;
     private String tag;
@@ -25,6 +25,7 @@ final class ZlgImpl implements Zlg {
     private int argc;
     private Object[] argv = new Object[MAX_ARGS];
     private Throwable throwable;
+    private String entrypoint = LogChain.ENTRYPOINT;
     
     private void reset() {
       tag = null;
@@ -34,6 +35,7 @@ final class ZlgImpl implements Zlg {
       }
       argc = 0;
       throwable = null;
+      entrypoint = LogChain.ENTRYPOINT;
     }
 
     @Override
@@ -125,18 +127,24 @@ final class ZlgImpl implements Zlg {
       argv[argc++] = arg;
       return this;
     }
+    
+    @Override
+    public LogChain entrypoint(String entrypoint) {
+      this.entrypoint = entrypoint;
+      return this;
+    }
 
     @Override
     public LogChain threw(Throwable throwable) {
-      if (this.throwable != null) throw new DuplicateValueException("Duplicate call to exception()");
+      if (this.throwable != null) throw new DuplicateValueException("Duplicate call to threw()");
       this.throwable = throwable;
       return this;
     }
 
     @Override
-    public void done() {
+    public void _done() {
       if (format == null) throw new MissingValueException("Missing call to format()");
-      target.log(level, tag, format, argc, argv, throwable);
+      target.log(level, tag, format, argc, argv, throwable, entrypoint);
       reset();
     }
   }
