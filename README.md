@@ -346,6 +346,11 @@ The choice of using option one or two depends on whether you are targeting zero 
 
 **Note:** Outside of the `assert` example, using of the continuous chaining style is strongly discouraged. You run the risk of forgetting to append the final `log()` at the end of the chain, which will have the effect of 'swallowing' the log without forwarding the log event to the underlying logger.
 
+## Is Zlg thread-safe?
+All public Zlg classes are thread-safe. For performance, Zlg will pool certain objects in thread-local contexts; the argument chain is one such example. So while `Zlg` instances may be safely shared between threads, once a thread starts building an argument chain, that thread will own that chain — it mustn't share it with other threads.
+
+Zlg will not (and cannot) make any thread-safety guarantees in relation to the underlying logger; however, it would be unusual for a logger to not be thread-safe.
+
 ## Can Zlg be mocked?
 Zlg's design is heavily interface-driven, to simplify mocking and testing, which in itself allows us to maintain Zlg with 100% instruction and branch coverage. Even with interfaces, using mocking frameworks (like Mockito) didn't feel like a natural fit for the fluent-style chaining — there are too many methods to mock and verification needs to be depth-aware. (That's probably the only practical drawback of fluent chaining.) 
 
