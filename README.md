@@ -285,7 +285,7 @@ You need to implement three classes:
 * `LogService` — acts as an abstract factory for creating instances of `LogTarget`.
 * `LogTarget` — responsible for the actual logging delegation. Has two methods: 
     + `boolean isEnabled(int level)` — for determining whether logging for the given level is enabled
-    + `void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint)` — for handling the log event
+    + `void log(int level, String tag, String format, int argc, Object[] argv, Throwable throwable, String entrypoint)` — for handling the log event (only called if the logging was enabled for that level)
 * `LogServiceBinding` — loaded by [SPI](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) when the logging subsystem is bootstrapped, responsible for supplying a `LogService` instance.
 
 `LogService` and `LogServiceBinding` are typically one-liners; `LogTarget` is where the bulk of the implementation will reside. Expect a bit of boilerplate mapping code between Zlg and your target logger. For SLFL4J, we made heavy use of function references to streamline the mappings.
@@ -402,7 +402,7 @@ zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI));
 
 verify(logChain).format(contains("the value of Pi"));
 verify(logChain).arg(eq(Math.PI));
-verify(logChain).done();
+verify(logChain).flush();
 ```
 
 ## How can I wrap an existing SLF4J logger?
@@ -419,7 +419,7 @@ zlg.i("Logging to a wrapped SLF4J instance");
 
 **Note:** The name passed to `forName()` has no effect in the above example, as `Slf4jWrapper` will return a pre-canned logger.
 
-## How do I correctly write logging helpers or custom logging façades?
+## How do I correctly write a logging helper or a custom logging façade?
 We've all done this before; written a static helper method that logs events in a particular way. Often this is done for logging messages or exceptions. For the latter, we sometimes log an exception internally before letting it percolate up the call stack. 
 
 A related, although somewhat less common scenario is when library developers try to outsmart the world by writing their own lightweight logging façade, ostensibly allowing the user to plug in any logger without tying them to SLF4J (but in reality adding no value and causing a heartache for all involved).
@@ -458,7 +458,7 @@ Running the example above will output the class/method/line of the call to the h
 **Note:** The entrypoint trick is also used to implement a bridging logger.
 
 ## Can you bridge other loggers to Zlg?
-The purpose of a bridge is to route the log events from an encumbered logging framework (e.g. JUL) to Zlg. It can almost be thought of as a _reverse binding_.
+The purpose of a bridge is to route the log events from an encumbered logging framework (e.g. `java.util.logging`) to Zlg. It can almost be thought of as a _reverse binding_, so to speak.
 
 Normally, if you are using Zlg over SLF4J (i.e. the recommended approach), this isn't necessary. SLF4J already comes with all the mainstream bridges you'll need. For example, SLF4J can be bridged from JUL, Log4j, JCL, to name a few.
 
