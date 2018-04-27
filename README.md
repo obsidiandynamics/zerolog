@@ -419,7 +419,7 @@ zlg.i("Logging to a wrapped SLF4J instance");
 
 **Note:** The name passed to `forName()` has no effect in the above example, as `Slf4jWrapper` will return a pre-canned logger.
 
-## Is there a correct way to write logging helpers or custom logging abstractions?
+## How do I correctly write logging helpers or custom logging façades?
 We've all done this before; written a static helper method that logs events in a particular way. Often this is done for logging messages or exceptions. For the latter, we sometimes log an exception internally before letting it percolate up the call stack. 
 
 A related, although somewhat less common scenario is when library developers try to outsmart the world by writing their own lightweight logging façade, ostensibly allowing the user to plug in any logger without tying them to SLF4J (but in reality adding no value and causing a heartache for all involved).
@@ -454,3 +454,19 @@ public static void main(String[] args) throws IOException {
 The only caveat is that helpers must be encapsulated in their own class (which may be private), which provides a clean demarcation between the helper and the rest of the application. Calls to the helper must be made from outside the helper class.
 
 Running the example above will output the class/method/line of the call to the helper, not the call to Zlg.
+
+**Note:** The entrypoint trick is also used to implement a bridging logger.
+
+## Can you bridge other loggers to Zlg?
+The purpose of a bridge is to route the log events from an encumbered logging framework (e.g. JUL) to Zlg. It can almost be thought of as a _reverse binding_.
+
+Normally, if you are using Zlg over SLF4J (i.e. the recommended approach), this isn't necessary. SLF4J already comes with all the mainstream bridges you'll need. For example, SLF4J can be bridged from JUL, Log4j, JCL, to name a few.
+
+Zlg has implemented some of its own bridge modules for certain mainstream and niche loggers. These include:
+
+* [bridge-jul](https://github.com/obsidiandynamics/zerolog/tree/master/bridge-jul)
+* [bridge-hazelcast](https://github.com/obsidiandynamics/zerolog/tree/master/bridge-hazelcast)
+
+Implementing a custom bridge isn't a big deal. The best place to start is to dissect one of the existing bridge implementations and adapt it to your purpose. Don't neglect call site locations, otherwise log events will appear to be coming from the bridge's plumbing rather than the application code. Use the entrypoint trick when implementing a bridge.
+
+Use the `bridge-xxx` convention to name your bridge modules. If you feel like contributing your bridge, we'd love a PR.
