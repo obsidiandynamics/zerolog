@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/zerolog/images/zerolog-logo.png" width="90px" alt="logo"/> ZeroLog
+<img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/zerolog/images/zerolog-logo.png" width="90px" alt="logo"/> Zerolog
 ===
 [![Download](https://api.bintray.com/packages/obsidiandynamics/zerolog/zerolog-core/images/download.svg) ](https://bintray.com/obsidiandynamics/zerolog/zerolog-core/_latestVersion)
 [![Build](https://travis-ci.org/obsidiandynamics/zerolog.svg?branch=master) ](https://travis-ci.org/obsidiandynamics/zerolog#)
@@ -6,8 +6,8 @@
 ===
 Low-overhead logging façade for performance-sensitive applications.
 
-# What is ZeroLog?
-ZeroLog (abbreviated to Zlg) is a logging façade with two fundamental design objectives:
+# What is Zerolog?
+Zerolog (abbreviated to Zlg) is a logging façade with two fundamental design objectives:
 
 1. **Ultra-low overhead for suppressed logging.** In other words, the cost of calling a log method when logging for that level has been disabled is negligible.
 2. **Uncompromised code coverage.** Suppression of logging should not impact statement and branch coverage metrics. A log entry is a statement like any other.
