@@ -1,0 +1,95 @@
+def packageName = "zerolog-benchmarks"
+version = project(":").version
+
+dependencies {
+  compile project(":")
+
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-dyno:${fulcrumVersion}"
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
+  testCompile "org.slf4j:slf4j-api:1.7.25"
+  testCompile "log4j:log4j:1.2.17"
+  testCompile "org.tinylog:tinylog:1.3.4"
+  testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
+}
+
+task addLauncherApps() {
+  project(":").launcherClasspath += sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.BaselineBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulLambdaBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Log4jBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
+  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
+}
+
+jar {
+  baseName packageName
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  baseName packageName
+  classifier = "javadoc"
+  from "$buildDir/docs/javadoc"
+}
+ 
+task sourcesJar(type: Jar) {
+  baseName packageName
+  from sourceSets.main.allSource
+  classifier = "sources"
+}
+ 
+artifacts {
+  archives jar
+  archives javadocJar
+  archives sourcesJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId project(":").group
+      artifactId packageName
+      version project(":").version
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+    }
+  }
+  repositories {
+    maven {
+      url "${project(':').projectDir}/../repo"
+    }
+  }
+}
+
+def envUser = "BINTRAY_USER"
+def envKey = "BINTRAY_KEY"
+def packageDesc = "Zerolog benchmarks"
+def repoName = "zerolog"
+bintray {
+  user = System.getenv(envUser)
+  key = System.getenv(envKey)
+  publications = ["mavenJava"]
+  pkg {
+    repo = "${repoName}"
+    name = packageName
+    userOrg = "obsidiandynamics"
+    desc = packageDesc
+    websiteUrl = "https://github.com/obsidiandynamics/${repoName}"
+    licenses = ["BSD New"]
+    vcsUrl = "https://github.com/obsidiandynamics/${repoName}"
+    issueTrackerUrl = "https://github.com/obsidiandynamics/${repoName}/issues"
+    publicDownloadNumbers = true
+    githubRepo = "obsidiandynamics/${repoName}"
+    override = true
+    publish = true
+    version {
+      name = project(":").version
+      desc = packageDesc
+      released  = new Date()
+      vcsTag = project(":").version
+    }
+  }
+}

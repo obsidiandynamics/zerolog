@@ -120,13 +120,7 @@ dependencies {
   compile "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
   compile "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
 
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-dyno:${fulcrumVersion}"
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
-  testCompile "org.slf4j:slf4j-api:1.7.25"
-  testCompile "log4j:log4j:1.2.17"
-  testCompile "org.tinylog:tinylog:1.3.4"
   testRuntime "com.obsidiandynamics.fulcrum:fulcrum-launcher:${fulcrumVersion}"
-  testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
 }
 
 project.ext.set("launcherClasspath", new org.gradle.api.internal.file.UnionFileCollection())
@@ -134,14 +128,6 @@ project.ext.set("launcherClasses", new ArrayList())
 
 task addLauncherApps() {
   project(":").launcherClasspath += sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.BaselineBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulLambdaBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Log4jBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
 }
 
 task launch() {
