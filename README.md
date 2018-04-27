@@ -71,7 +71,7 @@ public final class SysOutLoggingSample {
 Some important things to note:
 
 * A logger is a `Zlg` instance, created for a specific class (using `forClass()`) or an arbitrary name (using `forName()`). 
-* Calling `forDeclaringClass()` is a shorthand equivalent of `forClass(TheDeclaringClass.class)`, where `TheDeclaringClass` is the name of the class which declares the logger.
+* Calling `forDeclaringClass()` is the shorthand equivalent of `forClass(TheDeclaringClass.class)`, where `TheDeclaringClass` is the name of the class which declares the logger.
 * By convention we assign the logger to a field named `zlg`.
 * Logging is invoked via a fluent chain, starting with the log level (abbreviated to the first letter) specifying a mandatory format string, followed by any optional arguments (primitives or object types), an optional tag, and an optional exception.
 * The format string is printf-style, unlike most other loggers that use the `{}` (stash) notation.
