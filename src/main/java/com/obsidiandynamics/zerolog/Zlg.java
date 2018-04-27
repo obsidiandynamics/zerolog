@@ -158,7 +158,7 @@ public interface Zlg {
   }
   
   static ZlgBuilder forDeclaringClass() {
-    return forClass(CallingClass.forDepth(2));
+    return forClass(Stacks.classForDepth(2));
   }
   
   /** Pre-canned no-op logger. */

@@ -14,7 +14,7 @@ compile "com.obsidiandynamics.zerolog:zerolog-core:x.y.z"
 compile "com.obsidiandynamics.zerolog:zerolog-bridge-jul:x.y.z"
 ```
 
-## Installing programmatically
+## Programmatic installation
 The following example installs the bridge for the root logger (stashing prior handlers first) and demonstrates logging via JUL, ending up in Zlg. Afterwards the original handlers are restored from the stash.
 
 ```java

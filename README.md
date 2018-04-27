@@ -161,8 +161,8 @@ The built-in log levels are, from lowest to highest: `TRACE`, `DEBUG`, `CONF`, `
 Being a façade, Zlg delegates all log calls to an actual logger — an implementation of `LogService`. By default, Zlg comes pre-packaged with a very basic 'failsafe' `SysOutLogService` that prints entries to `System.out` in a fixed format. Example below.
 
 ```
-21:23:16.814 INF [main]: Connecting to github.com:80 [timeout: 30.0 sec]
-21:23:16.818 WRN [main] [I/O]: Error connecting to github.com:80
+21:18:11.771 INF [main] SysOutLoggingSample.open:20: Connecting to github.com:80 [timeout: 30.0 sec]
+21:18:11.773 WRN [main] [I/O] SysOutLoggingSample.open:25: Error connecting to github.com:80
 ```
 
 Zlg detects installed bindings using Java's [SPI](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html) plugin mechanism. By simply including a binding on the classpath, Zlg will switch over to the new binding by default.
