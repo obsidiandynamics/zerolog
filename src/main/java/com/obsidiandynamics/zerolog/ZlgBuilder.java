@@ -7,7 +7,7 @@ import java.net.*;
 import com.obsidiandynamics.props.*;
 
 /**
- *  Fluent builder for {@link Zlg} instance.
+ *  Fluent builder for {@link Zlg} instances.
  */
 public final class ZlgBuilder {
   public static final String KEY_DEFAULT_CONFIG_URI = "zlg.default.config.uri";
@@ -19,6 +19,10 @@ public final class ZlgBuilder {
   
   /** The default config service. */
   private static final ConfigService defaultConfigService = new PropertiesConfigService(forUri(defaultConfigUri, failsafeUri));
+  
+  public static ConfigService getDefaultConfigService() {
+    return defaultConfigService;
+  }
   
   private final String name;
   

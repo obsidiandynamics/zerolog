@@ -35,6 +35,7 @@ public final class JulZlgBridgeTest {
     final Logger root = JulZlgBridge.getRootLogger();
     Arrays.stream(JulZlgBridge.getRootLogger().getHandlers()).forEach(root::removeHandler);
     rootHandlers.forEach(root::addHandler);
+    rootHandlers.clear();
   }
   
   @Test

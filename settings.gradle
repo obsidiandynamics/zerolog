@@ -3,6 +3,9 @@ rootProject.name = "zerolog"
 include "zerolog-benchmarks"
 project(":zerolog-benchmarks").projectDir = new File(settingsDir, "benchmarks")
 
+include "zerolog-bridge-hazelcast"
+project(":zerolog-bridge-hazelcast").projectDir = new File(settingsDir, "bridge-hazelcast")
+
 include "zerolog-bridge-jul"
 project(":zerolog-bridge-jul").projectDir = new File(settingsDir, "bridge-jul")
 
