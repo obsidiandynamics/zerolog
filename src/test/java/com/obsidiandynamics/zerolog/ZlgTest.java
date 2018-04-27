@@ -150,6 +150,9 @@ public final class ZlgTest {
     final Zlg zlg = Zlg.nop();
     assertNotNull(zlg);
     assertSame(zlg, Zlg.nop());
-    zlg.i("hush");
+    for (LogLevel.Enum level : LogLevel.Enum.values()) {
+      assertFalse(zlg.isEnabled(level.getLevel()));
+      zlg.level(level.getLevel()).format("format").arg("arg").tag("tag").log();
+    }
   }
 }

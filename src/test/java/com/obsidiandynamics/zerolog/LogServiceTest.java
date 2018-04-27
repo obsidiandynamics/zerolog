@@ -10,6 +10,6 @@ public final class LogServiceTest {
     final LogService logService = LogService.nop();
     assertNotNull(logService);
     assertSame(logService, LogService.nop());
-    assertNull(logService.get("any"));
+    assertEquals(LogTarget.nop(), logService.get("any"));
   }
 }
