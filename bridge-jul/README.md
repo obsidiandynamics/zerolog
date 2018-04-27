@@ -2,8 +2,7 @@
 ===
 [![Download](https://api.bintray.com/packages/obsidiandynamics/zerolog/zerolog-core/images/download.svg) ](https://bintray.com/obsidiandynamics/zerolog/zerolog-core/_latestVersion)
 
-# Intro
-This module provides a bridge from `java.util.logging` to Zlg, while forwarding the call site location to the underlying concrete logger.
+This module provides a bridge from `java.util.logging` (a.k.a. JUL) to Zlg, while forwarding the call site location to the underlying concrete logger.
 
 # Getting Started
 ## Dependencies

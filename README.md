@@ -351,6 +351,9 @@ All public Zlg classes are thread-safe. For performance, Zlg will pool certain o
 
 Zlg will not (and cannot) make any thread-safety guarantees in relation to the underlying logger; however, it would be unusual for a logger to not be thread-safe.
 
+## Is Zlg serializable?
+No. While serialization support will likely be added in the near future, until such time you should declare the field with the `transient` modifier and restore it by hand during deserialization.
+
 ## Can Zlg be mocked?
 Zlg's design is heavily interface-driven, to simplify mocking and testing, which in itself allows us to maintain Zlg with 100% instruction and branch coverage. Even with interfaces, using mocking frameworks (like Mockito) didn't feel like a natural fit for the fluent-style chaining — there are too many methods to mock and verification needs to be depth-aware. (That's probably the only practical drawback of fluent chaining.) 
 
