@@ -18,7 +18,7 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
-    when(chain.entrypoint(any())).thenReturn(chain);
+    when(chain.entrypoint(any(String.class))).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     
     z.t("trace");
@@ -59,7 +59,7 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
-    when(chain.entrypoint(any())).thenReturn(chain);
+    when(chain.entrypoint(any(String.class))).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     when(chain.threw(isA(Throwable.class))).thenReturn(chain);
     
@@ -109,7 +109,7 @@ public final class ZlgTest {
   public void testZlgWithLambda() {
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
-    when(chain.entrypoint(any())).thenReturn(chain);
+    when(chain.entrypoint(any(String.class))).thenReturn(chain);
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     when(z.level(anyInt())).thenReturn(chain);
     
@@ -143,5 +143,13 @@ public final class ZlgTest {
     final Zlg zlg = Zlg.forDeclaringClass().withConfigService(new LogConfig().withLogService(logService)).get();
     assertNotNull(zlg);
     verify(logService).get(eq(ZlgTest.class.getName()));
+  }
+  
+  @Test
+  public void testNopCoverage() {
+    final Zlg zlg = Zlg.nop();
+    assertNotNull(zlg);
+    assertSame(zlg, Zlg.nop());
+    zlg.i("hush");
   }
 }

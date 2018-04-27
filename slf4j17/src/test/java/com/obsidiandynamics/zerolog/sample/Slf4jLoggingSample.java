@@ -12,8 +12,8 @@ public final class Slf4jLoggingSample {
     // short form
     zlg.i("Starting with %d args: %s", z -> z.arg(args.length).arg(Arrays.asList(args)));
     
-    // alternative long form
-    zlg.level(LogLevel.INFO).format("Starting with %d args: %s").arg(args.length).arg(Arrays.asList(args)).log();
+    // alternative long form, conditionally JIT-compiled
+    assert zlg.level(LogLevel.INFO).format("Starting with %d args: %s").arg(args.length).arg(Arrays.asList(args)).log();
     
     // with lazy rendering and exception
     final Supplier<Date> now = Date::new;

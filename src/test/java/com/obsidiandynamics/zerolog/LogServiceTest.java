@@ -9,6 +9,7 @@ public final class LogServiceTest {
   public void testNopCoverage() {
     final LogService logService = LogService.nop();
     assertNotNull(logService);
+    assertSame(logService, LogService.nop());
     assertNull(logService.get("any"));
   }
 }

@@ -48,6 +48,10 @@ public interface Zlg {
     
     LogChain entrypoint(String entrypoint);
     
+    default LogChain entrypoint(Class<?> cls) {
+      return entrypoint(cls.getName());
+    }
+    
     /**
      *  Feeds the log chain into a consumer and then completes the log chain.
      *  

@@ -418,3 +418,36 @@ zlg.i("Logging to a wrapped SLF4J instance");
 ```
 
 **Note:** The name passed to `forName()` has no effect in the above example, as `Slf4jWrapper` will return a pre-canned logger.
+
+## Is there a correct way to write logging helpers or custom logging abstractions?
+We've all done this before; written a static helper method that logs events in a particular way. Often this is done for logging messages or exceptions. For the latter, we sometimes log an exception internally before letting it percolate up the call stack. 
+
+A related, although somewhat less common scenario is when library developers try to outsmart the world by writing their own lightweight logging façade, ostensibly allowing the user to plug in any logger without tying them to SLF4J (but in reality adding no value and causing a heartache for all involved).
+
+While the latter is widely considered an anti-pattern, the use of helpers in niche contexts can sometimes be hugely convenient as it leads to standardisation of logging and minimises code duplication. There is no compelling reason why code de-duplication should be discouraged for logging.
+
+The major problem with logging helpers (and hand-rolled façades, for that matter) is that they interfere with the location awareness of the underlying concrete loggers. Loggers capture and output class, method name and line number of the call site; adding a level of indirection obfuscates the real call site, losing crucial debugging data.
+
+Zlg provides a facility for overriding the call site _entrypoint_, letting you write 'lossless' custom logging helpers, bridges and façades. Overriding the call site is done by calling `entrypoint()` on the log chain. Example below. 
+
+```java
+private static final Zlg zlg = Zlg.forDeclaringClass().get();
+
+private static class LogHelper {
+  // class nesting lets us demarcate the entrypoint
+  static void traceIOError(String summary, IOException cause) throws IOException {
+    // override the call site entry point to the helper class
+    zlg.w("I/O error: %s", z -> z.arg(summary).threw(cause).tag("I/O").entrypoint(LogHelper.class));
+    throw cause;
+  }
+}
+
+public static void main(String[] args) throws IOException {
+  // log an error via our helper
+  LogHelper.traceIOError("No more data", new EOFException());
+}
+```
+
+The only caveat is that helpers must be encapsulated in their own class (which may be private), which provides a clean demarcation between the helper and the rest of the application. Calls to the helper must be made from outside the helper class.
+
+Running the example above will output the class/method/line of the call to the helper, not the call to Zlg.
