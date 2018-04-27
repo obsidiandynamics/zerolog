@@ -10,9 +10,11 @@ public final class Slf4jHelperSample {
   
   // class nesting lets us demarcate the entrypoint
   private static class LogHelper {
+    private static final String entrypoint = LogHelper.class.getName();
+
     static void traceIOError(String summary, IOException cause) throws IOException {
       // override the call site entry point to the helper class
-      zlg.t("I/O error: %s", z -> z.arg(summary).threw(cause).tag("I/O").entrypoint(LogHelper.class));
+      zlg.t("I/O error: %s", z -> z.arg(summary).threw(cause).tag("I/O").entrypoint(entrypoint));
       throw cause;
     }
   }

@@ -81,7 +81,7 @@ public final class ZlgImplTest {
     zlg.i(format);
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
     verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(0), any(), isNull(), 
-                             eq(Zlg.ENTRYPOINT));
+                             eq(Zlg.entrypoint));
     assertArrayEquals(new Object[] {}, mocks.argv);
   }
 
@@ -142,7 +142,7 @@ public final class ZlgImplTest {
     .log();
     verify(mocks.target).isEnabled(eq(LogLevel.WARN));
     verify(mocks.target)
-    .log(eq(LogLevel.WARN), isNull(), eq(secondMessage), eq(0), any(), isNull(), eq(LogChain.ENTRYPOINT));
+    .log(eq(LogLevel.WARN), isNull(), eq(secondMessage), eq(0), any(), isNull(), eq(LogChain.entrypoint));
     assertArrayEquals(new Object[0], mocks.argv);
   }
 
@@ -161,7 +161,7 @@ public final class ZlgImplTest {
     .arg((Object) null)
     .log();
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
-    verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(1), any(), isNull(), eq(LogChain.ENTRYPOINT));
+    verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(1), any(), isNull(), eq(LogChain.entrypoint));
     assertArrayEquals(new Object[] {null}, mocks.argv);
   }
   
@@ -174,7 +174,7 @@ public final class ZlgImplTest {
       if (level.getLevel() != LogLevel.OFF) {
         zlg.level(level.getLevel()).format("format").log();
         verify(mocks.target)
-        .log(eq(level.getLevel()), isNull(), eq("format"), eq(0), any(), isNull(), eq(LogChain.ENTRYPOINT));
+        .log(eq(level.getLevel()), isNull(), eq("format"), eq(0), any(), isNull(), eq(LogChain.entrypoint));
       }
     }
   }

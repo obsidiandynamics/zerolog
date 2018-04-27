@@ -22,7 +22,7 @@ public final class ZlgMockTest {
     
     verify(logChain).format(contains("the value of Pi"));
     verify(logChain).arg(eq(Math.PI));
-    verify(logChain).flush(eq(Zlg.ENTRYPOINT));
+    verify(logChain).flush(eq(Zlg.entrypoint));
   }
   
   @Test
@@ -33,7 +33,7 @@ public final class ZlgMockTest {
         .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE).withLogService(__ -> logTarget))
         .get();
     
-    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI).entrypoint(ZlgMockTest.class));
+    zlg.t("the value of Pi is %.2f", z -> z.arg(Math.PI).entrypoint(ZlgMockTest.class.getName()));
     verify(logTarget).log(eq(LogLevel.TRACE), 
                           isNull(), 
                           eq("the value of Pi is %.2f"), 

@@ -428,16 +428,19 @@ While the latter is widely considered an anti-pattern, the use of helpers in nic
 
 The major problem with logging helpers (and hand-rolled façades, for that matter) is that they interfere with the location awareness of the underlying concrete loggers. Loggers capture and output class, method name and line number of the call site; adding a level of indirection obfuscates the real call site, losing crucial debugging data.
 
-Zlg provides a facility for overriding the call site _entrypoint_, letting you write 'lossless' custom logging helpers, bridges and façades. Overriding the call site is done by calling `entrypoint()` on the log chain. Example below. 
+Zlg provides a facility for overriding the call site _entrypoint_, letting you write 'lossless' custom logging helpers, bridges and façades. Capturing the call site is done by calling `entrypoint()` on the log chain, supplying the fully-qualified class name of the immediate entrypoint. Example below.
 
 ```java
-private static final Zlg zlg = Zlg.forDeclaringClass().get();
+private static final Zlg zlg = Zlg.forDeclaringClass()
+    .withConfigService(new LogConfig().withBaseLevel(LogLevel.TRACE)).get();
 
+// class nesting lets us demarcate the entrypoint
 private static class LogHelper {
-  // class nesting lets us demarcate the entrypoint
+  private static final String entrypoint = LogHelper.class.getName();
+
   static void traceIOError(String summary, IOException cause) throws IOException {
     // override the call site entry point to the helper class
-    zlg.w("I/O error: %s", z -> z.arg(summary).threw(cause).tag("I/O").entrypoint(LogHelper.class));
+    zlg.t("I/O error: %s", z -> z.arg(summary).threw(cause).tag("I/O").entrypoint(entrypoint));
     throw cause;
   }
 }

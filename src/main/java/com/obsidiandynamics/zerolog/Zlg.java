@@ -5,10 +5,10 @@ import java.util.function.*;
 import com.obsidiandynamics.zerolog.util.*;
 
 public interface Zlg {
-  static String ENTRYPOINT = Zlg.class.getName();
+  static String entrypoint = Zlg.class.getName();
   
   interface LogChain {
-    static String ENTRYPOINT = LogChain.class.getName();
+    static String entrypoint = LogChain.class.getName();
     
     static int MAX_ARGS = 64;
     
@@ -48,10 +48,6 @@ public interface Zlg {
     
     LogChain entrypoint(String entrypoint);
     
-    default LogChain entrypoint(Class<?> cls) {
-      return entrypoint(cls.getName());
-    }
-    
     /**
      *  Feeds the log chain into a consumer and then completes the log chain.
      *  
@@ -59,7 +55,7 @@ public interface Zlg {
      */
     default void flush(Consumer<LogChain> logChainConsumer) {
       logChainConsumer.accept(this);
-      flush(Zlg.ENTRYPOINT);
+      flush(Zlg.entrypoint);
     }
     
     /**
@@ -72,7 +68,7 @@ public interface Zlg {
     void flush(String assumedEntrypoint);
     
     default boolean log() {
-      flush(ENTRYPOINT);
+      flush(entrypoint);
       return true;
     }
   }
@@ -82,11 +78,11 @@ public interface Zlg {
   boolean isEnabled(int level);
   
   default void e(String message) { 
-    level(LogLevel.ERROR).format(message).flush(ENTRYPOINT); 
+    level(LogLevel.ERROR).format(message).flush(entrypoint); 
   }
   
   default void e(String summary, Throwable cause) {
-    level(LogLevel.ERROR).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.ERROR).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void e(String format, Consumer<LogChain> logChainConsumer) {
@@ -94,11 +90,11 @@ public interface Zlg {
   }
   
   default void w(String message) { 
-    level(LogLevel.WARN).format(message).flush(ENTRYPOINT); 
+    level(LogLevel.WARN).format(message).flush(entrypoint); 
   }
   
   default void w(String summary, Throwable cause) {
-    level(LogLevel.WARN).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.WARN).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void w(String format, Consumer<LogChain> logChainConsumer) {
@@ -106,11 +102,11 @@ public interface Zlg {
   }
   
   default void i(String message) { 
-    level(LogLevel.INFO).format(message).flush(ENTRYPOINT); 
+    level(LogLevel.INFO).format(message).flush(entrypoint); 
   }
   
   default void i(String summary, Throwable cause) {
-    level(LogLevel.INFO).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.INFO).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void i(String format, Consumer<LogChain> logChainConsumer) {
@@ -118,11 +114,11 @@ public interface Zlg {
   }
   
   default void c(String message) { 
-    level(LogLevel.CONF).format(message).flush(ENTRYPOINT);
+    level(LogLevel.CONF).format(message).flush(entrypoint);
   }
   
   default void c(String summary, Throwable cause) {
-    level(LogLevel.CONF).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.CONF).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void c(String format, Consumer<LogChain> logChainConsumer) {
@@ -130,11 +126,11 @@ public interface Zlg {
   }
   
   default void d(String message) { 
-    level(LogLevel.DEBUG).format(message).flush(ENTRYPOINT); 
+    level(LogLevel.DEBUG).format(message).flush(entrypoint); 
   }
 
   default void d(String summary, Throwable cause) {
-    level(LogLevel.DEBUG).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.DEBUG).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void d(String format, Consumer<LogChain> logChainConsumer) {
@@ -142,11 +138,11 @@ public interface Zlg {
   }
   
   default void t(String message) {
-    level(LogLevel.TRACE).format(message).flush(ENTRYPOINT); 
+    level(LogLevel.TRACE).format(message).flush(entrypoint); 
   }
   
   default void t(String summary, Throwable cause) {
-    level(LogLevel.TRACE).format(summary).threw(cause).flush(ENTRYPOINT); 
+    level(LogLevel.TRACE).format(summary).threw(cause).flush(entrypoint); 
   }
   
   default void t(String format, Consumer<LogChain> logChainConsumer) {

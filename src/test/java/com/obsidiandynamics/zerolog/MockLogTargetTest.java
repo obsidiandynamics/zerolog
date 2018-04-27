@@ -69,7 +69,7 @@ public final class MockLogTargetTest {
       assertEquals(Arrays.asList(i), entry.getArgs());
       assertEquals(cause, entry.getThrowable());
       assertEquals("entry #" + i, entry.getMessage());
-      assertEquals(LogChain.ENTRYPOINT, entry.getEntrypoint());
+      assertEquals(LogChain.entrypoint, entry.getEntrypoint());
     }
   }
   
@@ -326,7 +326,7 @@ public final class MockLogTargetTest {
     zlg.d("debug", z -> z.entrypoint("entrypoint"));
     zlg.c("conf");
 
-    assertEquals(2, target.entries().withEntrypoint(Zlg.ENTRYPOINT).count());
+    assertEquals(2, target.entries().withEntrypoint(Zlg.entrypoint).count());
     assertEquals(1, target.entries().withEntrypoint("entrypoint").count());
 
     // all log entries should have an entrypoint

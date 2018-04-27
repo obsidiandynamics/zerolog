@@ -60,10 +60,10 @@ public final class Slf4jLogTargetTest {
     final LocationAwareLogger log = mock(LocationAwareLogger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
     final Exception exception = new Exception("test exception");
-    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, exception, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, exception, Zlg.entrypoint);
     
     final Marker marker = MarkerFactory.getMarker("tag");
-    verify(log).log(eq(marker), eq(Zlg.ENTRYPOINT), eq(LocationAwareLogger.TRACE_INT), eq("format arg"), 
+    verify(log).log(eq(marker), eq(Zlg.entrypoint), eq(LocationAwareLogger.TRACE_INT), eq("format arg"), 
                     eq(new Object[0]), eq(exception));
   }
   
@@ -72,9 +72,9 @@ public final class Slf4jLogTargetTest {
     final LocationAwareLogger log = mock(LocationAwareLogger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
     final Exception exception = new Exception("test exception");
-    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, exception, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, exception, Zlg.entrypoint);
     
-    verify(log).log(isNull(), eq(Zlg.ENTRYPOINT), eq(LocationAwareLogger.TRACE_INT), eq("format arg"), 
+    verify(log).log(isNull(), eq(Zlg.entrypoint), eq(LocationAwareLogger.TRACE_INT), eq("format arg"), 
                     eq(new Object[0]), eq(exception));
   }
   
@@ -83,9 +83,9 @@ public final class Slf4jLogTargetTest {
     final LocationAwareLogger log = mock(LocationAwareLogger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
     final Exception exception = new Exception("test exception");
-    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, exception, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, exception, Zlg.entrypoint);
     
-    verify(log).log(isNull(), eq(Zlg.ENTRYPOINT), eq(LocationAwareLogger.TRACE_INT), contains("WARNING -"), 
+    verify(log).log(isNull(), eq(Zlg.entrypoint), eq(LocationAwareLogger.TRACE_INT), contains("WARNING -"), 
                     eq(new Object[0]), eq(exception));
   }
   
@@ -95,7 +95,7 @@ public final class Slf4jLogTargetTest {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
     final Exception exception = new Exception("test exception");
-    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, exception, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, exception, Zlg.entrypoint);
     
     final Marker marker = MarkerFactory.getMarker("tag");
     verify(log).trace(eq(marker), eq("format arg"), eq(exception));
@@ -105,7 +105,7 @@ public final class Slf4jLogTargetTest {
   public void testLogWithoutLocationWithMessageAndTag() {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
-    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, null, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, "tag", "format %s", 1, new Object[] {"arg"}, null, Zlg.entrypoint);
     
     final Marker marker = MarkerFactory.getMarker("tag");
     verify(log).trace(eq(marker), eq("format arg"));
@@ -116,7 +116,7 @@ public final class Slf4jLogTargetTest {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
     final Exception exception = new Exception("test exception");
-    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, exception, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, exception, Zlg.entrypoint);
     
     verify(log).trace(eq("format arg"), eq(exception));
   }
@@ -125,7 +125,7 @@ public final class Slf4jLogTargetTest {
   public void testLogWithoutLocationWithMessageOnly() {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
-    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, null, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, null, "format %s", 1, new Object[] {"arg"}, null, Zlg.entrypoint);
     
     verify(log).trace(eq("format arg"));
   }
@@ -134,7 +134,7 @@ public final class Slf4jLogTargetTest {
   public void testLogWithoutLocationWithBadFormat() {
     final Logger log = mock(Logger.class);
     final Slf4jLogTarget target = new Slf4jLogTarget(log);
-    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, null, Zlg.ENTRYPOINT);
+    target.log(LogLevel.TRACE, null, "format %d", 1, new Object[] {3.14}, null, Zlg.entrypoint);
     
     verify(log).trace(contains("WARNING -"));
   }

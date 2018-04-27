@@ -49,8 +49,8 @@ public final class ZlgTest {
     verify(chain).log();
 
     verify(z, times(6)).level(anyInt());
-    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
-    verify(chain, times(1)).flush(eq(LogChain.ENTRYPOINT));
+    verify(chain, times(6)).flush(eq(Zlg.entrypoint));
+    verify(chain, times(1)).flush(eq(LogChain.entrypoint));
     verifyNoMoreInteractions(chain);
   }
   
@@ -91,7 +91,7 @@ public final class ZlgTest {
     
     verify(z, times(6)).level(anyInt());
     verify(chain, times(6)).threw(eq(cause));
-    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
+    verify(chain, times(6)).flush(eq(Zlg.entrypoint));
     verifyNoMoreInteractions(chain);
   }
   
@@ -102,7 +102,7 @@ public final class ZlgTest {
     
     chain.flush(logChainConsumer);
     verify(logChainConsumer).accept(eq(chain));
-    verify(chain).flush(eq(Zlg.ENTRYPOINT));
+    verify(chain).flush(eq(Zlg.entrypoint));
   }
   
   @Test
@@ -134,7 +134,7 @@ public final class ZlgTest {
     verify(z).level(eq(LogLevel.ERROR));
     
     verify(logChainConsumer, times(6)).accept(eq(chain));
-    verify(chain, times(6)).flush(eq(Zlg.ENTRYPOINT));
+    verify(chain, times(6)).flush(eq(Zlg.entrypoint));
   }
   
   @Test
