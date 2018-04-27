@@ -24,4 +24,10 @@ public final class ZlgHandlerTest {
     target.entries().assertCount(1);
     target.entries().forLevel(LogLevel.DEBUG).withMessage("Pi is 3.14").assertCount(1);
   }
+  
+  @Test
+  public void testDefaultConstructor() {
+    final ZlgHandler handler = new ZlgHandler();
+    handler.close();
+  }
 }

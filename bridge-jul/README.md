@@ -14,8 +14,8 @@ compile "com.obsidiandynamics.zerolog:zerolog-core:x.y.z"
 compile "com.obsidiandynamics.zerolog:zerolog-bridge-jul:x.y.z"
 ```
 
-## Sample code
-The following example installs the bridge (stashing prior handlers first) and demonstrates logging via JUL, ending up in Zlg. Afterwards the original handlers are restored from the stash.
+## Installing programmatically
+The following example installs the bridge for the root logger (stashing prior handlers first) and demonstrates logging via JUL, ending up in Zlg. Afterwards the original handlers are restored from the stash.
 
 ```java
 final Logger logger = Logger.getLogger(JulZlgBridgeSample.class.getName());
@@ -40,4 +40,26 @@ JulZlgBridge.unstashAllHandlers();
 logger.log(Level.INFO, "Goodbye");
 ```
 
-You can keep the original handlers and use the bridge at the same time by skipping the (un)stashing.
+You can keep the original handlers and use the bridge at the same time by skipping the (un)stashing steps.
+
+**Note:** JUL will apply its own level-based filtering to the log entries prior to delegating them to the handler(s). By default, the root JUL logger operates at `Level.INFO`. To programmatically alter the level, invoke `setLevel(Level)` on the `Logger` instance.
+
+## Installing via a properties file
+The following sample properties file configures the `ZlgHandler` directly and enables all levels on the root logger.
+
+```
+handlers=com.obsidiandynamics.zerolog.ZlgHandler
+.level=ALL
+```
+
+Configure by setting the `java.util.logging.config.file` system property (programmatically, or via a `-D...` JVM argument).
+
+```java
+System.setProperty("java.util.logging.config.file", "src/test/resources/jul.properties");
+
+final Logger logger = Logger.getLogger(ZlgHandlerPropertiesSample.class.getName());
+
+// logging will now end up with Zlg
+logger.log(Level.INFO, "Pi is {0} ≈ {1}/{2}", new Object[] {Math.PI, 22, 7});
+```
+
