@@ -21,7 +21,7 @@ public final class HazelcastZlgBridge {
    *  Installs the bridge with the default {@link ConfigService}.
    */
   public static void install() {
-    install(ZlgBuilder.getDefaultConfigService());
+    install(ConfigServiceDefaults.getDefaultConfigService());
   }
   
   /**
@@ -40,7 +40,7 @@ public final class HazelcastZlgBridge {
   public static void uninstall() {
     if (isInstalled()) {
       System.getProperties().remove(PROPERTY_KEY);
-      ZlgFactory.setConfigService(ZlgBuilder.getDefaultConfigService());
+      ZlgFactory.setConfigService(ConfigServiceDefaults.getDefaultConfigService());
     }
   }
   
