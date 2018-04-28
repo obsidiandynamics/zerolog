@@ -18,12 +18,12 @@ final class ZlgLogger extends AbstractLogger {
 
   @Override
   public void log(Level level, String message) {
-    zlg.level(JulMappings.mapLevel(level)).format(message).entrypoint(entrypoint).log();
+    zlg.level(JulMappings.mapLevel(level)).format("%s").arg(message).entrypoint(entrypoint).log();
   }
 
   @Override
   public void log(Level level, String message, Throwable thrown) {
-    zlg.level(JulMappings.mapLevel(level)).format(message).threw(thrown).entrypoint(entrypoint).log();
+    zlg.level(JulMappings.mapLevel(level)).format("%s").arg(message).threw(thrown).entrypoint(entrypoint).log();
   }
 
   @Override
