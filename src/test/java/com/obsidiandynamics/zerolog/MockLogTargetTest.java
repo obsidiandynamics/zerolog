@@ -300,11 +300,13 @@ public final class MockLogTargetTest {
     zlg.t("trace");
     zlg.d("debug", z -> z.arg("string").arg(Math.PI));
     zlg.c("conf");
-
-    assertEquals(1, target.entries().withArgType(String.class).count());
+    
     assertEquals(1, target.entries().withArgType(Double.class).count());
     assertEquals(0, target.entries().withArgType(Integer.class).count());
-    assertEquals(1, target.entries().withArgType(Object.class).count());
+
+    // all three string args, as logging a message appends one string arg
+    assertEquals(3, target.entries().withArgType(String.class).count());
+    assertEquals(3, target.entries().withArgType(Object.class).count());
   }
   
   @Test
@@ -315,7 +317,8 @@ public final class MockLogTargetTest {
     zlg.d("debug", z -> z.arg("string").arg(Math.PI));
     zlg.c("conf");
 
-    assertEquals(1, target.entries().withArg().count());
+    // all three have args, as logging a message appends one string arg
+    assertEquals(3, target.entries().withArg().count());
   }
 
   @Test

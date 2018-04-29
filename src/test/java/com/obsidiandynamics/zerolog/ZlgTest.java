@@ -18,32 +18,33 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
+    when(chain.message(any())).thenReturn(chain);
     when(chain.entrypoint(any(String.class))).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     
     z.t("trace");
     verify(z).level(eq(LogLevel.TRACE));
-    verify(chain).format(eq("trace"));
+    verify(chain).message(eq("trace"));
 
     z.d("debug");
     verify(z).level(eq(LogLevel.DEBUG));
-    verify(chain).format(eq("debug"));
+    verify(chain).message(eq("debug"));
 
     z.c("conf");
     verify(z).level(eq(LogLevel.CONF));
-    verify(chain).format(eq("conf"));
+    verify(chain).message(eq("conf"));
 
     z.i("info");
     verify(z).level(eq(LogLevel.INFO));
-    verify(chain).format(eq("info"));
+    verify(chain).message(eq("info"));
 
     z.w("warn");
     verify(z).level(eq(LogLevel.WARN));
-    verify(chain).format(eq("warn"));
+    verify(chain).message(eq("warn"));
 
     z.e("error");
     verify(z).level(eq(LogLevel.ERROR));
-    verify(chain).format(eq("error"));
+    verify(chain).message(eq("error"));
     
     assertTrue(chain.log());
     verify(chain).log();
@@ -59,6 +60,7 @@ public final class ZlgTest {
     final Zlg z = mock(Zlg.class, Answers.CALLS_REAL_METHODS);
     final LogChain chain = mock(LogChain.class, Answers.CALLS_REAL_METHODS);
     when(chain.format(any())).thenReturn(chain);
+    when(chain.message(any())).thenReturn(chain);
     when(chain.entrypoint(any(String.class))).thenReturn(chain);
     when(z.level(anyInt())).thenReturn(chain);
     when(chain.threw(isA(Throwable.class))).thenReturn(chain);
@@ -67,27 +69,27 @@ public final class ZlgTest {
     
     z.t("trace", cause);
     verify(z).level(eq(LogLevel.TRACE));
-    verify(chain).format(eq("trace"));
+    verify(chain).message(eq("trace"));
 
     z.d("debug", cause);
     verify(z).level(eq(LogLevel.DEBUG));
-    verify(chain).format(eq("debug"));
+    verify(chain).message(eq("debug"));
 
     z.c("conf", cause);
     verify(z).level(eq(LogLevel.CONF));
-    verify(chain).format(eq("conf"));
+    verify(chain).message(eq("conf"));
 
     z.i("info", cause);
     verify(z).level(eq(LogLevel.INFO));
-    verify(chain).format(eq("info"));
+    verify(chain).message(eq("info"));
 
     z.w("warn", cause);
     verify(z).level(eq(LogLevel.WARN));
-    verify(chain).format(eq("warn"));
+    verify(chain).message(eq("warn"));
 
     z.e("error", cause);
     verify(z).level(eq(LogLevel.ERROR));
-    verify(chain).format(eq("error"));
+    verify(chain).message(eq("error"));
     
     verify(z, times(6)).level(anyInt());
     verify(chain, times(6)).threw(eq(cause));

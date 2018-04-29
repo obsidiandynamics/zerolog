@@ -17,6 +17,7 @@ public final class NopLogChainTest {
     final LogChain end = chain
         .tag("tag")
         .format("format")
+        .message("message")
         .arg(true)
         .arg((byte) 0x01)
         .arg('c')

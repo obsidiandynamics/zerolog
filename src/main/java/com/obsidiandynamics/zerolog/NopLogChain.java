@@ -20,6 +20,11 @@ public final class NopLogChain implements LogChain {
   public LogChain format(String format) {
     return this;
   }
+  
+  @Override
+  public LogChain message(Object message) {
+    return this;
+  }
 
   @Override
   public LogChain arg(boolean arg) {

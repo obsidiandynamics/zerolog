@@ -51,6 +51,11 @@ final class ZlgImpl implements Zlg {
       this.format = format;
       return this;
     }
+    
+    @Override
+    public LogChain message(Object message) {
+      return format("%s").arg(message);
+    }
 
     @Override
     public LogChain arg(boolean arg) {

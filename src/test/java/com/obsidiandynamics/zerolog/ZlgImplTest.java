@@ -76,13 +76,13 @@ public final class ZlgImplTest {
   public void testLogInfoWithoutArgsTagOrStack() {
     final LogMocks mocks = new LogMocks(LogLevel.CONF, LogLevel.INFO);
     final Zlg zlg = Zlg.forName("test").withConfigService(mocks).get();
-    final String format = "message";
+    final String message = "message";
     
-    zlg.i(format);
+    zlg.i(message);
     verify(mocks.target).isEnabled(eq(LogLevel.INFO));
-    verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq(format), eq(0), any(), isNull(), 
+    verify(mocks.target).log(eq(LogLevel.INFO), isNull(), eq("%s"), eq(1), any(), isNull(), 
                              eq(Zlg.entrypoint));
-    assertArrayEquals(new Object[] {}, mocks.argv);
+    assertArrayEquals(new Object[] {message}, mocks.argv);
   }
 
   /**

@@ -16,6 +16,8 @@ public interface Zlg {
     
     LogChain format(String format);
     
+    LogChain message(Object message);
+    
     LogChain arg(boolean arg);
     
     LogChain arg(BooleanSupplier supplier);
@@ -77,72 +79,72 @@ public interface Zlg {
   
   boolean isEnabled(int level);
   
-  default void e(String message) { 
-    level(LogLevel.ERROR).format(message).flush(entrypoint); 
+  default void e(Object message) { 
+    level(LogLevel.ERROR).message(message).flush(entrypoint); 
   }
   
   default void e(String summary, Throwable cause) {
-    level(LogLevel.ERROR).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.ERROR).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void e(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.ERROR).format(format).flush(logChainConsumer);
   }
   
-  default void w(String message) { 
-    level(LogLevel.WARN).format(message).flush(entrypoint); 
+  default void w(Object message) { 
+    level(LogLevel.WARN).message(message).flush(entrypoint); 
   }
   
   default void w(String summary, Throwable cause) {
-    level(LogLevel.WARN).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.WARN).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void w(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.WARN).format(format).flush(logChainConsumer);
   }
   
-  default void i(String message) { 
-    level(LogLevel.INFO).format(message).flush(entrypoint); 
+  default void i(Object message) { 
+    level(LogLevel.INFO).message(message).flush(entrypoint); 
   }
   
   default void i(String summary, Throwable cause) {
-    level(LogLevel.INFO).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.INFO).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void i(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.INFO).format(format).flush(logChainConsumer);
   }
   
-  default void c(String message) { 
-    level(LogLevel.CONF).format(message).flush(entrypoint);
+  default void c(Object message) { 
+    level(LogLevel.CONF).message(message).flush(entrypoint);
   }
   
   default void c(String summary, Throwable cause) {
-    level(LogLevel.CONF).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.CONF).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void c(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.CONF).format(format).flush(logChainConsumer);
   }
   
-  default void d(String message) { 
-    level(LogLevel.DEBUG).format(message).flush(entrypoint); 
+  default void d(Object message) { 
+    level(LogLevel.DEBUG).message(message).flush(entrypoint); 
   }
 
   default void d(String summary, Throwable cause) {
-    level(LogLevel.DEBUG).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.DEBUG).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void d(String format, Consumer<LogChain> logChainConsumer) {
     level(LogLevel.DEBUG).format(format).flush(logChainConsumer);
   }
   
-  default void t(String message) {
-    level(LogLevel.TRACE).format(message).flush(entrypoint); 
+  default void t(Object message) {
+    level(LogLevel.TRACE).message(message).flush(entrypoint); 
   }
   
   default void t(String summary, Throwable cause) {
-    level(LogLevel.TRACE).format(summary).threw(cause).flush(entrypoint); 
+    level(LogLevel.TRACE).message(summary).threw(cause).flush(entrypoint); 
   }
   
   default void t(String format, Consumer<LogChain> logChainConsumer) {
