@@ -320,6 +320,17 @@ public final class MockLogTargetTest {
     // all three have args, as logging a message appends one string arg
     assertEquals(3, target.entries().withArg().count());
   }
+  
+  @Test
+  public void testWithArgNone() {
+    final MockLogTarget target = new MockLogTarget();
+    final Zlg zlg = target.logger();
+    zlg.t("trace", z -> z.tag("tag"));
+    zlg.d("debug", z -> z.arg("string").arg(Math.PI));
+    zlg.c("conf", z -> z.tag("tag"));
+
+    assertEquals(1, target.entries().withArg().count());
+  }
 
   @Test
   public void testWithEntrypoint() {
