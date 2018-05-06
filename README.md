@@ -211,7 +211,7 @@ final Zlg zlg = Zlg
 
 # FAQ
 ## Aren't there enough loggers already?
-Zlg isn't a logger, it is a _logging façade_, acting as an interface between your application code and the logger implementation. It is up the underlying logger to format and persist (or forward) the logs.
+Zlg isn't a logger, it is a _logging façade_, acting as an interface between your application code and the logger implementation. It is up to the underlying logger to format and persist (or forward) the logs.
 
 Zlg comes with a 'failsafe' logger — `SysOutLogService`; however, this is only a stop-gap measure until you install an appropriate log binding.
 
