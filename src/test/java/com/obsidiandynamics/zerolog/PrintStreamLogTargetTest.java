@@ -19,7 +19,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     final PrintStreamLogTarget target = new PrintStreamLogTarget(new PrintStream(ss));
     final String threadName = Thread.currentThread().getName();
     final String tag = "abracadabra";
-    target.log(LogLevel.TRACE, tag, "message %d %d %d", 3, new Object[]{100, 200, 300, 400}, null, null);
+    target.log(LogLevel.TRACE, tag, "message %d %d %d", 3, new Object[]{100, 200, 300, 4_000}, null, null);
     final String out = ss.getString();
     
     assertHas(out, threadName);
@@ -28,7 +28,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     assertHas(out, "100");
     assertHas(out, "200");
     assertHas(out, "300");
-    assertHasNot(out, "400");
+    assertHasNot(out, "4000");
   }
   
   @Test
@@ -36,7 +36,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     final StringStream ss = new StringStream();
     final PrintStreamLogTarget target = new PrintStreamLogTarget(new PrintStream(ss));
     final String threadName = Thread.currentThread().getName();
-    target.log(LogLevel.TRACE, null, "message %d %d %d", 3, new Object[]{100, 200, 300, 400}, null, null);
+    target.log(LogLevel.TRACE, null, "message %d %d %d", 3, new Object[]{100, 200, 300, 4_000}, null, null);
     final String out = ss.getString();
     
     assertHas(out, threadName);
@@ -44,7 +44,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     assertHas(out, "100");
     assertHas(out, "200");
     assertHas(out, "300");
-    assertHasNot(out, "400");
+    assertHasNot(out, "4000");
   }
   
   @Test
@@ -54,7 +54,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     final String threadName = Thread.currentThread().getName();
     final String tag = "abracadabra";
     final Exception exception = new Exception("simulated error");
-    target.log(LogLevel.TRACE, tag, "message %d %d %d", 3, new Object[]{100, 200, 300, 400}, exception, null);
+    target.log(LogLevel.TRACE, tag, "message %d %d %d", 3, new Object[]{100, 200, 300, 4_000}, exception, null);
     final String out = ss.getString();
     
     assertHas(out, threadName);
@@ -63,7 +63,7 @@ public class PrintStreamLogTargetTest extends AbstractLogTargetTest {
     assertHas(out, "100");
     assertHas(out, "200");
     assertHas(out, "300");
-    assertHasNot(out, "400");
+    assertHasNot(out, "4000");
     assertHas(out, exception.getMessage());
     assertHas(out, "at");
     assertHas(out, "testLogWithTagAndException");
