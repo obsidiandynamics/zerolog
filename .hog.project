@@ -1,0 +1,9 @@
+commands:
+  build: ./gradlew build --info --stacktrace --no-daemon
+  publish: ./gradlew -x test bintrayUpload --no-daemon
+modules:
+- path: .
+  dependencies:
+  - name: fulcrum
+    groupId: com.obsidiandynamics.fulcrum
+    artefactId: fulcrum-func
