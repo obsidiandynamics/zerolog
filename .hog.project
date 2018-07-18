@@ -6,4 +6,4 @@ modules:
   dependencies:
   - name: fulcrum
     groupId: com.obsidiandynamics.fulcrum
-    artefactId: fulcrum-func
+    artifactId: fulcrum-func
