@@ -22,7 +22,8 @@ public final class PropertiesConfigService implements ConfigService {
     PropertiesLoadException(Throwable cause) { super(cause); }
   }
   
-  public interface PropertiesLoader extends ThrowingSupplier<Properties> {}
+  @FunctionalInterface
+  public interface PropertiesLoader extends CheckedSupplier<Properties, Exception> {}
   
   private final PropertiesLoader propsLoader;
   
