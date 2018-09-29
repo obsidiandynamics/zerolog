@@ -38,7 +38,7 @@ allprojects {
   }
   
   ext {
-    fulcrumVersion = "0.17.0"
+    fulcrumVersion = "0.18.0"
   }
   
   dependencies {
