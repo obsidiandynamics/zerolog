@@ -6,7 +6,7 @@ services:
 jdk:
   - oraclejdk8
   - oraclejdk9
-  - oraclejdk10
+  - openjdk10
   - openjdk11
 install:
   - ./gradlew assemble --stacktrace --info
