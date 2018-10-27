@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import com.obsidiandynamics.zerolog.util.*;
+import com.obsidiandynamics.format.*;
 
 /**
  *  A mock {@link LogTarget} that accumulates all log entries and provides a fluent

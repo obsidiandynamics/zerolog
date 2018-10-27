@@ -2,12 +2,12 @@ def packageName = "zerolog-slf4j17"
 version = project(":").version
 
 dependencies {
-  compileOnly "org.slf4j:slf4j-api:1.7.25" // not exporting, so that any 1.7.x can be supplied by the user
   compile project(":")
+  compileOnly "org.slf4j:slf4j-api:${slf4jVersion}" // not exporting, so that any 1.7.x can be supplied by the user
   
-  testCompile "org.slf4j:slf4j-api:1.7.25"
-  testRuntime "org.slf4j:slf4j-log4j12:1.7.25"
-  testRuntime "log4j:log4j:1.2.17"
+  testCompile "org.slf4j:slf4j-api:${slf4jVersion}"
+  testRuntime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+  testRuntime "log4j:log4j:${log4jVersion}"
 }
 
 jar {

@@ -3,7 +3,7 @@ package com.obsidiandynamics.zerolog;
 import org.slf4j.*;
 import org.slf4j.spi.*;
 
-import com.obsidiandynamics.zerolog.util.*;
+import com.obsidiandynamics.format.*;
 
 final class Slf4jLogTarget implements LogTarget {
   @FunctionalInterface

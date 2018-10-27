@@ -4,6 +4,7 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
+import com.obsidiandynamics.format.*;
 import com.obsidiandynamics.zerolog.util.*;
 
 final class PrintStreamLogTarget implements LogTarget {

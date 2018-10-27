@@ -1,4 +1,5 @@
 rootProject.name = "zerolog"
+enableFeaturePreview('STABLE_PUBLISHING') // Gradle 5.0 forward compatibility testing
 
 include "zerolog-benchmarks"
 project(":zerolog-benchmarks").projectDir = new File(settingsDir, "benchmarks")
