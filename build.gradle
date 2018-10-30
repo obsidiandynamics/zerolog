@@ -38,7 +38,7 @@ allprojects {
   }
   
   ext {
-    fulcrumVersion = "0.24.0"
+    fulcrumVersion = "0.25.0"
     hazelcastVersion = "3.11"
     jmhVersion = "1.21"
     junitVersion = "4.12"
