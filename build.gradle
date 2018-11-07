@@ -6,7 +6,7 @@ apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
 
 group = "com.obsidiandynamics.zerolog"
-version = "0.22.0-SNAPSHOT"
+version = "0.22.0"
   
 def envUser = "BINTRAY_USER"
 def envKey = "BINTRAY_KEY"
