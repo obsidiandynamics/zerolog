@@ -40,11 +40,18 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
   classifier = "sources"
 }
+
+task testJar(type: Jar) {
+  baseName packageName
+  from sourceSets.test.output
+  classifier = "test"
+}
  
 artifacts {
   archives jar
   archives javadocJar
   archives sourcesJar
+  archives testJar
 }
 
 publishing {
