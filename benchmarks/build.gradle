@@ -10,19 +10,36 @@ dependencies {
   testCompile "log4j:log4j:${log4jVersion}"
   testCompile "org.tinylog:tinylog:${tinylogVersion}"
   testCompile "org.openjdk.jmh:jmh-core:${jmhVersion}"
+
+  testRuntime "com.obsidiandynamics.fulcrum:fulcrum-launcher:${fulcrumVersion}"
   testRuntime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 }
 
-task addLauncherApps() {
-  project(":").launcherClasspath += sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.BaselineBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.JulLambdaBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Log4jBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
-  project(":").launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
+task launch(dependsOn: testClasses) {
+  doLast {
+    def launcherClasses = new ArrayList()
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.BaselineBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.JulBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.JulLambdaBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.Log4jBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.Slf4jBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.TinyLogBenchmark"
+    launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
+    
+    def perfJvmArgs = "-XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark " + 
+                      "-XX:+UseBiasedLocking -Xms2G -Xmx2G -Xss1M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 " + 
+                      "-XX:InitiatingHeapOccupancyPercent=0 -Djava.net.preferIPv4Stack=true " + 
+                      "-Dlauncher.package.compress.level=3"
+    javaexec {
+      systemProperties = System.properties
+      classpath = sourceSets.test.runtimeClasspath
+      main = "com.obsidiandynamics.launcher.Launcher"
+      args = launcherClasses
+      jvmArgs = Arrays.asList(perfJvmArgs.split(" ")) + baseJvmArgs
+      standardInput = System.in
+    }
+  }
 }
 
 jar {
