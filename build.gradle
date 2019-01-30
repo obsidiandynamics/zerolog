@@ -52,7 +52,7 @@ allprojects {
   }
   
   ext {
-    fulcrumVersion = "0.28.0"
+    fulcrumVersion = "0.29.0"
     hazelcastVersion = "3.11.1"
     jmhVersion = "1.21"
     junitVersion = "4.12"
@@ -118,6 +118,10 @@ allprojects {
   // invoke this task when ready to publish to Bintray
   bintrayUpload {
     dependsOn ":bintrayCredentialsCheck"
+    dependsOn "jar"
+    dependsOn "sourcesJar"
+    dependsOn "javadocJar"
+    dependsOn "generatePomFileForMavenJavaPublication"
   }
 }
 
