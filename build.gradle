@@ -97,12 +97,6 @@ allprojects {
   jacoco {
     toolVersion = "0.8.3"
   }
-  
-  javadoc {
-    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
-      options.addStringOption("quiet", "-html5")
-    }
-  }
 
   jacocoTestReport {
     additionalSourceDirs.from = files(sourceSets.main.allSource.srcDirs)

@@ -4,7 +4,6 @@ os:
 services:
   - docker
 jdk:
-  - oraclejdk8
   - oraclejdk9
   - openjdk10
   - openjdk11
