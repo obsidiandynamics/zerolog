@@ -8,8 +8,8 @@ jdk:
   - openjdk10
   - openjdk11
 install:
-  - ./gradlew assemble --stacktrace --info
+  - travis_retry ./gradlew --info dependencies --refresh-dependencies
 script:
-  - ./gradlew check --stacktrace --info
+  - ./gradlew build --stacktrace --info
 after_success:
   - bash <(curl -s https://codecov.io/bash)
