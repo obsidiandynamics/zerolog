@@ -5,7 +5,6 @@ services:
   - docker
 jdk:
   - oraclejdk9
-  - openjdk10
   - openjdk11
 install:
   - travis_retry ./gradlew --info dependencies --refresh-dependencies
