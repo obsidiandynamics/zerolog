@@ -53,7 +53,7 @@ public final class JulZlgBridge {
    */
   public static Set<Handler> uninstallAllHandlers() {
     final Logger root = getRootLogger();
-    final Set<Handler> stash = new HashSet<>();
+    final Set<Handler> stash = new HashSet<>(root.getHandlers().length, 1f);
     Arrays.stream(root.getHandlers()).forEach(handler -> {
       stash.add(handler);
       root.removeHandler(handler);
