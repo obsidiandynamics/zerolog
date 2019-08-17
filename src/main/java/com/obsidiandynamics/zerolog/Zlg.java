@@ -42,7 +42,7 @@ public interface Zlg {
     
     LogChain arg(short arg);
     
-    LogChain arg(Object arg);
+    LogChain arg(Object arg); // lgtm [java/confusing-method-signature]
     
     LogChain arg(Supplier<?> supplier);
     
