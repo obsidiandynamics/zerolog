@@ -1,6 +1,6 @@
 plugins {
   id "com.jfrog.bintray" version "1.8.4"
-  id "com.github.ben-manes.versions" version "0.21.0"
+  id "com.github.ben-manes.versions" version "0.22.0"
 }
 apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
@@ -53,7 +53,7 @@ allprojects {
   
   ext {
     fulcrumVersion = "0.34.0"
-    hazelcastVersion = "3.12.1"
+    hazelcastVersion = "3.12.2"
     jmhVersion = "1.21"
     junitVersion = "4.12"
     log4jVersion = "1.2.17"
