@@ -3,6 +3,7 @@
 [![Download](https://api.bintray.com/packages/obsidiandynamics/zerolog/zerolog-core/images/download.svg) ](https://bintray.com/obsidiandynamics/zerolog/zerolog-core/_latestVersion)
 [![Build](https://travis-ci.org/obsidiandynamics/zerolog.svg?branch=master) ](https://travis-ci.org/obsidiandynamics/zerolog#)
 [![codecov](https://codecov.io/gh/obsidiandynamics/zerolog/branch/master/graph/badge.svg)](https://codecov.io/gh/obsidiandynamics/zerolog)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/obsidiandynamics/zerolog.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/obsidiandynamics/zerolog/context:java)
 ===
 Low-overhead logging façade for performance-sensitive applications.
 
