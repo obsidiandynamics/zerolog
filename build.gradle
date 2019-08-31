@@ -162,6 +162,7 @@ dependencies {
   compile "com.obsidiandynamics.fulcrum:fulcrum-func:${fulcrumVersion}"
   compile "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
   compile "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
+  compile "com.obsidiandynamics.fulcrum:fulcrum-worker:${fulcrumVersion}"
 }
 
 jar {
