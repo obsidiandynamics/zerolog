@@ -13,7 +13,7 @@ Zerolog (abbreviated to Zlg) is a logging façade with two fundamental design ob
 1. **Ultra-low overhead for suppressed logging.** In other words, the cost of calling a log method when logging for that level has been disabled is negligible.
 2. **Uncompromised code coverage.** Suppression of logging should not impact statement and branch coverage metrics. A log entry is a statement like any other.
 
-Collectively, these goals make Zlg suitable for use in ultra-high performance, low-latency applications and in high-assurance environments.
+Collectively, these goals make Zlg suitable for use in ultra-high performance, low-latency applications, and high-assurance environments.
 
 # How fast is it?
 A JMH benchmark conducted on an [i7-4770 Haswell](https://ark.intel.com/products/75122/Intel-Core-i7-4770-Processor-8M-Cache-up-to-3_90-GHz) CPU with logging suppressed compares the per-invocation penalties for Zlg with some of the major loggers. Four primitives are passed to each logger for formatting, which is a fair representation of a typical log entry.
@@ -431,7 +431,7 @@ zlg.i("Logging to a wrapped SLF4J instance");
 ## How do I correctly write a logging helper or a custom logging façade?
 We've all done this before; written a static helper method that logs events in a particular way. Often this is done for logging messages or exceptions. For the latter, we sometimes log an exception internally before letting it percolate up the call stack. 
 
-A related, although somewhat less common scenario is when library developers try to outsmart the world by writing their own lightweight logging façade, ostensibly allowing the user to plug in any logger without tying them to SLF4J (but in reality adding no value and causing a heartache for all involved).
+A related, although a somewhat less common scenario is when library developers try to outsmart the world by writing their own lightweight logging façade, ostensibly allowing the user to plug in any logger without tying them to SLF4J (but in reality adding no value and causing a heartache for all involved).
 
 While the latter is widely considered an anti-pattern, the use of helpers in niche contexts can sometimes be hugely convenient as it leads to standardisation of logging and minimises code duplication. There is no compelling reason why code de-duplication should be discouraged for logging.
 
