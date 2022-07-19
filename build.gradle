@@ -35,7 +35,7 @@ allprojects {
   apply plugin: 'signing'
 
   group = "com.obsidiandynamics.zerolog"
-  version = "0.31.0-SNAPSHOT"
+  version = "0.31.0"
   
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
@@ -48,6 +48,15 @@ allprojects {
     maven {
       url "https://oss.sonatype.org/content/repositories/snapshots"
     }
+  }
+
+  java {
+    withJavadocJar()
+    withSourcesJar()
+  }
+
+  signing {
+    sign publishing.publications
   }
   
   ext {
