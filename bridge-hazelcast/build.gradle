@@ -18,7 +18,7 @@ publishing {
       pom {
         name = packageName
         description = packageDescription
-        url = 'https://github.com/obsidiandynamics/fulcrum'
+        url = 'https://github.com/obsidiandynamics/zerolog'
         licenses {
           license {
             name = 'BSD 3-Clause License'
@@ -33,9 +33,9 @@ publishing {
           }
         }
         scm {
-          connection = 'scm:git:git://github.com/obsidiandynamics/fulcrum.git'
-          developerConnection = 'scm:git:ssh://github.com/obsidiandynamics/fulcrum.git'
-          url = 'https://github.com/obsidiandynamics/fulcrum'
+          connection = 'scm:git:git://github.com/obsidiandynamics/zerolog.git'
+          developerConnection = 'scm:git:ssh://github.com/obsidiandynamics/zerolog.git'
+          url = 'https://github.com/obsidiandynamics/zerolog'
         }
       }
     }
