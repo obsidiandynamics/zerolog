@@ -1,18 +1,18 @@
 def packageName = "zerolog-benchmarks"
-version = project(":").version
+def packageDescription = "Benchmarks"
 
 dependencies {
-  compile project(":")
+  api project(":")
 
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-dyno:${fulcrumVersion}"
-  testCompile "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
-  testCompile "org.slf4j:slf4j-api:${slf4jVersion}"
-  testCompile "log4j:log4j:${log4jVersion}"
-  testCompile "org.tinylog:tinylog:${tinylogVersion}"
-  testCompile "org.openjdk.jmh:jmh-core:${jmhVersion}"
+  testImplementation "com.obsidiandynamics.fulcrum:fulcrum-dyno:${fulcrumVersion}"
+  testImplementation "com.obsidiandynamics.fulcrum:fulcrum-testmark:${fulcrumVersion}"
+  testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
+  testImplementation "log4j:log4j:${log4jVersion}"
+  testImplementation "org.tinylog:tinylog:${tinylogVersion}"
+  testImplementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
 
-  testRuntime "com.obsidiandynamics.fulcrum:fulcrum-launcher:${fulcrumVersion}"
-  testRuntime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+  testImplementation "com.obsidiandynamics.fulcrum:fulcrum-launcher:${fulcrumVersion}"
+  testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 }
 
 task launch(dependsOn: testClasses) {
@@ -42,72 +42,34 @@ task launch(dependsOn: testClasses) {
   }
 }
 
-jar {
-  baseName packageName
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  baseName packageName
-  classifier = "javadoc"
-  from "$buildDir/docs/javadoc"
-}
-
-task sourcesJar(type: Jar) {
-  baseName packageName
-  from sourceSets.main.allSource
-  classifier = "sources"
-}
- 
-artifacts {
-  archives jar
-  archives javadocJar
-  archives sourcesJar
-}
-
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      groupId project(":").group
-      artifactId packageName
-      version project(":").version
+      artifactId = packageName
       from components.java
-      artifact sourcesJar
-      artifact javadocJar
-    }
-  }
-  repositories {
-    maven {
-      url "${project(':').projectDir}/../repo"
-    }
-  }
-}
-
-def envUser = "BINTRAY_USER"
-def envKey = "BINTRAY_KEY"
-def packageDesc = "Benchmarks"
-def repoName = "zerolog"
-bintray {
-  user = System.getenv(envUser)
-  key = System.getenv(envKey)
-  publications = ["mavenJava"]
-  pkg {
-    repo = "${repoName}"
-    name = packageName
-    userOrg = "obsidiandynamics"
-    desc = packageDesc
-    websiteUrl = "https://github.com/obsidiandynamics/${repoName}"
-    licenses = ["BSD New"]
-    vcsUrl = "https://github.com/obsidiandynamics/${repoName}"
-    issueTrackerUrl = "https://github.com/obsidiandynamics/${repoName}/issues"
-    publicDownloadNumbers = true
-    githubRepo = "obsidiandynamics/${repoName}"
-    override = true
-    publish = true
-    version {
-      name = project(":").version
-      desc = packageDesc
-      released  = new Date()
-      vcsTag = project(":").version
+      pom {
+        name = packageName
+        description = packageDescription
+        url = 'https://github.com/obsidiandynamics/fulcrum'
+        licenses {
+          license {
+            name = 'BSD 3-Clause License'
+            url = 'https://opensource.org/licenses/BSD-3-Clause'
+          }
+        }
+        developers {
+          developer {
+            id = 'ekoutanov'
+            name = 'Emil Koutanov'
+            email = 'ekoutanov@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:git://github.com/obsidiandynamics/fulcrum.git'
+          developerConnection = 'scm:git:ssh://github.com/obsidiandynamics/fulcrum.git'
+          url = 'https://github.com/obsidiandynamics/fulcrum'
+        }
+      }
     }
   }
 }

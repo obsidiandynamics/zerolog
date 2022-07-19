@@ -1,22 +1,15 @@
 plugins {
-  id "com.jfrog.bintray" version "1.8.4"
   id "com.github.ben-manes.versions" version "0.22.0"
+  id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
-apply plugin: "maven-publish"
-apply plugin: "com.jfrog.bintray"
 
-group = "com.obsidiandynamics.zerolog"
-version = "0.31.0-SNAPSHOT"
-  
-def envUser = "BINTRAY_USER"
-def envKey = "BINTRAY_KEY"
-task bintrayCredentialsCheck {
-  doLast {
-    if (System.getenv(envUser) == null) {
-      throw new GradleException("No Bintray username specified; set with 'export ${envUser}=<username>'")
-    }
-    if (System.getenv(envKey) == null) {
-      throw new GradleException("No Bintray key specified; set with 'export ${envKey}=<key>'")
+nexusPublishing {
+  repositories {
+    sonatype {
+      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+      username = findProperty('sonatype.username')
+      password = findProperty('sonatype.password')
     }
   }
 }
@@ -36,52 +29,43 @@ def baseJvmArgs = [
 project.ext.set("baseJvmArgs", baseJvmArgs)
 
 allprojects {
-  apply plugin: "java"
+  apply plugin: "java-library"
   apply plugin: "jacoco"
-  apply plugin: "maven-publish"
-  apply plugin: "com.jfrog.bintray"
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
+
+  group = "com.obsidiandynamics.zerolog"
+  version = "0.31.0-SNAPSHOT"
   
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
+  //TODO remove when Javadoc errors have been resolved
+  javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
   repositories {
-    jcenter()
+    mavenCentral()
     maven {
       url "https://oss.sonatype.org/content/repositories/snapshots"
     }
   }
   
   ext {
-    fulcrumVersion = "0.36.0"
+    fulcrumVersion = "0.37.0"
     hazelcastVersion = "3.12.2"
     jmhVersion = "1.21"
     junitVersion = "4.12"
     log4jVersion = "1.2.17"
-    mockitoVersion = "3.0.0"
+    mockitoVersion = "4.6.1"
     slf4jVersion = "1.7.25"
     tinylogVersion = "1.3.6"
   }
   
   dependencies {
-    testCompile "com.obsidiandynamics.fulcrum:fulcrum-assert:${fulcrumVersion}"
-    testCompile "com.obsidiandynamics.fulcrum:fulcrum-junit:${fulcrumVersion}"
-    testCompile "junit:junit:${junitVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
-  }
-  
-  compileJava {
-    options.compilerArgs += "-proc:none"
-    options.compilerArgs += "-Xlint:unchecked"
-  }
-
-  compileTestJava {
-    options.compilerArgs += "-proc:none"
-    options.compilerArgs += "-Xlint:unchecked"
-  }
-  
-  tasks.withType(JavaCompile) {
-    options.fork = true
-    options.incremental = true
+    testImplementation "com.obsidiandynamics.fulcrum:fulcrum-assert:${fulcrumVersion}"
+    testImplementation "com.obsidiandynamics.fulcrum:fulcrum-junit:${fulcrumVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
   }
 
   test {
@@ -95,7 +79,7 @@ allprojects {
   }
 
   jacoco {
-    toolVersion = "0.8.4"
+    toolVersion = "0.8.8"
   }
 
   jacocoTestReport {
@@ -108,20 +92,11 @@ allprojects {
       csv.enabled false
     }
   }
-
-  // invoke this task when ready to publish to Bintray
-  bintrayUpload {
-    dependsOn ":bintrayCredentialsCheck"
-    dependsOn "jar"
-    dependsOn "sourcesJar"
-    dependsOn "javadocJar"
-    dependsOn "generatePomFileForMavenJavaPublication"
-  }
 }
 
 subprojects {
   dependencies {
-    testCompile project(":").sourceSets.test.output
+    testImplementation project(":").sourceSets.test.output
   }
 }
 
@@ -156,80 +131,44 @@ task jacocoRootReport(type: JacocoReport) {
 }
 
 def packageName = "zerolog-core"
+def packageDescription = "Low-overhead logging façade for performance-intensive applications"
 
 dependencies {
-  compile "com.obsidiandynamics.fulcrum:fulcrum-format:${fulcrumVersion}"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-func:${fulcrumVersion}"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-worker:${fulcrumVersion}"
-}
-
-jar {
-  baseName packageName
-  finalizedBy jacocoRootReport
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  baseName packageName
-  classifier = "javadoc"
-  from "$buildDir/docs/javadoc"
-}
- 
-task sourcesJar(type: Jar) {
-  baseName packageName
-  from sourceSets.main.allSource
-  classifier = "sources"
-}
- 
-artifacts {
-  archives jar
-  archives javadocJar
-  archives sourcesJar
+  api "com.obsidiandynamics.fulcrum:fulcrum-format:${fulcrumVersion}"
+  api "com.obsidiandynamics.fulcrum:fulcrum-func:${fulcrumVersion}"
+  api "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
+  api "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
+  api "com.obsidiandynamics.fulcrum:fulcrum-worker:${fulcrumVersion}"
 }
 
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      groupId project(":").group
-      artifactId packageName
-      version project(":").version
+      artifactId = packageName
       from components.java
-      artifact sourcesJar
-      artifact javadocJar
-    }
-  }
-  repositories {
-    maven {
-      url "${project(":").projectDir}/../repo"
-    }
-  }
-}
-
-def packageDesc = "Low-overhead logging façade for performance-intensive applications"
-def repoName = "zerolog"
-bintray {
-  user = System.getenv(envUser)
-  key = System.getenv(envKey)
-  publications = ["mavenJava"]
-  pkg {
-    repo = "${repoName}"
-    name = packageName
-    userOrg = "obsidiandynamics"
-    desc = packageDesc
-    websiteUrl = "https://github.com/obsidiandynamics/${repoName}"
-    licenses = ["BSD New"]
-    vcsUrl = "https://github.com/obsidiandynamics/${repoName}"
-    issueTrackerUrl = "https://github.com/obsidiandynamics/${repoName}/issues"
-    publicDownloadNumbers = true
-    githubRepo = "obsidiandynamics/${repoName}"
-    override = true
-    publish = true
-    version {
-      name = project(":").version
-      desc = packageDesc
-      released  = new Date()
-      vcsTag = project(":").version
+      pom {
+        name = packageName
+        description = packageDescription
+        url = 'https://github.com/obsidiandynamics/fulcrum'
+        licenses {
+          license {
+            name = 'BSD 3-Clause License'
+            url = 'https://opensource.org/licenses/BSD-3-Clause'
+          }
+        }
+        developers {
+          developer {
+            id = 'ekoutanov'
+            name = 'Emil Koutanov'
+            email = 'ekoutanov@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:git://github.com/obsidiandynamics/fulcrum.git'
+          developerConnection = 'scm:git:ssh://github.com/obsidiandynamics/fulcrum.git'
+          url = 'https://github.com/obsidiandynamics/fulcrum'
+        }
+      }
     }
   }
 }
