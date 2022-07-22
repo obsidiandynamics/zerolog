@@ -95,7 +95,7 @@ public final class Stacks extends SecurityManager {
   }
   
   /**
-   *  Checks if the given character is an ASCII digit. Differs from {@link Character#isDigit()}
+   *  Checks if the given character is an ASCII digit. Differs from {@link Character#isDigit(char)}
    *  in that the latter considers the Unicode character set and answers {@code true} to some 
    *  non-ASCII digits.
    * 

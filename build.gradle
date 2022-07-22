@@ -15,7 +15,6 @@ nexusPublishing {
 }
 
 def baseJvmArgs = [
-  "--illegal-access=warn",
   "--add-opens=java.base/java.io=ALL-UNNAMED",
   "--add-opens=java.base/java.lang=ALL-UNNAMED",
   "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
@@ -96,9 +95,9 @@ allprojects {
     sourceDirectories.from = files(sourceSets.main.allSource.srcDirs)
     classDirectories.from = files(sourceSets.main.output)
     reports {
-      html.enabled true
-      xml.enabled true
-      csv.enabled false
+      html.required = true
+      xml.required = true
+      csv.required = false
     }
   }
 }
@@ -109,25 +108,16 @@ subprojects {
   }
 }
 
-task jacocoMerge(type: JacocoMerge) {
-  mustRunAfter = allprojects.test
-  executionData = files(allprojects.jacocoTestReport.executionData)
-  doFirst {
-    executionData = files(files(allprojects.jacocoTestReport.executionData).findAll { it.exists() })
-  }
-}
-
 task jacocoRootReport(type: JacocoReport) {
-  dependsOn jacocoMerge
-  mustRunAfter = allprojects.test
+  mustRunAfter = allprojects.test + allprojects.javadoc
   additionalSourceDirs.from = files(allprojects.sourceSets.main.allSource.srcDirs)
   sourceDirectories.from = files(allprojects.sourceSets.main.allSource.srcDirs)
   classDirectories.from = files(allprojects.sourceSets.main.output)
-  executionData jacocoMerge.destinationFile
+  executionData.setFrom project.fileTree(dir: '.', include: ['**/build/jacoco/test.exec'])
   reports {
-    html.enabled true
-    xml.enabled true
-    csv.enabled false
+    html.required = true
+    xml.required = true
+    csv.required = false
   }
   onlyIf = {
     true
@@ -148,6 +138,10 @@ dependencies {
   api "com.obsidiandynamics.fulcrum:fulcrum-io:${fulcrumVersion}"
   api "com.obsidiandynamics.fulcrum:fulcrum-props:${fulcrumVersion}"
   api "com.obsidiandynamics.fulcrum:fulcrum-worker:${fulcrumVersion}"
+}
+
+jar {
+  finalizedBy jacocoRootReport
 }
 
 publishing {
