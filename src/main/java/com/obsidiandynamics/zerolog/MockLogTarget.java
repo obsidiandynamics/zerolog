@@ -260,7 +260,7 @@ public final class MockLogTarget implements LogTarget {
     }
     
     public LogEntries withThrowableType(Class<? extends Throwable> throwableClass) {
-      return where(e -> e.throwable != null && throwableClass.isInstance(e.throwable));
+      return where(e -> throwableClass.isInstance(e.throwable));
     }
     
     public LogEntries withThrowable(Throwable throwable) {

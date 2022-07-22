@@ -5,12 +5,12 @@ import java.util.function.*;
 import com.obsidiandynamics.zerolog.util.*;
 
 public interface Zlg {
-  static String entrypoint = Zlg.class.getName();
+  String entrypoint = Zlg.class.getName();
   
   interface LogChain {
-    static String entrypoint = LogChain.class.getName();
+    String entrypoint = LogChain.class.getName();
     
-    static int MAX_ARGS = 64;
+    int MAX_ARGS = 64;
     
     LogChain tag(String tag);
     
@@ -164,7 +164,7 @@ public interface Zlg {
   }
   
   /** Pre-canned no-op logger. */
-  static Zlg nop = Zlg.forName("no-op").withConfigService(new LogConfig()
+  Zlg nop = Zlg.forName("no-op").withConfigService(new LogConfig()
                                                           .withBaseLevel(LogLevel.OFF)
                                                           .withLogService(LogService.nop())).get();
   

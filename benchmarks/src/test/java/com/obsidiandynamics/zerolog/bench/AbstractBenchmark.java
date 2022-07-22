@@ -21,7 +21,7 @@ public abstract class AbstractBenchmark implements BenchmarkTarget {
   protected abstract void cycle(float f, double d, int i, long l);
 
   private static final String JVM_ARGS = 
-      "-XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark -XX:+UseBiasedLocking -Xms2G -Xmx2G -Xss1M " + 
+      "-XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark -Xms2G -Xmx2G -Xss1M " +
       "-XX:+UseG1GC -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=99 -verbose:gc";
 
   private enum Profile {
@@ -57,12 +57,12 @@ public abstract class AbstractBenchmark implements BenchmarkTarget {
      .withWarmupFraction(0.25));
 
     final Supplier<Dyno> dynoSupplier;
-    private Profile(Supplier<Dyno> dynoSupplier) { this.dynoSupplier = dynoSupplier; }
+    Profile(Supplier<Dyno> dynoSupplier) { this.dynoSupplier = dynoSupplier; }
   }
 
   private static final Profile defaultProfile = Props.get("zlg.bench.profile", Profile::valueOf, Profile.STANDARD);
 
-  static final BenchmarkResult run(Class<? extends AbstractBenchmark> target) {
+  static BenchmarkResult run(Class<? extends AbstractBenchmark> target) {
     return defaultProfile.dynoSupplier.get()
         .withTarget(target)
         .withOutput(AbstractBenchmark::printResult)
@@ -73,7 +73,7 @@ public abstract class AbstractBenchmark implements BenchmarkTarget {
     System.out.format("Average call time: %,.3f ns\n", toNanos(result));
   }
 
-  static final double toNanos(BenchmarkResult result) {
+  static double toNanos(BenchmarkResult result) {
     return result.getScore() * 1_000_000_000d;
   }
 }

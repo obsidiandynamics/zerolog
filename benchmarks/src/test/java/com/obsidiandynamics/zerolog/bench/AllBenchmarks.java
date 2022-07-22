@@ -25,7 +25,7 @@ public final class AllBenchmarks {
       benchmarks.put("Zlg w/ guard", ZlgGuardBenchmark.class);
     }
     
-    final int longestBenchmarkName = benchmarks.keySet().stream().map(key -> key.length()).max(Integer::compare).get().intValue();
+    final int longestBenchmarkName = benchmarks.keySet().stream().map(String::length).max(Integer::compare).get();
     final String nameHeader = "Logger implementation";
     final String timeHeader = "Avg. time (ns)";
     

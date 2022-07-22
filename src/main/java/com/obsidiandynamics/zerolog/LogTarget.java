@@ -1,7 +1,7 @@
 package com.obsidiandynamics.zerolog;
 
 public interface LogTarget {
-  static LogTarget nop = new LogTarget() {
+  LogTarget nop = new LogTarget() {
     @Override
     public boolean isEnabled(int level) { return false; }
 

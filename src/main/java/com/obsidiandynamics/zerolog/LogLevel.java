@@ -53,7 +53,7 @@ public final class LogLevel {
     private final String shortName;
     private final int level;
     
-    private Enum(String shortName, int level) {
+    Enum(String shortName, int level) {
       this.shortName = shortName;
       this.level = level;
     }

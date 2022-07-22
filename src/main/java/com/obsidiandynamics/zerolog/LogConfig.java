@@ -4,7 +4,7 @@ import java.util.*;
 
 public final class LogConfig implements ConfigService {
   private static final int DEFAULT_BASE_LEVEL = LogLevel.CONF;
-  private static LogService defaultLogService;
+  private static final LogService defaultLogService;
   
   static {
     // load any bindings on the classpath; set defaultLogService to the one with the highest priority

@@ -103,7 +103,7 @@ final class Slf4jLogTarget implements LogTarget {
   
   private final Logger log;
   
-  private final LogMapping mappings[] = new LogMapping[LogLevel.Enum.values().length];
+  private final LogMapping[] mappings = new LogMapping[LogLevel.Enum.values().length];
 
   Slf4jLogTarget(Logger log) {
     this.log = log;

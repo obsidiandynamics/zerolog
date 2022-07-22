@@ -39,7 +39,7 @@ public final class PropertiesConfigService implements ConfigService {
   public LogConfig get() {
     synchronized (cacheLock) {
       if (cachedConfig == null) {
-        final Properties props = Exceptions.wrap(propsLoader::get, PropertiesLoadException::new);
+        final Properties props = Exceptions.wrap(propsLoader, PropertiesLoadException::new);
         cachedConfig = loadConfig(props);
       }
     }

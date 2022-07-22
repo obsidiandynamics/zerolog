@@ -11,11 +11,11 @@ public abstract class AbstractLogTargetTest {
     }
   }
   
-  protected static final void assertHas(String str, String substr) {
+  protected static void assertHas(String str, String substr) {
     assertTrue("str=" + str, str.contains(substr));
   }
   
-  protected static final void assertHasNot(String str, String substr) {
+  protected static void assertHasNot(String str, String substr) {
     assertFalse("str=" + str, str.contains(substr));
   }
 }

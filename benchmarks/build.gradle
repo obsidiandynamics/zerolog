@@ -28,13 +28,13 @@ task launch(dependsOn: testClasses) {
     launcherClasses += "com.obsidiandynamics.zerolog.bench.ZlgBenchmark"
     
     def perfJvmArgs = "-XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark " + 
-                      "-XX:+UseBiasedLocking -Xms2G -Xmx2G -Xss1M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 " + 
+                      "-Xms2G -Xmx2G -Xss1M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 " +
                       "-XX:InitiatingHeapOccupancyPercent=0 -Djava.net.preferIPv4Stack=true " + 
                       "-Dlauncher.package.compress.level=3"
     javaexec {
       systemProperties = System.properties
       classpath = sourceSets.test.runtimeClasspath
-      main = "com.obsidiandynamics.launcher.Launcher"
+      mainClass = "com.obsidiandynamics.launcher.Launcher"
       args = launcherClasses
       jvmArgs = Arrays.asList(perfJvmArgs.split(" ")) + baseJvmArgs
       standardInput = System.in

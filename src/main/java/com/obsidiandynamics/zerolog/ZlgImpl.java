@@ -23,7 +23,7 @@ final class ZlgImpl implements Zlg {
     private String tag;
     private String format;
     private int argc;
-    private Object[] argv = new Object[MAX_ARGS];
+    private final Object[] argv = new Object[MAX_ARGS];
     private Throwable throwable;
     private String entrypoint;
     
