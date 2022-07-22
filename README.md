@@ -1,11 +1,11 @@
 <img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/zerolog/images/zerolog-logo.png" width="90px" alt="logo"/> Zerolog
 ===
+Low-overhead logging façade for performance-sensitive applications.
+
 [![Maven release](https://img.shields.io/maven-metadata/v.svg?color=blue&label=maven-central&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Fobsidiandynamics%2Fzerolog%2Fzerolog-core%2Fmaven-metadata.xml)](https://mvnrepository.com/artifact/com.obsidiandynamics.zerolog)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/obsidiandynamics/zerolog.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/obsidiandynamics/zerolog/alerts/)
 [![Gradle build](https://github.com/obsidiandynamics/zerolog/actions/workflows/master.yml/badge.svg)](https://github.com/obsidiandynamics/zerolog/actions/workflows/master.yml)
 [![codecov](https://codecov.io/gh/obsidiandynamics/zerolog/branch/master/graph/badge.svg)](https://codecov.io/gh/obsidiandynamics/zerolog)
-
-Low-overhead logging façade for performance-sensitive applications.
 
 # What is Zerolog?
 Zerolog (abbreviated to Zlg) is a logging façade with two fundamental design objectives:
