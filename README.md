@@ -1,10 +1,10 @@
 <img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/zerolog/images/zerolog-logo.png" width="90px" alt="logo"/> Zerolog
 ===
-[![Download](https://api.bintray.com/packages/obsidiandynamics/zerolog/zerolog-core/images/download.svg) ](https://bintray.com/obsidiandynamics/zerolog/zerolog-core/_latestVersion)
-[![Build](https://travis-ci.org/obsidiandynamics/zerolog.svg?branch=master) ](https://travis-ci.org/obsidiandynamics/zerolog#)
+[![Maven release](https://img.shields.io/maven-metadata/v.svg?color=blue&label=maven-central&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fcom%2Fobsidiandynamics%2Fzerolog%2Fzerolog-core%2Fmaven-metadata.xml)](https://mvnrepository.com/artifact/com.obsidiandynamics.zerolog)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/obsidiandynamics/zerolog.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/obsidiandynamics/zerolog/alerts/)
+[![Gradle build](https://github.com/obsidiandynamics/zerolog/actions/workflows/master.yml/badge.svg)](https://github.com/obsidiandynamics/zerolog/actions/workflows/master.yml)
 [![codecov](https://codecov.io/gh/obsidiandynamics/zerolog/branch/master/graph/badge.svg)](https://codecov.io/gh/obsidiandynamics/zerolog)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/obsidiandynamics/zerolog.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/obsidiandynamics/zerolog/context:java)
-===
+
 Low-overhead logging façade for performance-sensitive applications.
 
 # What is Zerolog?
