@@ -66,7 +66,7 @@ public final class MockLogTargetTest {
       assertEquals(logLevel, entry.getLevel());
       assertEquals(String.valueOf(i), entry.getTag());
       assertEquals(format, entry.getFormat());
-      assertEquals(Arrays.asList(i), entry.getArgs());
+      assertEquals(Collections.singletonList(i), entry.getArgs());
       assertEquals(cause, entry.getThrowable());
       assertEquals("entry #" + i, entry.getMessage());
       assertEquals(LogChain.entrypoint, entry.getEntrypoint());
@@ -357,7 +357,6 @@ public final class MockLogTargetTest {
     
     assertEquals(1, target.entries().withFormat("debug %d").count());
     assertEquals(0, target.entries().withFormat("foo").count());
-    assertEquals(0, target.entries().withFormat(null).count());
   }
   
   @Test

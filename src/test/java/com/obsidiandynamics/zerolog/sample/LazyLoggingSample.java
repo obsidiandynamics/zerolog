@@ -35,7 +35,7 @@ public final class LazyLoggingSample {
                                              new Name("Angela", "Bennett"));
     final String surnameToFind = "Smith";
     
-    if (! hackers.stream().anyMatch(n -> n.surname.contains(surnameToFind))) {
+    if (hackers.stream().noneMatch(n -> n.surname.contains(surnameToFind))) {
       zlg.i("%s not found among %s", 
             z -> z.arg(surnameToFind).arg(Args.map(Args.ref(hackers), LazyLoggingSample::tokeniseSurnames)));
     }

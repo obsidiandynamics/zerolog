@@ -11,7 +11,7 @@ public final class LogConfig implements ConfigService {
     final ServiceLoader<LogServiceBinding> serviceLoader = ServiceLoader.load(LogServiceBinding.class);
     final List<LogServiceBinding> prioritisedBindings = new ArrayList<>();
     serviceLoader.forEach(prioritisedBindings::add);
-    Collections.sort(prioritisedBindings, LogServiceBinding::byPriorityDecreasing);
+    prioritisedBindings.sort(LogServiceBinding::byPriorityDecreasing);
     defaultLogService = prioritisedBindings.get(0).getLogService();
   }
   

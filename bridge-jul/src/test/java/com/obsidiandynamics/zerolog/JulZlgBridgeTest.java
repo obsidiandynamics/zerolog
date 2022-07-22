@@ -22,7 +22,7 @@ public final class JulZlgBridgeTest {
   }
   
   private void saveHandlers() {
-    Arrays.stream(JulZlgBridge.getRootLogger().getHandlers()).forEach(rootHandlers::add);
+    rootHandlers.addAll(Arrays.asList(JulZlgBridge.getRootLogger().getHandlers()));
   }
   
   @After

@@ -23,7 +23,7 @@ public final class PropertiesConfigServiceTest {
     final int defaultBaseLevel = defaultConfig.getBaseLevel();
     final LogService defaultLogService = defaultConfig.getLogService();
     
-    final PropertiesConfigService configService = new PropertiesConfigService(() -> new Properties());
+    final PropertiesConfigService configService = new PropertiesConfigService(Properties::new);
     final LogConfig config = configService.get();
     assertNotNull(config);
     assertEquals(defaultBaseLevel, config.getBaseLevel());

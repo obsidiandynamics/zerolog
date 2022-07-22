@@ -16,7 +16,7 @@ public final class JulZlgBridge {
    *  @return True if a bridge is installed.
    */
   public static boolean isInstalled() {
-    return Arrays.stream(getRootLogger().getHandlers()).filter(ZlgHandler.class::isInstance).findFirst().isPresent();
+    return Arrays.stream(getRootLogger().getHandlers()).anyMatch(ZlgHandler.class::isInstance);
   }
   
   /**

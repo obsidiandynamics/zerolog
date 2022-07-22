@@ -15,8 +15,8 @@ public final class LogLevel {
    *  Obtains the notional ordinal for the given log level. The ordinal is the zero-based position
    *  of the {@code int}-based {@code level} as it appears in {@link LogLevel}.
    *  
-   *  @param level
-   *  @return
+   *  @param level The log level.
+   *  @return The corresponding ordinal.
    */
   static int ordinal(int level) {
     // very fast, but brittle; take great care when changing level values
@@ -29,9 +29,9 @@ public final class LogLevel {
    *  Maps a given {@code int}-based {@code level} to an element residing in a given array, based on its
    *  notional ordinal.
    *  
-   *  @param level
-   *  @param elements
-   *  @return
+   *  @param level The log level.
+   *  @param elements The array elements.
+   *  @return The corresponding element.
    */
   static <T> T map(int level, T[] elements) {
     try {

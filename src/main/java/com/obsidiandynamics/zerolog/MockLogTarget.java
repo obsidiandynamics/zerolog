@@ -244,11 +244,11 @@ public final class MockLogTarget implements LogTarget {
     }
     
     public LogEntries withArgType(Class<?> argClass) {
-      return where(e -> e.getArgs().stream().filter(argClass::isInstance).findFirst().isPresent());
+      return where(e -> e.getArgs().stream().anyMatch(argClass::isInstance));
     }
     
     public LogEntries withFormat(CharSequence format) {
-      return where(e -> e.format.equals(format));
+      return where(e -> e.format.contentEquals(format));
     }
     
     public LogEntries withMessage(CharSequence message) {
