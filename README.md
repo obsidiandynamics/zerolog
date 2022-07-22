@@ -32,8 +32,8 @@ The run was conducted on CentOS 7, running JDK 10. To replicate, run `./gradlew 
 Add the following snippet to your build file, replacing `x.y.z` with the version shown on the Download badge at the top of this README.
 
 ```groovy
-compile "com.obsidiandynamics.zerolog:zerolog-core:x.y.z"
-compile "com.obsidiandynamics.zerolog:<binding>:x.y.z"
+api "com.obsidiandynamics.zerolog:zerolog-core:x.y.z"
+api "com.obsidiandynamics.zerolog:<binding>:x.y.z"
 ```
 
 You need the `zerolog-core` module and, typically, a binding module. The sole currently supported Zlg binding is `zerolog-slf4j17`, which should work with any logger that features an SLF4J 1.7.x binding. (This covers all major loggers.) For example, to use Zlg with Log4j 1.2.17, add the following to your `build.gradle` (replacing `x.y.z` as appropriate).
