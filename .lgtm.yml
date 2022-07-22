@@ -1,7 +1,7 @@
 extraction:
   java:
     index:
-      java_version: "9"
+      java_version: "16"
 queries:
   - include: "*"
   - exclude: java/uncaught-number-format-exception
