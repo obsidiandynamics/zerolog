@@ -29,7 +29,7 @@ The run was conducted on CentOS 7, running JDK 10. To replicate, run `./gradlew 
 
 # Getting Started
 ## Dependencies
-Gradle builds are hosted on JCenter. Add the following snippet to your build file, replacing `x.y.z` with the version shown on the Download badge at the top of this README.
+Add the following snippet to your build file, replacing `x.y.z` with the version shown on the Download badge at the top of this README.
 
 ```groovy
 compile "com.obsidiandynamics.zerolog:zerolog-core:x.y.z"
