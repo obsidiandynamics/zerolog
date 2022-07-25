@@ -34,7 +34,7 @@ allprojects {
   apply plugin: 'signing'
 
   group = "com.obsidiandynamics.zerolog"
-  version = "0.33.0"
+  version = "0.34.0-SNAPSHOT"
   
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
