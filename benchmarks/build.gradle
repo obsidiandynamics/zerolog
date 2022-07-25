@@ -15,7 +15,7 @@ dependencies {
   testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 }
 
-task launch(dependsOn: testClasses) {
+task launch(dependsOn: build) {
   doLast {
     def launcherClasses = new ArrayList()
     launcherClasses += "com.obsidiandynamics.zerolog.bench.AllBenchmarks"
@@ -33,7 +33,7 @@ task launch(dependsOn: testClasses) {
                       "-Dlauncher.package.compress.level=3"
     javaexec {
       systemProperties = System.properties
-      classpath = sourceSets.test.runtimeClasspath
+      classpath = sourceSets.main.compileClasspath + sourceSets.main.runtimeClasspath + sourceSets.test.compileClasspath + sourceSets.test.runtimeClasspath
       mainClass = "com.obsidiandynamics.launcher.Launcher"
       args = launcherClasses
       jvmArgs = Arrays.asList(perfJvmArgs.split(" ")) + baseJvmArgs
